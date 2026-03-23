@@ -1,37 +1,24 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import LogoTop from '@/componentes/LogoTop.vue'
 import { useProdutosStore } from '@/stores/useProdutosStore'
 import { useRouter } from 'vue-router'
 
 const produtosStore = useProdutosStore()
-
 const router = useRouter()
+
 const nome = ref('')
 const preco = ref('')
 const categoria = ref('')
 const personalizavel = ref(false)
 const descricao = ref('')
-const imagemPrincipal = ref(null)
-const imagensSecundarias = ref([])
+const imagemPrincipalNome = ref('')
 
 const mensagem = ref('')
 const loading = ref(false)
 
-onMounted(async () => {
-  await produtosStore.carregarProdutos()
-})
-
 function esperar(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
-}
-
-const onFilePrincipalChange = (e) => {
-  imagemPrincipal.value = e.target.files[0]
-}
-
-const onFilesSecundariasChange = (e) => {
-  imagensSecundarias.value = Array.from(e.target.files).slice(0, 5)
 }
 
 async function cadastrarProduto() {
@@ -45,9 +32,7 @@ async function cadastrarProduto() {
       categoria: categoria.value,
       personalizavel: personalizavel.value,
       descricao: descricao.value,
-      imagemPrincipal: imagemPrincipal.value,
-      imagensSecundarias: imagensSecundarias.value,
-      criadoEm: new Date()
+      imagemPrincipal: imagemPrincipalNome.value || null,
     })
 
     mensagem.value = '✅ Produto cadastrado com sucesso!'
@@ -57,11 +42,10 @@ async function cadastrarProduto() {
     categoria.value = ''
     personalizavel.value = false
     descricao.value = ''
-    imagemPrincipal.value = null
-    imagensSecundarias.value = []
-    
+    imagemPrincipalNome.value = ''
+
     await esperar(2000)
-    router.push({name: 'Crud'});
+    router.push({ name: 'Crud' })
 
   } catch (error) {
     console.error(error)
@@ -72,7 +56,6 @@ async function cadastrarProduto() {
 }
 </script>
 
-
 <template>
   <LogoTop></LogoTop>
   <main class="admin-wrapper">
@@ -82,7 +65,7 @@ async function cadastrarProduto() {
 
       <div class="input-group">
         <label>Nome do Produto</label>
-        <input v-model="nome" placeholder="Ex: Camiseta Oversized" required />
+        <input v-model="nome" placeholder="Ex: Tênis 3D Azul" required />
       </div>
 
       <div class="row">
@@ -93,7 +76,7 @@ async function cadastrarProduto() {
 
         <div class="input-group">
           <label>Categoria</label>
-          <input v-model="categoria" placeholder="Ex: Roupas" required />
+          <input v-model="categoria" placeholder="Ex: calcados" required />
         </div>
       </div>
 
@@ -107,12 +90,10 @@ async function cadastrarProduto() {
         <textarea v-model="descricao" placeholder="Descreva o produto..." rows="4"></textarea>
       </div>
 
-      <div class="upload-box">
-        <label>Imagem Principal</label>
-        <input type="file" accept="image/*" @change="onFilePrincipalChange" />
-
-        <label>Imagens Secundárias (até 5)</label>
-        <input type="file" accept="image/*" multiple @change="onFilesSecundariasChange" />
+      <div class="input-group">
+        <label>Nome da Imagem Principal</label>
+        <input v-model="imagemPrincipalNome" placeholder="Ex: tenis_azul.jpg" />
+        <small>Digite o nome do arquivo de imagem</small>
       </div>
 
       <button type="submit" :disabled="loading" class="btn-submit">
@@ -125,16 +106,45 @@ async function cadastrarProduto() {
 </template>
 
 <style scoped>
-  input,
-  textarea {
+  .admin-wrapper {
+    max-width: 700px;
+    margin: 2rem auto;
+    font-family: var(--font-family-base);
+  }
+  .titulo {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+  }
+  .admin-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    border: 2px solid var(--color-primary);
+    border-radius: 14px;
+    padding: 2rem;
+  }
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .input-group label {
+    font-weight: 600;
+  }
+  .input-group small {
+    color: var(--color-muted);
+    font-size: 12px;
+  }
+  input, textarea {
     padding: 12px;
     border: 1px solid var(--color-border-input);
     border-radius: 10px;
     font-size: 1rem;
     outline: none;
   }
-  input:focus,
-  textarea:focus {
+  input:focus, textarea:focus {
     border-color: var(--color-primary);
   }
   .row {
@@ -147,12 +157,25 @@ async function cadastrarProduto() {
     gap: 8px;
     font-weight: 600;
   }
-  .upload-box {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  .btn-submit {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
   }
-  .upload-box label {
+  .btn-submit:hover {
+    transform: scale(1.02);
+  }
+  .btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .mensagem {
+    text-align: center;
     font-weight: 600;
   }
 </style>

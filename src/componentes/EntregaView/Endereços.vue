@@ -1,73 +1,80 @@
 <script setup>
-    import { ref, onMounted } from 'vue'
-    import { useCarrinhoStore } from '@/stores/useCarrinhoStore';
-    import { useFretesStore } from '@/stores/useFretesStore';
-    
-    const carrinho = useCarrinhoStore()
-    const fretes = useFretesStore()
-    const enderecos = ref([])
-    const ValorFrete = ref(null)
-    const enderecoSelecionado = ref(null);
+  import { ref, onMounted } from 'vue'
+  import { useCarrinhoStore } from '@/stores/useCarrinhoStore';
+  import { useFretesStore } from '@/stores/useFretesStore';
+  import axiosInstance from '@/api/config';
 
-    onMounted(async () => {
-        await fretes.carregarFretes()
+  const carrinho = useCarrinhoStore()
+  const fretes = useFretesStore()
+  const enderecos = ref([])
+  const ValorFrete = ref(null)
+  const enderecoSelecionado = ref(null);
 
-        const resposta = await fetch('http://localhost:3000/enderecos')
-        const data = await resposta.json()
-        enderecos.value = data
-        
-        // Sincronizar com frete já selecionado na store
-        if (carrinho.freteSelecionado) {
-            ValorFrete.value = carrinho.freteSelecionado
-        }
-    })
+  // ID do usuário fixo por enquanto — será substituído pelo auth futuramente
+  const ID_USUARIO = 1
 
-    function selecionarEndereco(endereco) {
-        
-        enderecoSelecionado.value = endereco.cep;
-        
-        const freteEncontrado = fretes.fretes.find(f => f.cep_entrega === enderecoSelecionado.value);
-        
-        if (freteEncontrado) {
-            ValorFrete.value = freteEncontrado.valor_frete;
-            carrinho.definirFrete(freteEncontrado.valor_frete);
-        } else {
-            ValorFrete.value = null;
-            carrinho.definirFrete(null);
-        }
+  onMounted(async () => {
+    await fretes.carregarFretes()
+
+    // Busca endereços do backend
+    const { data } = await axiosInstance.get(`/api/enderecos/${ID_USUARIO}`)
+    enderecos.value = data
+
+    if (carrinho.freteSelecionado) {
+      ValorFrete.value = carrinho.freteSelecionado
     }
+  })
 
+  function selecionarEndereco(endereco) {
+    enderecoSelecionado.value = endereco.cep;
+
+    const freteEncontrado = fretes.fretes.find(f => f.cep_entrega === enderecoSelecionado.value);
+
+    if (freteEncontrado) {
+      ValorFrete.value = freteEncontrado.valor_frete;
+      carrinho.definirFrete(freteEncontrado.valor_frete);
+    } else {
+      ValorFrete.value = null;
+      carrinho.definirFrete(null);
+    }
+  }
 </script>
 
 <template>
-    <div class="products">
-        <div class="topo">
-            <h2># Endereço de Entrega</h2>
-        <!--<h4>criar botão para adicionar+</h4>-->
-        </div>
-
-        <hr>
-        <div class="lista-endereco">
-            <div v-for="endereco in enderecos" :key="endereco.id" class="endereco" :class="{ selecionado: enderecoSelecionado === endereco.cep }" @click="selecionarEndereco(endereco)">
-                <div class="endereco-esquerda">
-                    <div class="endereco-nome"> {{endereco.titulo}} </div>
-
-                    <div class="endereco-linha1">
-                        {{endereco.rua}}  ,  {{endereco.numero}} 
-                    </div>
-
-                    <div class="endereco-linha2">
-                        {{endereco.bairro}}  -  {{endereco.cidade}}  -  {{endereco.estado}}  -  {{endereco.cep}} 
-                    </div>
-                </div>
-
-                <div class="endereco-botoes">
-                    <!--<button class="editar">Editar</button>-->
-                    <!--<button class="excluir" @click="excluirEndereco(endereco)">Excluir</button>-->
-                </div>
-            </div>
-        </div>
+  <div class="products">
+    <div class="topo">
+      <h2># Endereço de Entrega</h2>
     </div>
+
+    <hr>
+    <div class="lista-endereco">
+      <div
+        v-for="endereco in enderecos"
+        :key="endereco.id"
+        class="endereco"
+        :class="{ selecionado: enderecoSelecionado === endereco.cep }"
+        @click="selecionarEndereco(endereco)"
+      >
+        <div class="endereco-esquerda">
+          <!-- campo "nome" no backend, era "titulo" antes -->
+          <div class="endereco-nome">{{ endereco.nome }}</div>
+
+          <div class="endereco-linha1">
+            {{ endereco.rua }}, {{ endereco.numero }}
+          </div>
+
+          <div class="endereco-linha2">
+            {{ endereco.bairro }} - {{ endereco.cidade }} - {{ endereco.estado }} - {{ endereco.cep }}
+          </div>
+        </div>
+
+        <div class="endereco-botoes">
+          <!--<button class="editar">Editar</button>-->
+          <!--<button class="excluir" @click="excluirEndereco(endereco)">Excluir</button>-->
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>

@@ -1,6 +1,10 @@
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-
-export const supabase = createClient(supabaseUrl, supabaseKey)
+// Supabase desabilitado temporariamente para testes com backend local
+export const supabase = {
+  storage: {
+    from: () => ({
+      upload: async () => ({ data: null, error: new Error('Supabase desabilitado') }),
+      getPublicUrl: () => ({ data: { publicUrl: '' } }),
+      remove: async () => ({ error: null }),
+    }),
+  },
+}

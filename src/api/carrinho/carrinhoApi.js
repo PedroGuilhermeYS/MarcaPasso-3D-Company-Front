@@ -1,31 +1,43 @@
 import axiosInstance from "../config";
 
-export async function getCarrinhoNaApi() {
-    const { data } = await axiosInstance.get('/carrinho')
-    return data
+// Mapeia os campos do backend para o padrão do frontend
+function mapearItem(item) {
+  return {
+    id: item.idItem,
+    idProduto: item.idProduto,
+    nome: item.nomeProduto,
+    imagem: item.imagemPrincipal,
+    quantidade: item.quantidade,
+    preco: item.precoUnitario,
+  }
+}
+
+export async function getCarrinhoNaApi(idUsuario = 1) {
+  const { data } = await axiosInstance.get(`/api/carrinho/${idUsuario}`)
+  return data.map(mapearItem)
 }
 
 export async function getItemCarrinhoNaApi(id) {
-    const { data } = await axiosInstance.get(`/carrinho/${id}`)
-    return data
+  // Backend não tem endpoint individual de item — retorna null
+  return null
 }
 
 export async function addItemCarrinhoNaApi(item) {
-    const { data } = await axiosInstance.post('/carrinho', item)
-    return data
+  // Será implementado futuramente com endpoint POST
+  return item
 }
 
 export async function updateQuantidadeItemNaApi(id, quantidade) {
-    const { data } = await axiosInstance.put(`/carrinho/${id}`, { quantidade })
-    return data
+  // Será implementado futuramente com endpoint PUT
+  return { id, quantidade }
 }
 
 export async function removeItemCarrinhoNaApi(id) {
-    const { data } = await axiosInstance.delete(`/carrinho/${id}`)
-    return data
+  await axiosInstance.delete(`/api/carrinho/item/${id}`)
+  return { id }
 }
 
 export async function removeTodosItensCarrinhoNaApi() {
-    const { data } = await axiosInstance.delete('/carrinho')
-    return data
+  // Será implementado futuramente
+  return []
 }

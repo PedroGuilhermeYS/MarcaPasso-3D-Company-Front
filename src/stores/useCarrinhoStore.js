@@ -1,20 +1,19 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { useAuthStore } from './useAuthStore'
 import { useCarrinhoService } from '@/services/carrinhoService'
 import { useAsyncHandler } from '@/composables/useAsyncHandler'
 import { normalizarIdObjeto } from '@/composables/useNormalizadorId'
 
+// ID fixo do usuário para testes — será substituído pelo auth real futuramente
+const ID_USUARIO_TESTE = 1
+
 export const useCarrinhoStore = defineStore('carrinho', () => {
   const itens = ref([])
   const freteSelecionado = ref(null)
-
   const carregando = ref(false)
   const erro = ref(null)
 
-  const authStore = useAuthStore()
   const carrinhoService = useCarrinhoService()
-
   const { run: withHandling } = useAsyncHandler({ carregando, erro })
 
   const total = computed(() =>
@@ -25,16 +24,10 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
   )
 
   async function carregarCarrinho() {
-    if (!authStore.usuario) {
-      itens.value = []
-      return
-    }
-
     const lista = await withHandling(
-      () => carrinhoService.buscarTodos(),
+      () => carrinhoService.buscarTodos(ID_USUARIO_TESTE),
       'Erro ao carregar carrinho'
     )
-
     itens.value = Array.isArray(lista) ? lista.map(normalizarIdObjeto) : []
   }
 
@@ -81,19 +74,16 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
   async function alterarQuantidade(id, quantidade) {
     if (quantidade <= 0) return
 
-    const atualizado = await withHandling(
+    await withHandling(
       () => carrinhoService.alterarQuantidade(id, quantidade),
       'Erro ao alterar quantidade'
     )
 
-    // atualiza localmente por comparação de string para garantir consistência de tipos
     itens.value = itens.value.map(item =>
       String(item.id) === String(id)
         ? { ...item, quantidade }
         : item
     )
-
-    return atualizado
   }
 
   async function removerItem(id) {
@@ -101,7 +91,6 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
       () => carrinhoService.removerItem(id),
       'Erro ao remover item do carrinho'
     )
-
     itens.value = itens.value.filter(i => String(i.id) !== String(id))
   }
 
@@ -110,7 +99,6 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
       () => carrinhoService.limparCarrinho(),
       'Erro ao limpar carrinho'
     )
-
     itens.value = []
   }
 
@@ -118,22 +106,12 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
     freteSelecionado.value = frete
   }
 
-  authStore.$subscribe((_, state) => {
-    if (state.usuario) {
-      carregarCarrinho()
-    } else {
-      itens.value = []
-    }
-  })
-
   return {
     itens,
     freteSelecionado,
     carregando,
     erro,
-
     total,
-
     carregarCarrinho,
     adicionarItem,
     alterarQuantidade,
