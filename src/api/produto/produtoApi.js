@@ -16,8 +16,8 @@ export async function addProdutoNaApi(produto) {
 }
 
 export async function removeProdutoNaApi(id) {
-  const { data } = await axiosInstance.delete(`/produtos/${id}`)
-  return data
+  await axiosInstance.delete(`/produtos/${id}`)
+  return { id }
 }
 
 export async function atualizaProdutoNaApi(id, produto) {

@@ -8,9 +8,9 @@ import {
 } from '@/api/carrinho'
 
 export function useCarrinhoService() {
-  async function buscarTodos() {
-    return await getCarrinhoNaApi()
-  }
+  async function buscarTodos(idUsuario = 1) {
+  return await getCarrinhoNaApi(idUsuario)
+}
 
   async function buscarItem(id) {
     return await getItemCarrinhoNaApi(id)
