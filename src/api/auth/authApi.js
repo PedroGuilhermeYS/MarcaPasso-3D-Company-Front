@@ -15,7 +15,7 @@ export async function doLogoutNaApi() {
   return data
 }
 
-export async function doCadastroNaApi(email, password) {
-  const { data } = await axiosInstance.post('/auth/cadastro', { email, password })
+export async function doCadastroNaApi(dadosUsuario) {
+  const { data } = await axiosInstance.post('/auth/cadastro', dadosUsuario)
   return data
 }
