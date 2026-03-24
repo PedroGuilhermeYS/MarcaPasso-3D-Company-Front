@@ -29,8 +29,8 @@ export function useAuthService() {
     return { ok: true, ...data }
   }
 
-  async function register(email, senha, nome, cpf, telefone) {
-    const data = await doCadastroNaApi(email, senha, nome, cpf, telefone)
+  async function register(email, senha, nome) {
+    const data = await doCadastroNaApi(email, senha, nome)
     if (data?.token) {
       const u = data.user ?? data
       localStorage.setItem('jwt_token', data.token)

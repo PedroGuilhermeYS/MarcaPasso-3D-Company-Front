@@ -2,8 +2,14 @@ import axios from 'axios'
 import { ApiError } from '@/errors/ApiError'
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
-})
+  // ESSA É A LINHA MÁGICA QUE FALTA:
+  baseURL: 'http://localhost:8080', 
+  
+  // As outras configurações que você já tiver aí continuam normais
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
 
 axiosInstance.interceptors.request.use(
   (config) => {
@@ -27,13 +33,9 @@ axiosInstance.interceptors.response.use(
       'Erro inesperado na comunicação com o servidor'
 
     if (status === 401) {
-      const url = error.config?.url ?? ''
-      const isAuthRoute = url.includes('/auth/login') || url.includes('/auth/cadastro')
-      if (!isAuthRoute) {
-        console.error('Não autorizado. Faça login novamente.')
-        localStorage.removeItem('jwt_token')
-        localStorage.removeItem('usuario')
-      }
+      console.error('Sessão expirada. Faça login novamente.')
+      localStorage.removeItem('jwt_token')
+      localStorage.removeItem('usuario')
     }
 
     return Promise.reject(new ApiError(message, status, data))
