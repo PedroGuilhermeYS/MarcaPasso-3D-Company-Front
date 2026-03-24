@@ -7,7 +7,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('jwt_token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -27,7 +27,13 @@ axiosInstance.interceptors.response.use(
       'Erro inesperado na comunicação com o servidor'
 
     if (status === 401) {
-      console.error('Não autorizado. Faça login novamente.')
+      const url = error.config?.url ?? ''
+      const isAuthRoute = url.includes('/auth/login') || url.includes('/auth/cadastro')
+      if (!isAuthRoute) {
+        console.error('Não autorizado. Faça login novamente.')
+        localStorage.removeItem('jwt_token')
+        localStorage.removeItem('usuario')
+      }
     }
 
     return Promise.reject(new ApiError(message, status, data))
