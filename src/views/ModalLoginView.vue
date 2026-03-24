@@ -25,30 +25,29 @@
     }
 
     async function logar() {
-        
-    if (!email.value || !senha.value) {
-        erro.value = 'Por favor, preencha o e-mail e a senha.'
-        return
-    }
-
-    erro.value = ''
-    loading.value = true
-    
-    try {
-        const res = await auth.login(email.value, senha.value)
-        
-        if (res && res.ok) {
-            fecharModalLogin()
-            router.push({ name: 'Home' })
-        } else {
-            erro.value = res?.error || 'E-mail ou senha incorretos.'
+        if (!email.value || !senha.value) {
+            erro.value = 'Por favor, preencha o e-mail e a senha.'
+            return
         }
-    } catch (e) {
-        erro.value = e?.message ?? 'Erro ao efetuar login.'
-    } finally {
-        loading.value = false
+
+        erro.value = ''
+        loading.value = true
+
+        try {
+            const ok = await auth.login(email.value, senha.value)
+
+            if (ok) {
+                fecharModalLogin()
+                router.push({ name: 'Home' })
+            } else {
+                erro.value = auth.erro || 'E-mail ou senha incorretos.'
+            }
+        } catch (e) {
+            erro.value = e?.message ?? 'Erro ao efetuar login.'
+        } finally {
+            loading.value = false
+        }
     }
-}
 </script>
 
 <template>
