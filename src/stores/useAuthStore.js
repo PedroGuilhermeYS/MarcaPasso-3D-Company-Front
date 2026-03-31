@@ -12,10 +12,10 @@ export const useAuthStore = defineStore('auth', () => {
 
   const { run: withHandling } = useAsyncHandler({ carregando, erro })
 
-  const cadastrar = async (email, senha) => {
+  const cadastrar = async (email, senha, nome, cpf, telefone) => {
     try {
       const res = await withHandling(
-        () => authService.register(email, senha),
+        () => authService.register(email, senha, nome, cpf, telefone),
         'Erro ao cadastrar'
       )
       usuario.value = authService.getCurrentUser()
@@ -68,7 +68,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const isAdmin = () => !!usuario.value
+  const isAdmin = () => usuario.value?.role === 'admin'
   const isAuthenticated = () => !!usuario.value
 
   return {

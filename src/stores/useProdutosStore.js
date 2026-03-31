@@ -20,26 +20,18 @@ export const useProdutosStore = defineStore('produtos', () => {
       'Erro ao carregar produtos'
     )
 
-    // 1. Imprime no console para você ver exatamente o formato que o Java mandou
-    console.log("Resposta do Backend/Mock:", resposta)
-
-    // 2. Garante que vamos extrair um Array, não importa como venha
     let listaMapeada = []
     
     if (Array.isArray(resposta)) {
-      // Se vier a lista pura [ {}, {} ]
-      listaMapeada = resposta
+        listaMapeada = resposta
     } else if (resposta && Array.isArray(resposta.data)) {
-      // Se o Axios embrulhar em { data: [] }
-      listaMapeada = resposta.data
+        listaMapeada = resposta.data
     } else if (resposta && Array.isArray(resposta.content)) {
-      // Se o Spring Boot mandar paginado { content: [] }
-      listaMapeada = resposta.content
+        listaMapeada = resposta.content
     } else {
-      console.warn("Formato desconhecido recebido da API", resposta)
+        console.warn("Formato desconhecido recebido da API", resposta)
     }
 
-    // 3. Agora sim, com a garantia de ser um Array, fazemos o .map()
     produtos.value = listaMapeada.map(normalizarIdObjeto)
     
     return produtos.value
