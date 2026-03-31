@@ -41,7 +41,7 @@ const acessar = computed(() => {
           </router-link>
 
           <router-link :to="{ name: 'PainelUsuario' }">
-            <h4 v-if="usuarioLogado">Olá, {{ usuarioLogado.displayName || usuarioLogado.email }}</h4>
+            <h4 v-if="usuarioLogado">Olá, {{ usuarioLogado.nome || usuarioLogado.email }}</h4>
           </router-link>
         </div>
 

@@ -46,7 +46,7 @@ async function cadastrar() {
 
     loading.value = true
     try {
-        await auth.cadastrar(email.value, senha.value)
+        const ok = await auth.cadastrar(email.value, senha.value, nome.value, cpf.value, telefone.value)
         fecharModalCadastro()
     } catch (e) {
         erro.value = e?.message ?? 'Erro ao cadastrar usuário.'

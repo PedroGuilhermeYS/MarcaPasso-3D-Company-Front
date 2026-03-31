@@ -15,12 +15,25 @@ export const useProdutosStore = defineStore('produtos', () => {
   const { run: withHandling } = useAsyncHandler({ carregando, erro })
 
   const carregarProdutos = async () => {
-    const lista = await withHandling(
+    const resposta = await withHandling(
       () => produtoService.buscarTodos(),
       'Erro ao carregar produtos'
     )
 
-    produtos.value = (lista || []).map(normalizarIdObjeto)
+    let listaMapeada = []
+    
+    if (Array.isArray(resposta)) {
+        listaMapeada = resposta
+    } else if (resposta && Array.isArray(resposta.data)) {
+        listaMapeada = resposta.data
+    } else if (resposta && Array.isArray(resposta.content)) {
+        listaMapeada = resposta.content
+    } else {
+        console.warn("Formato desconhecido recebido da API", resposta)
+    }
+
+    produtos.value = listaMapeada.map(normalizarIdObjeto)
+    
     return produtos.value
   }
 
