@@ -6,9 +6,7 @@ const favoritoApi = useMock
 
 export const {
   getTodosFavoritosNaApi,
-  getFavoritoNaApi,
   addFavoritoNaApi,
   removeFavoritoNaApi,
   removeTodosFavoritosNaApi,
-  atualizaFavoritoNaApi
 } = favoritoApi
