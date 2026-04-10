@@ -1,8 +1,7 @@
 import { ApiError } from '@/errors/ApiError'
 
-const adminEmail = 'pedro210905@gmail.com'
 const USERS = [
-  { id: 1, email: adminEmail, password: '123456', role: 'admin' },
+  { id: 1, email: 'admin@marcapasso.com', password: '123456', role: 'admin' },
 ]
 
 function generateFakeJwt(payload = {}, expiresInSeconds = 60 * 60) {
@@ -61,8 +60,8 @@ export async function doCadastroNaApi(email, password) {
     return Promise.reject(new ApiError('Usuário já existe', 409, null))
   }
   const id = USERS.length + 1
-  const newUser = { id, email, password, role: 'user' }
+  const newUser = { id, email, password, role: 'admin' }
   USERS.push(newUser)
-  const token = generateFakeJwt({ sub: id, email, role: 'user' }, 60 * 60)
-  return { ok: true, token, user: { id, email, role: 'user' } }
+  const token = generateFakeJwt({ sub: id, email, role: 'admin' }, 60 * 60)
+  return { ok: true, token, user: { id, email, role: 'admin' } }
 }
