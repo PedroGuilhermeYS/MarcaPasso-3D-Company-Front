@@ -68,7 +68,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const isAdmin = () => usuario.value?.role === 'admin'
+  const isAdmin = () => !!usuario.value
   const isAuthenticated = () => !!usuario.value
 
   return {
