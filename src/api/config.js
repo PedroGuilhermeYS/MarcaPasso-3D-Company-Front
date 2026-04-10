@@ -7,10 +7,10 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const usuario = import.meta.env.VITE_API_USER || 'user'
-    const senha = import.meta.env.VITE_API_PASSWORD || ''
-    const token = btoa(`${usuario}:${senha}`)
-    config.headers.Authorization = `Basic ${token}`
+    const token = localStorage.getItem('jwt_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
     return config
   },
   (error) => Promise.reject(error)
@@ -27,7 +27,9 @@ axiosInstance.interceptors.response.use(
       'Erro inesperado na comunicação com o servidor'
 
     if (status === 401) {
-      console.error('Não autorizado. Verifique usuário e senha no .env')
+      console.error('Sessão expirada. Faça login novamente.')
+      localStorage.removeItem('jwt_token')
+      localStorage.removeItem('usuario')
     }
 
     return Promise.reject(new ApiError(message, status, data))
