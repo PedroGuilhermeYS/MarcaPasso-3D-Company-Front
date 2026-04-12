@@ -2,6 +2,7 @@ import { ApiError } from '@/errors/ApiError'
 
 const USERS = [
   { id: 1, email: 'admin@marcapasso.com', password: '123456', role: 'admin' },
+  { id: 1, email: 'admin@marcapasso.com', password: '123456', role: 'admin' },
 ]
 
 function generateFakeJwt(payload = {}, expiresInSeconds = 60 * 60) {
