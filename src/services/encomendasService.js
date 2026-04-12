@@ -1,28 +1,26 @@
 import {
-    getTodasEncomendasNaApi,
-    getEncomendaNaApi,
-    addEncomendaNaApi,
+  getEncomendasDoUsuarioNaApi,
+  getEncomendaDetalheNaApi,
+  criarEncomendaNaApi,
 } from '@/api/encomenda'
 
 export function useEncomendasService() {
 
-    async function buscarEncomendas() {
-        return await getTodasEncomendasNaApi()
-    }
+  async function buscarEncomendas(idUsuario) {
+    return await getEncomendasDoUsuarioNaApi(idUsuario)
+  }
 
-    async function buscarEncomenda(id) {
-        return await getEncomendaNaApi(id)
-    }
+  async function buscarDetalhe(idUsuario, idEncomenda) {
+    return await getEncomendaDetalheNaApi(idUsuario, idEncomenda)
+  }
 
-    async function adicionarEncomenda(encomenda) {
-        return await addEncomendaNaApi(encomenda)
-    }
+  async function criarEncomenda(idUsuario, encomenda) {
+    return await criarEncomendaNaApi(idUsuario, encomenda)
+  }
 
-    return {
-        buscarEncomendas,
-        buscarEncomenda,
-        adicionarEncomenda,
-    }
-
+  return {
+    buscarEncomendas,
+    buscarDetalhe,
+    criarEncomenda,
+  }
 }
-

@@ -5,7 +5,7 @@ const encomendaApi = useMock
   : await import('./encomendaApi.js')
 
 export const {
-  getTodasEncomendasNaApi,
-  getEncomendaNaApi,
-  addEncomendaNaApi
+  getEncomendasDoUsuarioNaApi,
+  getEncomendaDetalheNaApi,
+  criarEncomendaNaApi,
 } = encomendaApi
