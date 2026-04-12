@@ -13,7 +13,6 @@ onMounted(async () => {
 
 async function selecionarPedido(id) {
   if (pedidoSelecionadoId.value === id) {
-    // Clicou no mesmo pedido → fecha o painel
     pedidoSelecionadoId.value = null
     encomendasStore.encomendaDetalhe = null
     return
@@ -61,37 +60,36 @@ const statusClass = (status) => {
 
 <template>
   <main>
-    <div class="container1" :class="{ 'com-detalhe': pedidoSelecionadoId }">
+    <div class="container1">
 
-      <!-- ── Lista de pedidos ─────────────────────────── -->
-      <div class="lista-wrap">
-        <div class="lista-header">
-          <h1 class="page-title">Meus Pedidos</h1>
-          <span v-if="encomendasStore.encomendas.length" class="total-badge">
-            {{ encomendasStore.encomendas.length }} pedido(s)
-          </span>
-        </div>
+      <div class="lista-header">
+        <h1 class="page-title">Meus Pedidos</h1>
+        <span v-if="encomendasStore.encomendas.length" class="total-badge">
+          {{ encomendasStore.encomendas.length }} pedido(s)
+        </span>
+      </div>
 
-        <!-- Carregando -->
-        <div v-if="encomendasStore.carregando" class="estado-info">
-          <span class="spinner"></span>
-          <p>Carregando pedidos...</p>
-        </div>
+      <!-- Carregando -->
+      <div v-if="encomendasStore.carregando" class="estado-info">
+        <span class="spinner"></span>
+        <p>Carregando pedidos...</p>
+      </div>
 
-        <!-- Erro -->
-        <div v-else-if="encomendasStore.erro" class="estado-erro">
-          <p>{{ encomendasStore.erro }}</p>
-        </div>
+      <!-- Erro -->
+      <div v-else-if="encomendasStore.erro" class="estado-erro">
+        <p>{{ encomendasStore.erro }}</p>
+      </div>
 
-        <!-- Vazio -->
-        <div v-else-if="!encomendasStore.encomendas.length" class="estado-vazio">
-          <p>Você ainda não realizou nenhum pedido.</p>
-        </div>
+      <!-- Vazio -->
+      <div v-else-if="!encomendasStore.encomendas.length" class="estado-vazio">
+        <p>Você ainda não realizou nenhum pedido.</p>
+      </div>
 
-        <!-- Cards de pedidos -->
+      <!-- Cards + detalhe inline -->
+      <template v-for="pedido in encomendasStore.encomendas" :key="pedido.id">
+
+        <!-- Card do pedido -->
         <div
-          v-for="pedido in encomendasStore.encomendas"
-          :key="pedido.id"
           class="pedido-card"
           :class="{ ativo: pedidoSelecionadoId === pedido.id }"
           @click="selecionarPedido(pedido.id)"
@@ -133,18 +131,22 @@ const statusClass = (status) => {
 
           </div>
         </div>
-      </div>
 
-      <!-- ── Painel de detalhe ────────────────────────── -->
-      <transition name="slide">
-        <div v-if="pedidoSelecionadoId" class="detalhe-wrap">
-          <DetalheEncomenda
-            :encomenda="encomendasStore.encomendaDetalhe"
-            :carregando="encomendasStore.carregandoDetalhe"
-            @fechar="fecharDetalhe"
-          />
-        </div>
-      </transition>
+        <!-- Detalhe abre ABAIXO do card clicado -->
+        <transition name="expand">
+          <div
+            v-if="pedidoSelecionadoId === pedido.id"
+            class="detalhe-inline"
+          >
+            <DetalheEncomenda
+              :encomenda="encomendasStore.encomendaDetalhe"
+              :carregando="encomendasStore.carregandoDetalhe"
+              @fechar="fecharDetalhe"
+            />
+          </div>
+        </transition>
+
+      </template>
 
     </div>
   </main>
@@ -160,23 +162,11 @@ main {
   padding: 0 1rem;
 }
 
-/* ── Layout principal ──────────────────── */
 .container1 {
   display: flex;
-  gap: 2rem;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 0;
   margin-bottom: 3rem;
-  transition: all .3s ease;
-}
-
-.lista-wrap {
-  flex: 1;
-  min-width: 0;
-}
-
-.detalhe-wrap {
-  width: 420px;
-  flex-shrink: 0;
 }
 
 /* ── Header da lista ───────────────────── */
@@ -209,11 +199,10 @@ main {
   border-radius: 12px;
   border: 2px solid transparent;
   box-shadow: 0 2px 8px #00000010;
-  padding: 1.2rem 1.2rem;
-  margin-bottom: 1rem;
+  padding: 1.2rem;
+  margin-bottom: .75rem;
   cursor: pointer;
   transition: border-color .15s, background .15s, box-shadow .15s;
-  position: relative;
 }
 
 .pedido-card:hover {
@@ -224,6 +213,9 @@ main {
 .pedido-card.ativo {
   border-color: var(--color-primary);
   background: var(--color-bg-hover, #f9f9f9);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 0;
 }
 
 .pedido-header {
@@ -254,8 +246,8 @@ main {
   color: var(--color-text);
 }
 
-.orange   { color: var(--color-warning, #f57c00); font-weight: 700; }
-.bold     { font-weight: 700; }
+.orange { color: var(--color-warning, #f57c00); font-weight: 700; }
+.bold   { font-weight: 700; }
 
 .valor-col { margin-left: auto; text-align: right; min-width: 100px; }
 
@@ -268,6 +260,17 @@ main {
   line-height: 1;
 }
 .seta.girar { transform: rotate(90deg); color: var(--color-primary); }
+
+/* ── Detalhe inline abaixo do card ─────── */
+.detalhe-inline {
+  border: 2px solid var(--color-primary);
+  border-top: none;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  background: var(--color-surface);
+  margin-bottom: .75rem;
+  overflow: hidden;
+}
 
 /* ── Badge de status ────────────────────── */
 .badge {
@@ -324,14 +327,16 @@ main {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Animação do painel ─────────────────── */
-.slide-enter-active,
-.slide-leave-active {
-  transition: opacity .25s ease, transform .25s ease;
+/* ── Animação expand ────────────────────── */
+.expand-enter-active,
+.expand-leave-active {
+  transition: opacity .2s ease, max-height .25s ease;
+  max-height: 2000px;
+  overflow: hidden;
 }
-.slide-enter-from,
-.slide-leave-to {
+.expand-enter-from,
+.expand-leave-to {
   opacity: 0;
-  transform: translateX(24px);
+  max-height: 0;
 }
 </style>

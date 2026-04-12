@@ -2,31 +2,38 @@
   import { ref, onMounted } from 'vue'
   import { useCarrinhoStore } from '@/stores/useCarrinhoStore';
   import { useFretesStore } from '@/stores/useFretesStore';
+  import { useAuthStore } from '@/stores/useAuthStore';
   import axiosInstance from '@/api/config';
 
   const carrinho = useCarrinhoStore()
   const fretes = useFretesStore()
+  const authStore = useAuthStore()
   const enderecos = ref([])
   const ValorFrete = ref(null)
   const enderecoSelecionado = ref(null);
 
-  // ID do usuário fixo por enquanto — será substituído pelo auth futuramente
-  const ID_USUARIO = 1
-
   onMounted(async () => {
     await fretes.carregarFretes()
 
-    // Busca endereços do backend
-    const { data } = await axiosInstance.get(`/api/enderecos/${ID_USUARIO}`)
-    enderecos.value = data
+    const idUsuario = authStore.usuario?.id
+    if (idUsuario) {
+      const { data } = await axiosInstance.get(`/api/enderecos/${idUsuario}`)
+      enderecos.value = data
+    }
 
     if (carrinho.freteSelecionado) {
       ValorFrete.value = carrinho.freteSelecionado
+    }
+    if (carrinho.enderecoSelecionado) {
+      enderecoSelecionado.value = carrinho.enderecoSelecionado.cep
     }
   })
 
   function selecionarEndereco(endereco) {
     enderecoSelecionado.value = endereco.cep;
+
+    // Armazena endereço completo no store (para usar no pagamento)
+    carrinho.definirEndereco(endereco);
 
     const freteEncontrado = fretes.fretes.find(f => f.cep_entrega === enderecoSelecionado.value);
 
@@ -56,13 +63,11 @@
         @click="selecionarEndereco(endereco)"
       >
         <div class="endereco-esquerda">
-          <!-- campo "nome" no backend, era "titulo" antes -->
           <div class="endereco-nome">{{ endereco.nome }}</div>
-
           <div class="endereco-linha1">
             {{ endereco.rua }}, {{ endereco.numero }}
+            <span v-if="endereco.complemento"> — {{ endereco.complemento }}</span>
           </div>
-
           <div class="endereco-linha2">
             {{ endereco.bairro }} - {{ endereco.cidade }} - {{ endereco.estado }} - {{ endereco.cep }}
           </div>
@@ -72,6 +77,10 @@
           <!--<button class="editar">Editar</button>-->
           <!--<button class="excluir" @click="excluirEndereco(endereco)">Excluir</button>-->
         </div>
+      </div>
+
+      <div v-if="!enderecos.length" class="sem-endereco">
+        <p>Nenhum endereço cadastrado.</p>
       </div>
     </div>
   </div>
@@ -162,5 +171,11 @@
     }
     .excluir:hover, .editar:hover {
         transform: scale(1.03);
+    }
+    .sem-endereco {
+        text-align: center;
+        color: var(--color-muted);
+        font-size: 14px;
+        padding: 1.5rem 0;
     }
 </style>

@@ -49,7 +49,6 @@ const ehCartao = computed(() => props.encomenda?.formaPagamento === 'cartao')
     <!-- Cabeçalho -->
     <div class="detalhe-header">
       <h2 class="detalhe-titulo">Detalhes do Pedido</h2>
-      <button class="btn-fechar" @click="emit('fechar')" aria-label="Fechar detalhes">✕</button>
     </div>
 
     <!-- Loading -->
@@ -173,15 +172,13 @@ const ehCartao = computed(() => props.encomenda?.formaPagamento === 'cartao')
 .detalhe-painel {
   width: 100%;
   background: var(--color-surface);
-  border-radius: 16px;
-  border: 2px solid var(--color-primary);
+  border-radius: 0;
+  border: none;
   padding: 1.8rem 1.6rem;
   font-family: var(--font-family-base);
   font-weight: 300;
-  overflow-y: auto;
-  max-height: 85vh;
-  position: sticky;
-  top: 1rem;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .detalhe-header {
@@ -198,18 +195,6 @@ const ehCartao = computed(() => props.encomenda?.formaPagamento === 'cartao')
   color: var(--color-text);
   margin: 0;
 }
-
-.btn-fechar {
-  background: none;
-  border: none;
-  font-size: 1.1rem;
-  cursor: pointer;
-  color: var(--color-text-muted, #888);
-  padding: 0 .3rem;
-  line-height: 1;
-  transition: color .15s;
-}
-.btn-fechar:hover { color: var(--color-danger, #e53935); }
 
 /* ── Seções ─────────────────────────────── */
 .secao {
