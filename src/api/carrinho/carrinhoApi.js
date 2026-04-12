@@ -12,32 +12,38 @@ function mapearItem(item) {
   }
 }
 
-export async function getCarrinhoNaApi(idUsuario = 1) {
+// GET — buscar itens do carrinho
+export async function getCarrinhoNaApi(idUsuario) {
   const { data } = await axiosInstance.get(`/api/carrinho/${idUsuario}`)
   return data.map(mapearItem)
 }
 
 export async function getItemCarrinhoNaApi(id) {
-  // Backend não tem endpoint individual de item — retorna null
+  // Backend não tem endpoint individual de item
   return null
 }
 
-export async function addItemCarrinhoNaApi(item) {
-  // Será implementado futuramente com endpoint POST
-  return item
+// POST — adicionar item ao carrinho
+export async function addItemCarrinhoNaApi(idUsuario, item) {
+  const { data } = await axiosInstance.post(`/api/carrinho/${idUsuario}/item`, {
+    idProduto: item.id,
+    quantidade: item.quantidade,
+    precoUnitario: item.preco,
+  })
+  return data.map(mapearItem)
 }
 
+// PUT — atualizar quantidade (será implementado futuramente)
 export async function updateQuantidadeItemNaApi(id, quantidade) {
-  // Será implementado futuramente com endpoint PUT
   return { id, quantidade }
 }
 
+// DELETE — remover item
 export async function removeItemCarrinhoNaApi(id) {
   await axiosInstance.delete(`/api/carrinho/item/${id}`)
   return { id }
 }
 
 export async function removeTodosItensCarrinhoNaApi() {
-  // Será implementado futuramente
   return []
 }

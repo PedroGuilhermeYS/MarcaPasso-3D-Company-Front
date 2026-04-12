@@ -37,32 +37,30 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
   }
 
   async function adicionarItem(produto, quantidadeInformada = 1) {
+    const idUsuario = getIdUsuario()
+    if (!idUsuario) return null
+
     produto = normalizarIdObjeto(produto)
     const quantidade = Number(quantidadeInformada) || 1
-    let existente = await withHandling(
-      () => carrinhoService.buscarItem(produto.id),
-      'Erro ao buscar item no carrinho'
-    )
-    if (existente) {
-      existente = normalizarIdObjeto(existente)
-      return await alterarQuantidade(existente.id, Number(existente.quantidade || 0) + quantidade)
-    }
-    const novo = await withHandling(
-      () => carrinhoService.adicionarItem({
-        id: produto.id, nome: produto.nome, preco: produto.preco,
-        imagem: produto.imagemPrincipal, quantidade,
+
+    // Chama o backend passando o idUsuario e o item
+    const lista = await withHandling(
+      () => carrinhoService.adicionarItem(idUsuario, {
+        id: produto.id,
+        nome: produto.nome,
+        preco: produto.preco,
+        imagem: produto.imagemPrincipal,
+        quantidade,
       }),
       'Erro ao adicionar item ao carrinho'
     )
-    if (!novo) return null
-    const normalizado = normalizarIdObjeto(novo)
-    if (!itens.value.some(p => p.id === normalizado.id)) {
-      itens.value.push(normalizado)
-    } else {
-      const idx = itens.value.findIndex(p => p.id === normalizado.id)
-      if (idx !== -1) itens.value.splice(idx, 1, normalizado)
+
+    // Atualiza a lista local com o retorno do backend
+    if (Array.isArray(lista)) {
+      itens.value = lista.map(normalizarIdObjeto)
     }
-    return normalizado
+
+    return lista
   }
 
   async function alterarQuantidade(id, quantidade) {

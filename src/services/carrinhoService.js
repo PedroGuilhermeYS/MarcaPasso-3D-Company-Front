@@ -8,16 +8,18 @@ import {
 } from '@/api/carrinho'
 
 export function useCarrinhoService() {
-  async function buscarTodos(idUsuario = 1) {
-  return await getCarrinhoNaApi(idUsuario)
-}
+
+  async function buscarTodos(idUsuario) {
+    return await getCarrinhoNaApi(idUsuario)
+  }
 
   async function buscarItem(id) {
     return await getItemCarrinhoNaApi(id)
   }
 
-  async function adicionarItem(item) {
-    return await addItemCarrinhoNaApi(item)
+  // Recebe idUsuario e item
+  async function adicionarItem(idUsuario, item) {
+    return await addItemCarrinhoNaApi(idUsuario, item)
   }
 
   async function alterarQuantidade(id, quantidade) {
@@ -41,4 +43,3 @@ export function useCarrinhoService() {
     limparCarrinho,
   }
 }
-
