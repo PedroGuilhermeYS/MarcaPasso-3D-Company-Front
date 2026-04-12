@@ -8,6 +8,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 export const useCarrinhoStore = defineStore('carrinho', () => {
   const itens = ref([])
   const freteSelecionado = ref(null)
+  const enderecoSelecionado = ref(null)
   const carregando = ref(false)
   const erro = ref(null)
 
@@ -43,7 +44,6 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
     produto = normalizarIdObjeto(produto)
     const quantidade = Number(quantidadeInformada) || 1
 
-    // Chama o backend passando o idUsuario e o item
     const lista = await withHandling(
       () => carrinhoService.adicionarItem(idUsuario, {
         id: produto.id,
@@ -55,7 +55,6 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
       'Erro ao adicionar item ao carrinho'
     )
 
-    // Atualiza a lista local com o retorno do backend
     if (Array.isArray(lista)) {
       itens.value = lista.map(normalizarIdObjeto)
     }
@@ -82,21 +81,48 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
     itens.value = itens.value.filter(i => String(i.id) !== String(id))
   }
 
+  /**
+   * Deleta cada item individualmente no backend via DELETE /api/carrinho/item/{id}
+   * e depois zera o estado local. Não depende de um endpoint "limpar tudo".
+   */
   async function limparCarrinho() {
-    await withHandling(
-      () => carrinhoService.limparCarrinho(),
-      'Erro ao limpar carrinho'
+    const ids = itens.value.map(i => i.id)
+
+    await Promise.all(
+      ids.map(id =>
+        carrinhoService.removerItem(id).catch(err => {
+          // Loga mas não interrompe os outros deletes
+          console.warn(`Falha ao remover item ${id} do carrinho:`, err)
+        })
+      )
     )
+
     itens.value = []
+    freteSelecionado.value = null
+    enderecoSelecionado.value = null
   }
 
   function definirFrete(frete) {
     freteSelecionado.value = frete
   }
 
+  function definirEndereco(endereco) {
+    enderecoSelecionado.value = endereco
+  }
+
   return {
-    itens, freteSelecionado, carregando, erro, total,
-    carregarCarrinho, adicionarItem, alterarQuantidade,
-    removerItem, limparCarrinho, definirFrete,
+    itens,
+    freteSelecionado,
+    enderecoSelecionado,
+    carregando,
+    erro,
+    total,
+    carregarCarrinho,
+    adicionarItem,
+    alterarQuantidade,
+    removerItem,
+    limparCarrinho,
+    definirFrete,
+    definirEndereco,
   }
 })

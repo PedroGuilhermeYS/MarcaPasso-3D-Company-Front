@@ -49,7 +49,7 @@ const routes = [
     component: PadraoLayout,
     meta: { requiresAuth: true },
     children: [
-      { path: 'entrega', name: 'Entrega', component: EntregaView },
+      { path: 'enderecoentrega', name: 'EnderecoEntrega', component: EntregaView },
       { path: 'encomendas', name: 'Encomendas', component: EncomendasView },
       { path: 'carrinho', name: 'Carrinho', component: CarrinhoView },
       { path: 'favoritos', name: 'Favoritos', component: FavoritosView }
