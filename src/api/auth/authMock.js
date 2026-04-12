@@ -1,8 +1,7 @@
 import { ApiError } from '@/errors/ApiError'
 
-const adminEmail = 'pedro210905@gmail.com'
 const USERS = [
-  { id: 1, email: adminEmail, password: '123456', role: 'admin' },
+  { id: 1, email: 'admin@marcapasso.com', password: '123456', role: 'admin' },
 ]
 
 function generateFakeJwt(payload = {}, expiresInSeconds = 60 * 60) {
@@ -29,11 +28,10 @@ export async function doLoginNaApi(email, password) {
   await wait(250)
   const user = USERS.find(u => u.email == email && u.password == password)
   if (!user) {
-    // padronizado para lançar ApiError em vez de retornar { ok: false }
     return Promise.reject(new ApiError('Credenciais inválidas', 401, null))
   }
-  const token = generateFakeJwt({ sub: user.id, email: user.email, role: user.role }, 60 * 60)
-  return { ok: true, token, user: { id: user.id, email: user.email, role: user.role } }
+  const token = generateFakeJwt({ sub: user.id, email: user.email, nome: user.nome, role: user.role }, 60 * 60)
+  return { ok: true, token, id: user.id, email: user.email, role: user.role, nome: user.nome }
 }
 
 export async function verificaLoginNaApi(token) {
@@ -51,18 +49,17 @@ export async function verificaLoginNaApi(token) {
 
 export async function doLogoutNaApi() {
   await wait(50)
-  // logout no mock só confirma
   return { ok: true }
 }
 
-export async function doCadastroNaApi(email, password) {
+export async function doCadastroNaApi(email, senha, nome, cpf, telefone) {
   await wait(300)
   if (USERS.some(u => u.email == email)) {
     return Promise.reject(new ApiError('Usuário já existe', 409, null))
   }
   const id = USERS.length + 1
-  const newUser = { id, email, password, role: 'user' }
+  const newUser = { id, email, password: senha, nome, role: 'admin' }
   USERS.push(newUser)
-  const token = generateFakeJwt({ sub: id, email, role: 'user' }, 60 * 60)
-  return { ok: true, token, user: { id, email, role: 'user' } }
+  const token = generateFakeJwt({ sub: id, email, nome, role: 'admin' }, 60 * 60)
+  return { ok: true, token, id, email, role: 'admin', nome }
 }

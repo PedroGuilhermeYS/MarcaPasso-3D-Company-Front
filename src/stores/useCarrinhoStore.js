@@ -3,9 +3,7 @@ import { ref, computed } from 'vue'
 import { useCarrinhoService } from '@/services/carrinhoService'
 import { useAsyncHandler } from '@/composables/useAsyncHandler'
 import { normalizarIdObjeto } from '@/composables/useNormalizadorId'
-
-// ID fixo do usuário para testes — será substituído pelo auth real futuramente
-const ID_USUARIO_TESTE = 1
+import { useAuthStore } from '@/stores/useAuthStore'
 
 export const useCarrinhoStore = defineStore('carrinho', () => {
   const itens = ref([])
@@ -16,6 +14,11 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
   const carrinhoService = useCarrinhoService()
   const { run: withHandling } = useAsyncHandler({ carregando, erro })
 
+  function getIdUsuario() {
+    const authStore = useAuthStore()
+    return authStore.usuario?.id
+  }
+
   const total = computed(() =>
     itens.value.reduce(
       (acc, item) => acc + (Number(item.preco || 0) * Number(item.quantidade || 0)),
@@ -24,8 +27,10 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
   )
 
   async function carregarCarrinho() {
+    const idUsuario = getIdUsuario()
+    if (!idUsuario) { itens.value = []; return }
     const lista = await withHandling(
-      () => carrinhoService.buscarTodos(ID_USUARIO_TESTE),
+      () => carrinhoService.buscarTodos(idUsuario),
       'Erro ao carregar carrinho'
     )
     itens.value = Array.isArray(lista) ? lista.map(normalizarIdObjeto) : []
@@ -34,55 +39,40 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
   async function adicionarItem(produto, quantidadeInformada = 1) {
     produto = normalizarIdObjeto(produto)
     const quantidade = Number(quantidadeInformada) || 1
-
     let existente = await withHandling(
       () => carrinhoService.buscarItem(produto.id),
       'Erro ao buscar item no carrinho'
     )
-
     if (existente) {
       existente = normalizarIdObjeto(existente)
       return await alterarQuantidade(existente.id, Number(existente.quantidade || 0) + quantidade)
     }
-
     const novo = await withHandling(
-      () =>
-        carrinhoService.adicionarItem({
-          id: produto.id,
-          nome: produto.nome,
-          preco: produto.preco,
-          imagem: produto.imagemPrincipal,
-          quantidade,
-        }),
+      () => carrinhoService.adicionarItem({
+        id: produto.id, nome: produto.nome, preco: produto.preco,
+        imagem: produto.imagemPrincipal, quantidade,
+      }),
       'Erro ao adicionar item ao carrinho'
     )
-
     if (!novo) return null
-
     const normalizado = normalizarIdObjeto(novo)
-
     if (!itens.value.some(p => p.id === normalizado.id)) {
       itens.value.push(normalizado)
     } else {
       const idx = itens.value.findIndex(p => p.id === normalizado.id)
       if (idx !== -1) itens.value.splice(idx, 1, normalizado)
     }
-
     return normalizado
   }
 
   async function alterarQuantidade(id, quantidade) {
     if (quantidade <= 0) return
-
     await withHandling(
       () => carrinhoService.alterarQuantidade(id, quantidade),
       'Erro ao alterar quantidade'
     )
-
     itens.value = itens.value.map(item =>
-      String(item.id) === String(id)
-        ? { ...item, quantidade }
-        : item
+      String(item.id) === String(id) ? { ...item, quantidade } : item
     )
   }
 
@@ -107,16 +97,8 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
   }
 
   return {
-    itens,
-    freteSelecionado,
-    carregando,
-    erro,
-    total,
-    carregarCarrinho,
-    adicionarItem,
-    alterarQuantidade,
-    removerItem,
-    limparCarrinho,
-    definirFrete,
+    itens, freteSelecionado, carregando, erro, total,
+    carregarCarrinho, adicionarItem, alterarQuantidade,
+    removerItem, limparCarrinho, definirFrete,
   }
 })
