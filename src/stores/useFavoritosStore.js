@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { useFavoritoService } from '@/services/favoritoService'
 import { useAsyncHandler } from '@/composables/useAsyncHandler'
 import { normalizarIdObjeto } from '@/composables/useNormalizadorId'
-import { useAuthStore } from '../../../../MarcaPasso-3D-Company-Front/src/stores/useAuthStore'
+import { useAuthStore } from '@/stores/useAuthStore'
 
 export const useFavoritosStore = defineStore('favoritos', () => {
   const favoritos = ref([])
