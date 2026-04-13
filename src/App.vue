@@ -1,9 +1,10 @@
-<script setup></script>
+<script setup>
+import ChatIA from '@/componentes/ChatIA.vue'
+</script>
 
 <template>
-  <RouterView>
-    
-  </RouterView>
+  <RouterView />
+  <ChatIA />
 </template>
 
 <style scoped></style>
