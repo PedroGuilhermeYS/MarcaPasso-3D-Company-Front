@@ -28,16 +28,16 @@ const irParaLoja = () => {
         <!-- <h3>Dados pessoais <span @click="editarDados" class="editar">Editar</span></h3> -->
 
         <div class="info">
-          <p><strong>Nome:</strong> Pedro Guilherme</p>
-          <p><strong>E-mail:</strong> pedro210905@gmail.com</p>
-          <p><strong>Telefone:</strong> 81997076382</p>
+          <p><strong>Nome:</strong> {{ authStore.usuario?.nome ?? '—' }}</p>
+          <p><strong>E-mail:</strong> {{ authStore.usuario?.email ?? '—' }}</p>
+          <p><strong>Telefone:</strong> {{ authStore.usuario?.telefone ?? '—' }}</p>
         </div>
 
         <button class="sair" @click="sair">Sair</button>
       </div>
 
       <div class="painel-compra">
-        <img src="@\img\reshot-icon-shopping-cart-WFDT3CVZMJ.svg" alt="Carrinho" class="cart-icon"/>
+        <img src="@/img/reshot-icon-shopping-cart-WFDT3CVZMJ.svg" alt="Carrinho" class="cart-icon"/>
         <p>Realize sua primeira compra!</p>
         <button class="btn-loja" @click="irParaLoja">Ir para a loja</button>
       </div>

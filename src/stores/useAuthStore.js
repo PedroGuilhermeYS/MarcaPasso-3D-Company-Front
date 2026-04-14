@@ -12,7 +12,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   const { run: withHandling } = useAsyncHandler({ carregando, erro })
 
-  // Merge da Ari: cadastro aceita nome, cpf e telefone
   const cadastrar = async (email, senha, nome, cpf, telefone) => {
     try {
       const res = await withHandling(

@@ -2,8 +2,14 @@ import axios from 'axios'
 import { ApiError } from '@/errors/ApiError'
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
-})
+  // ESSA É A LINHA MÁGICA QUE FALTA:
+  baseURL: 'http://localhost:8080', 
+  
+  // As outras configurações que você já tiver aí continuam normais
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
 
 axiosInstance.interceptors.request.use(
   (config) => {
