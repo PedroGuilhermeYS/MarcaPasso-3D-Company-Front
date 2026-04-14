@@ -219,11 +219,6 @@ const toggleChat = () => {
               {{ carregando ? 'Processando…' : 'Online' }}
             </span>
           </div>
-          <button class="chat-header__close" @click="toggleChat" aria-label="Fechar chat">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-              <path d="M18 6 6 18M6 6l12 12"/>
-            </svg>
-          </button>
         </div>
 
         <!-- Lista de mensagens -->
@@ -377,9 +372,6 @@ const toggleChat = () => {
 .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #4cff72; flex-shrink: 0; }
 .status-dot--typing { background: #ffe074; animation: pulse 1s infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-.chat-header__close { background: none; border: none; cursor: pointer; color: #fff; opacity: 0.75; padding: 4px; display: flex; align-items: center; transition: opacity 0.15s; }
-.chat-header__close:hover { opacity: 1; }
-.chat-header__close svg { width: 18px; height: 18px; }
 
 /* ─── Lista de mensagens ──────────────────────────────────── */
 .chat-messages {
