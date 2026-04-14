@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { useFavoritoService } from '@/services/favoritoService'
 import { useAsyncHandler } from '@/composables/useAsyncHandler'
 import { normalizarIdObjeto } from '@/composables/useNormalizadorId'
-import { useAuthStore } from './useAuthStore'
+import { useAuthStore } from '@/stores/useAuthStore'
 
 export const useFavoritosStore = defineStore('favoritos', () => {
   const favoritos = ref([])
@@ -15,85 +15,67 @@ export const useFavoritosStore = defineStore('favoritos', () => {
 
   const { run: withHandling } = useAsyncHandler({ carregando, erro })
 
+  // Pega o ID do usuário logado
+  const idUsuario = computed(() => authStore.usuario?.id ?? null)
+
   const total = computed(() =>
     favoritos.value.reduce((acc, item) => acc + (item.preco || 0), 0)
   )
 
   const favoritosIds = computed(() =>
-    new Set(favoritos.value.map(f => f.id))
+    new Set(favoritos.value.map(f => String(f.id)))
   )
 
-  const isFavoritado = (id) =>
-    favoritosIds.value.has(String(id))
+  const isFavoritado = (id) => favoritosIds.value.has(String(id))
 
   const quantidade = computed(() => favoritos.value.length)
 
   async function carregarFavoritos() {
-    if (!authStore.usuario) {
+    if (!idUsuario.value) {
       favoritos.value = []
       return
     }
 
     const lista = await withHandling(
-      () => favoritoService.buscarTodos(),
+      () => favoritoService.buscarTodos(idUsuario.value),
       'Erro ao carregar favoritos'
     )
 
     favoritos.value = (lista || []).map(normalizarIdObjeto)
   }
 
-
   async function adicionarFavorito(produto) {
-    const novo = await withHandling(
-      () => favoritoService.adicionarFavorito(produto),
+    if (!idUsuario.value) return null
+
+    const lista = await withHandling(
+      () => favoritoService.adicionarFavorito(idUsuario.value, produto.id),
       'Erro ao adicionar favorito'
     )
 
-    const favoritoNormalizado = normalizarIdObjeto(novo)
-
-    if (!favoritos.value.some(f => f.id === favoritoNormalizado.id)) {
-      favoritos.value.push(favoritoNormalizado)
-    }
-
-    return favoritoNormalizado
+    favoritos.value = (lista || []).map(normalizarIdObjeto)
+    return lista
   }
 
+  async function removerFavorito(idProduto) {
+    if (!idUsuario.value) return
 
-  async function removerFavorito(id) {
-    await withHandling(
-      () => favoritoService.removerFavorito(id),
+    const lista = await withHandling(
+      () => favoritoService.removerFavorito(idUsuario.value, idProduto),
       'Erro ao remover favorito'
     )
 
-    const sid = String(id)
-
-    favoritos.value = favoritos.value.filter(f => String(f.id) !== sid)
+    favoritos.value = (lista || []).map(normalizarIdObjeto)
   }
 
   async function limparFavoritos() {
+    if (!idUsuario.value) return
+
     await withHandling(
-      () => favoritoService.removerTodosFavoritos(),
+      () => favoritoService.removerTodosFavoritos(idUsuario.value),
       'Erro ao limpar favoritos'
     )
 
     favoritos.value = []
-  }
-
-  async function atualizarFavorito(id, dados) {
-    const atualizado = await withHandling(
-      () => favoritoService.atualizarFavorito(id, dados),
-      'Erro ao atualizar favorito'
-    )
-
-    const favoritoNormalizado = normalizarIdObjeto(atualizado)
-
-    favoritos.value = favoritos.value.map(f =>
-      f.id === favoritoNormalizado.id
-        ? { ...f, ...favoritoNormalizado }
-        : f
-    )
-
-    return favoritoNormalizado
   }
 
   authStore.$subscribe((_, state) => {
@@ -108,15 +90,12 @@ export const useFavoritosStore = defineStore('favoritos', () => {
     favoritos,
     carregando,
     erro,
-
     total,
     quantidade,
     isFavoritado,
-
     carregarFavoritos,
     adicionarFavorito,
     removerFavorito,
     limparFavoritos,
-    atualizarFavorito,
   }
 })

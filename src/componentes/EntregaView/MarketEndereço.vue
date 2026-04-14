@@ -56,6 +56,6 @@
 
         <hr>
         <button class="button-comprar" @click="salvarFreteNoCarrinho">CONTINUAR PARA PAGAMENTO</button>
-        <router-link to="/Carrinho"><button class="button-voltar" >VOLTAR PARA CARRINHO</button></router-link>
+        <router-link :to="{ name: 'Carrinho' }"><button class="button-voltar" >VOLTAR PARA CARRINHO</button></router-link>
     </div>
 </template>

@@ -8,6 +8,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 export const useCarrinhoStore = defineStore('carrinho', () => {
   const itens = ref([])
   const freteSelecionado = ref(null)
+  const enderecoSelecionado = ref(null)
   const carregando = ref(false)
   const erro = ref(null)
 
@@ -37,32 +38,28 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
   }
 
   async function adicionarItem(produto, quantidadeInformada = 1) {
+    const idUsuario = getIdUsuario()
+    if (!idUsuario) return null
+
     produto = normalizarIdObjeto(produto)
     const quantidade = Number(quantidadeInformada) || 1
-    let existente = await withHandling(
-      () => carrinhoService.buscarItem(produto.id),
-      'Erro ao buscar item no carrinho'
-    )
-    if (existente) {
-      existente = normalizarIdObjeto(existente)
-      return await alterarQuantidade(existente.id, Number(existente.quantidade || 0) + quantidade)
-    }
-    const novo = await withHandling(
-      () => carrinhoService.adicionarItem({
-        id: produto.id, nome: produto.nome, preco: produto.preco,
-        imagem: produto.imagemPrincipal, quantidade,
+
+    const lista = await withHandling(
+      () => carrinhoService.adicionarItem(idUsuario, {
+        id: produto.id,
+        nome: produto.nome,
+        preco: produto.preco,
+        imagem: produto.imagemPrincipal,
+        quantidade,
       }),
       'Erro ao adicionar item ao carrinho'
     )
-    if (!novo) return null
-    const normalizado = normalizarIdObjeto(novo)
-    if (!itens.value.some(p => p.id === normalizado.id)) {
-      itens.value.push(normalizado)
-    } else {
-      const idx = itens.value.findIndex(p => p.id === normalizado.id)
-      if (idx !== -1) itens.value.splice(idx, 1, normalizado)
+
+    if (Array.isArray(lista)) {
+      itens.value = lista.map(normalizarIdObjeto)
     }
-    return normalizado
+
+    return lista
   }
 
   async function alterarQuantidade(id, quantidade) {
@@ -84,21 +81,48 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
     itens.value = itens.value.filter(i => String(i.id) !== String(id))
   }
 
+  /**
+   * Deleta cada item individualmente no backend via DELETE /api/carrinho/item/{id}
+   * e depois zera o estado local. Não depende de um endpoint "limpar tudo".
+   */
   async function limparCarrinho() {
-    await withHandling(
-      () => carrinhoService.limparCarrinho(),
-      'Erro ao limpar carrinho'
+    const ids = itens.value.map(i => i.id)
+
+    await Promise.all(
+      ids.map(id =>
+        carrinhoService.removerItem(id).catch(err => {
+          // Loga mas não interrompe os outros deletes
+          console.warn(`Falha ao remover item ${id} do carrinho:`, err)
+        })
+      )
     )
+
     itens.value = []
+    freteSelecionado.value = null
+    enderecoSelecionado.value = null
   }
 
   function definirFrete(frete) {
     freteSelecionado.value = frete
   }
 
+  function definirEndereco(endereco) {
+    enderecoSelecionado.value = endereco
+  }
+
   return {
-    itens, freteSelecionado, carregando, erro, total,
-    carregarCarrinho, adicionarItem, alterarQuantidade,
-    removerItem, limparCarrinho, definirFrete,
+    itens,
+    freteSelecionado,
+    enderecoSelecionado,
+    carregando,
+    erro,
+    total,
+    carregarCarrinho,
+    adicionarItem,
+    alterarQuantidade,
+    removerItem,
+    limparCarrinho,
+    definirFrete,
+    definirEndereco,
   }
 })

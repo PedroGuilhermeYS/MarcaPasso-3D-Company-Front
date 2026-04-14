@@ -10,7 +10,7 @@
     
     onMounted(() => {
         if (carrinho.itens.length === 0) {
-            router.push("/Carrinho")
+            router.push({ name: 'Carrinho' })
         }
     })
 

@@ -68,6 +68,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  // Merge da Ari: isAdmin verifica role corretamente
   const isAdmin = () => usuario.value?.role === 'admin'
   const isAuthenticated = () => !!usuario.value
 

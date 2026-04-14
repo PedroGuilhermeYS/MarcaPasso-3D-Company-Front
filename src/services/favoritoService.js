@@ -1,43 +1,32 @@
 import {
   getTodosFavoritosNaApi,
-  getFavoritoNaApi,
   addFavoritoNaApi,
   removeFavoritoNaApi,
   removeTodosFavoritosNaApi,
-  atualizaFavoritoNaApi
 } from '@/api/favorito'
 
 export function useFavoritoService() {
-  async function buscarTodos() {
-    return await getTodosFavoritosNaApi()
+
+  async function buscarTodos(idUsuario) {
+    return await getTodosFavoritosNaApi(idUsuario)
   }
 
-  async function buscarFavorito(id) {
-    return await getFavoritoNaApi(id)
+  async function adicionarFavorito(idUsuario, idProduto) {
+    return await addFavoritoNaApi(idUsuario, idProduto)
   }
 
-  async function adicionarFavorito(favorito) {
-    return await addFavoritoNaApi(favorito)
+  async function removerFavorito(idUsuario, idProduto) {
+    return await removeFavoritoNaApi(idUsuario, idProduto)
   }
 
-  async function removerFavorito(id) {
-    return await removeFavoritoNaApi(id)
-  }
-
-  async function removerTodosFavoritos() {
-    return await removeTodosFavoritosNaApi()
-  }
-
-  async function atualizarFavorito(id, favorito) {
-    return await atualizaFavoritoNaApi(id, favorito)
+  async function removerTodosFavoritos(idUsuario) {
+    return await removeTodosFavoritosNaApi(idUsuario)
   }
 
   return {
     buscarTodos,
-    buscarFavorito,
     adicionarFavorito,
     removerFavorito,
     removerTodosFavoritos,
-    atualizarFavorito,
   }
 }

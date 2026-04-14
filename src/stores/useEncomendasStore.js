@@ -1,46 +1,87 @@
-import { ref } from "vue"
-import { defineStore } from "pinia"
-import { useAsyncHandler } from "@/composables/useAsyncHandler"
-import { normalizarIdObjeto } from "@/composables/useNormalizadorId"
-import { useEncomendasService } from "@/services/encomendasService"
+import { ref } from 'vue'
+import { defineStore } from 'pinia'
+import { useAsyncHandler } from '@/composables/useAsyncHandler'
+import { useEncomendasService } from '@/services/encomendasService'
+import { useAuthStore } from '@/stores/useAuthStore'
 
 export const useEncomendasStore = defineStore('encomendas', () => {
 
-    const encomendas = ref([])
+  const encomendas = ref([])
+  const encomendaDetalhe = ref(null)
+  const carregando = ref(false)
+  const carregandoDetalhe = ref(false)
+  const erro = ref(null)
 
-    const carregando = ref(false)
-    const erro = ref(null)
+  const { run: withHandling } = useAsyncHandler({ carregando, erro })
 
-    const { run: withHandling } = useAsyncHandler({ carregando, erro })
+  const erroDetalhe = ref(null)
+  const { run: withHandlingDetalhe } = useAsyncHandler({
+    carregando: carregandoDetalhe,
+    erro: erroDetalhe,
+  })
 
-    const encomendasService = useEncomendasService()
+  const encomendasService = useEncomendasService()
 
-    const carregarEncomendas = async () => {
-        carregando.value = true
-        erro.value = null
+  function getIdUsuario() {
+    const authStore = useAuthStore()
+    const id = authStore.usuario?.id
+    if (!id) throw new Error('Usuário não autenticado')
+    return id
+  }
 
-        const lista = await withHandling(async () => encomendasService.buscarEncomendas(), 'Erro ao carregar encomendas')
+  // ── Carrega lista de pedidos ──────────────────────────────
+  const carregarEncomendas = async () => {
+    const idUsuario = getIdUsuario()
+    const lista = await withHandling(
+      () => encomendasService.buscarEncomendas(idUsuario),
+      'Erro ao carregar encomendas'
+    )
+    encomendas.value = Array.isArray(lista) ? lista : []
+  }
 
-        encomendas.value = lista.map(normalizarIdObjeto)
+  // ── Carrega detalhe de um pedido ──────────────────────────
+  const carregarDetalhe = async (idEncomenda) => {
+    const idUsuario = getIdUsuario()
+    encomendaDetalhe.value = null
+    const detalhe = await withHandlingDetalhe(
+      () => encomendasService.buscarDetalhe(idUsuario, idEncomenda),
+      'Erro ao carregar detalhe do pedido'
+    )
+    encomendaDetalhe.value = detalhe
+    return detalhe
+  }
+
+  // ── Cria um novo pedido ───────────────────────────────────
+  const adicionarEncomenda = async (encomenda) => {
+    const idUsuario = getIdUsuario()
+    const criada = await withHandling(
+      () => encomendasService.criarEncomenda(idUsuario, encomenda),
+      'Erro ao criar encomenda'
+    )
+    if (criada) {
+      // Adiciona no topo da lista (mais recente primeiro)
+      encomendas.value.unshift({
+        id: criada.id,
+        numeroPedido: criada.numeroPedido,
+        dataHora: criada.dataHora,
+        formaPagamento: criada.formaPagamento,
+        status: criada.status,
+        total: criada.total,
+      })
     }
+    return criada
+  }
 
-    const buscarEncomenda = async (id) => {
-        return await withHandling(async () => encomendasService.buscarEncomenda(String(id)), 'Erro ao buscar encomenda')
-    }
+  return {
+    encomendas,
+    encomendaDetalhe,
+    carregando,
+    carregandoDetalhe,
+    erro,
+    erroDetalhe,
 
-    const adicionarEncomenda = async (encomenda) => {
-        encomenda = normalizarIdObjeto(encomenda)
-        return await withHandling(async () => encomendasService.adicionarEncomenda(encomenda), 'Erro ao adicionar encomenda')
-    }
-
-    return {
-        encomendas,
-        carregando,
-        erro,
-
-        carregarEncomendas,
-        buscarEncomenda,
-        adicionarEncomenda
-    }
-
+    carregarEncomendas,
+    carregarDetalhe,
+    adicionarEncomenda,
+  }
 })
