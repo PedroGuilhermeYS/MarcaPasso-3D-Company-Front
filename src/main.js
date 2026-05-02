@@ -4,7 +4,7 @@ import router from './router'
 import { createPinia } from 'pinia'
 import { useAuthStore } from './stores/useAuthStore'
 
-import './style/main.css'
+import './style/general.css'
 import './style/ul.css'
 import './style/market.css'
 
