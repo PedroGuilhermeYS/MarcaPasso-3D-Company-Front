@@ -1,126 +1,252 @@
 <script setup>
-    import { useFavoritosStore } from '@/stores/useFavoritosStore';
-    import { onMounted } from 'vue';
+import { onMounted } from 'vue'
+import { useFavoritosStore } from '@/stores/useFavoritosStore'
 
-    const favoritosStore = useFavoritosStore()
+const favoritosStore = useFavoritosStore()
 
-    onMounted(async () => {
-        await favoritosStore.carregarFavoritos()
-    })
+onMounted(async () => {
+    await favoritosStore.carregarFavoritos()
+})
 
-    function limparTudo() {
-        favoritosStore.limparFavoritos()
-    }
+function limparTudo() {
+    favoritosStore.limparFavoritos()
+}
 </script>
 
 <template>
-    <main>
-        <div class="container">
-            <div class="all-products">
-                <h2 class="MS-Reference">Todos os favoritos</h2>
-                <button class="apagar" @click="limparTudo" v-if="favoritosStore.quantidade > 0">LIMPAR TUDO</button>
-                <div class="lista-produtos">
-                    <div v-for="item in favoritosStore.favoritos" :key="item.id" class="produto">
-                        <img :src="item.imagem" :alt="item.nome">
-                        <h3>{{ item.nome }}</h3>
-                        <p class="preco">R$ {{ item.preco.toFixed(2) }}</p>
-                        <p class="avaliacao">★★★★★</p>
-                        <button @click="$router.push({ name: 'Produto', params: { id: item.id } })">Comprar</button>
+    <main class="users favoritos-page">
+        <div class="breadcrumb">
+            <span>Home</span>
+            <span>›</span>
+            <span>Minha Conta</span>
+            <span>›</span>
+            <span class="atual">Favoritos</span>
+        </div>
+
+        <!-- BLOCO DO TOPO -->
+        <div class="container header-container">
+            <div class="page-header">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h2 class="titulo">Meus Favoritos</h2>
+                        <p class="subtitulo">
+                            <span>{{ favoritosStore.quantidade }}</span>produtos salvos
+                        </p>
                     </div>
                 </div>
 
-                <div v-if="favoritosStore.quantidade === 0" class="nenhum-produto" >
-                    Você ainda não adicionou nenhum favorito.
+                <button v-if="favoritosStore.quantidade > 0" class="btn-apagar" @click="limparTudo">
+                    Apagar todos
+                </button>
+            </div>
+        </div>
+
+        <!-- BLOCO DOS PRODUTOS -->
+        <div class="container produtos-container">
+            <div v-if="favoritosStore.quantidade > 0" class="grid">
+                <div v-for="item in favoritosStore.favoritos" :key="item.id" class="produto">
+                    <div class="produto-img">
+                        <img :src="item.imagem" :alt="item.nome" />
+                    </div>
+
+                    <div class="produto-body">
+                        <h3 class="nome">{{ item.nome }}</h3>
+
+                        <div class="preco-row">
+                            <p class="preco">R$ {{ item.preco.toFixed(2) }}</p>
+
+                            <button class="btn-comprar"
+                                @click="$router.push({ name: 'Produto', params: { id: item.id } })">
+                                Comprar
+                            </button>
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <div v-else class="estado-vazio">
+                <div class="vazio-icone">♡</div>
+                <h3>Nenhum favorito ainda</h3>
+                <p>Você ainda não adicionou nenhum produto aos favoritos.</p>
             </div>
         </div>
     </main>
 </template>
 
 <style scoped>
+.breadcrumb {
+    display: flex;
+    gap: 6px;
+    font-size: 13px;
+    color: #8f9db8;
+    margin-bottom: 16px;
+}
 
-    main{
-        width: 1400px;
-        margin: 0 auto;
-        font-family: var(--font-family-base);
-        font-weight: 300;
-    }
-    .container{
-        margin-left: 20px;
-        display: flex;
-        align-items: flex-start;
-        
-    }
-    .MS-Reference{
-       font-family: var(--font-family-ms-reference);
-       font-weight: 200;
-    }
-    .all-products{
-        width: 90%;
-        margin: 0 auto;
-        border-radius: 20px;
-        border: 2px solid var(--color-primary);
-    }
-    .all-products h3{
-        margin-top: 5px;
-        margin-left: 40px;
-        font-size: .8rem;
-    }
-    .all-products h2, .apagar{
-        margin-top: 10px;
-        margin-left: 50px;
-        margin-bottom: 0px;
-    }
-    .produto {
-        width: 220px;
-        text-align: center;
-        padding: 10px;
-        border-radius: 10px;
-    }
-    .produto:hover {
-        transform: scale(1.03);
-    }
-    .produto img {
-        width: 80%;
-        height: 160px;
-        object-fit: cover;
-    }
-    .produto h3 {
-        display: -webkit-box;
-        line-clamp: 2;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        font-size: 16px;
-        margin: 10px 0 5px;
-        height: 2.6em;
-    }
-    .lista-produtos {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);;
-        margin-top: 20px;
-        gap: 20px;
-        padding: 20px;
-        justify-items: center;
-    }
-    .nenhum-produto {
-        padding: 0px 80px 50px;
-    }
-    .preco {
-        margin: 0;
-        font-weight: bold;
-    }
-    .avaliacao {
-        color: gold;
-        margin: 0px 0;
-    }
-    button {
-        background-color: var(--color-primary);
-        color: var(--color-on-primary);
-        border: none;
-        padding: 8px 15px;
-        border-radius: 8px;
-        cursor: pointer;
-    }
+.breadcrumb .atual {
+    color: #252f4a;
+    font-weight: 500;
+}
 
+.container {
+    background: #fff;
+    border: 1px solid #e4e9f2;
+    border-radius: 14px;
+    padding: 22px;
+}
+
+.header-container {
+    margin-bottom: 16px;
+}
+
+.produtos-container {
+    margin-top: 0;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left {
+    display: flex;
+    gap: 14px;
+}
+
+.header-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: rgba(214, 48, 49, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-icon svg {
+    height: 24px;
+    fill: #d63031;
+}
+
+.titulo {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.subtitulo {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: #252f4a;
+    font-weight: 700;
+}
+
+.subtitulo span {
+    color: #252f4a;
+    font-weight: 700;
+}
+
+.btn-apagar {
+    border: 1.5px solid #d63031;
+    background: #fff;
+    color: #d63031;
+    border-radius: 50px;
+    padding: 10px 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.produto {
+    border: 1px solid #e4e9f2;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.produto-img {
+    height: 180px;
+    background: #f4f6fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.produto-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.produto-body {
+    padding: 14px;
+}
+
+.nome {
+    font-size: 15px;
+    margin: 0 0 8px;
+    color: #252f4a;
+}
+
+.preco-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.preco {
+    font-size: 18px;
+    font-weight: 800;
+    color: #049377;
+    margin: 0;
+}
+
+.btn-comprar {
+    border: none;
+    background: linear-gradient(135deg, #2c18a0, #114798);
+    color: #fff;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.estado-vazio {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.vazio-icone {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(214, 48, 49, 0.08);
+    color: #d63031;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin: 0 auto 16px;
+}
+
+.estado-vazio h3 {
+    margin: 0 0 8px;
+    color: #141824;
+}
+
+.estado-vazio p {
+    margin: 0;
+}
 </style>

@@ -1,7 +1,26 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import { onMounted, computed } from 'vue'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { useCarrinhoStore } from '@/stores/useCarrinhoStore'
+import { useFavoritosStore } from '@/stores/useFavoritosStore'
+import { formatarPreco } from '@/composables/useFormatadorPreco.js'
 
+const carrinho = useCarrinhoStore()
+const favoritosStore = useFavoritosStore()
 const router = useRouter()
+const auth = useAuthStore()
+
+const usuarioLogado = computed(() => auth.usuario)
+const acessar = computed(() => {
+  return auth.isAdmin()
+})
+
+onMounted(async () => {
+  await carrinho.carregarCarrinho()
+  await favoritosStore.carregarFavoritos()
+})
+
 </script>
 
 <template>
@@ -26,6 +45,7 @@ const router = useRouter()
           </svg>
         </div>
       </div>
+
       <div class="nav-acts">
         <button class="nbtn" @click="router.push({ name: 'PainelUsuario' })">
           <svg width="14" height="14" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -33,23 +53,14 @@ const router = useRouter()
         </button>
         <button class="nbtn-ic" @click="router.push({ name: 'Favoritos' })">
           <svg width="14" height="14" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          <span class="nbadge">4</span>
+          <span class="nbadge">{{ favoritosStore.quantidade }}</span>
         </button>
         <button class="nbtn-ic" @click="router.push({ name: 'Carrinho' })">
           <svg width="14" height="14" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-          <span class="nbadge">2</span>
+          <span class="nbadge">{{ carrinho.itens.length }}</span>
         </button>
       </div>
-    </div>
-    <div class="nav-sec">
-      <button class="ntab">☰ Departamentos</button>
-      <button class="ntab hl-w">🔥 Promoções</button>
-      <button class="ntab hl-g">✦ Frete Grátis</button>
-      <button class="ntab">Decoração</button>
-      <button class="ntab">Roupas</button>
-      <button class="ntab">Acessórios</button>
-      <button class="ntab">Personalizar</button>
-      <button class="ntab">Minha Conta</button>
+
     </div>
   </nav>
 </template>
@@ -193,46 +204,5 @@ nav {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.nav-sec {
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 0 28px;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  border-top: 1px solid rgba(255,255,255,.1);
-}
-
-.ntab {
-  color: rgba(255,255,255,.75);
-  padding: 9px 15px;
-  font-size: 13px;
-  font-weight: 500;
-  border: none;
-  background: none;
-  border-radius: 8px 8px 0 0;
-  white-space: nowrap;
-  cursor: pointer;
-  font-family: var(--font-family-base);
-  transition: all .18s;
-}
-
-.ntab:hover {
-  color: #fff;
-  background: rgba(255,255,255,.1);
-}
-
-.ntab.hl-g {
-  background: var(--color-brand-green);
-  color: #fff;
-  font-weight: 600;
-}
-
-.ntab.hl-w {
-  background: var(--color-warning);
-  color: #fff;
-  font-weight: 600;
 }
 </style>

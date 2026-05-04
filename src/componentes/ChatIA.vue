@@ -301,7 +301,7 @@ const toggleChat = () => {
   flex-direction: column;
   align-items: flex-end;
   gap: 12px;
-  font-family: var(--font-family-base, 'Open Sans', sans-serif);
+  font-family: var(--font-family-base, 'Source Sans 3', sans-serif);
 }
 
 /* ─── Botão de abrir/fechar ───────────────────────────────── */
@@ -456,7 +456,7 @@ const toggleChat = () => {
   border-radius: 12px;
   padding: 9px 12px;
   font-size: 0.875rem;
-  font-family: var(--font-family-base, 'Open Sans', sans-serif);
+  font-family: var(--font-family-base, 'Source Sans 3', sans-serif);
   color: var(--color-text, #000);
   background: var(--color-bg-muted, #f7f7f7);
   outline: none; line-height: 1.4;

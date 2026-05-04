@@ -11,7 +11,6 @@
 
     const carrinho = useCarrinhoStore()
     const cepatual = ref('')
-
 </script>
 
 <template>

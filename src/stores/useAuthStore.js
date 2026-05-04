@@ -14,7 +14,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const cadastrar = async (email, senha, nome, cpf, telefone) => {
     try {
-      const res = await withHandling(
+      await withHandling(
         () => authService.register(email, senha, nome, cpf, telefone),
         'Erro ao cadastrar'
       )
@@ -27,7 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const login = async (email, senha) => {
     try {
-      const res = await withHandling(
+      await withHandling(
         () => authService.login(email, senha),
         'Erro ao realizar login'
       )
@@ -40,10 +40,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const logout = async () => {
     try {
-      await withHandling(
-        () => authService.logout(),
-        'Erro ao sair'
-      )
+      await withHandling(() => authService.logout(), 'Erro ao sair')
       usuario.value = null
       return true
     } catch {
@@ -54,10 +51,9 @@ export const useAuthStore = defineStore('auth', () => {
   const sincronizarSessao = async () => {
     try {
       const res = await withHandling(
-        () =>
-          authService.verificaLogin
-            ? authService.verificaLogin()
-            : Promise.resolve({ ok: false }),
+        () => authService.verificaLogin
+          ? authService.verificaLogin()
+          : Promise.resolve({ ok: false }),
         'Erro ao sincronizar sessão'
       )
       usuario.value = res?.ok ? authService.getCurrentUser() : null
@@ -68,7 +64,29 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Merge da Ari: isAdmin verifica role corretamente
+  const atualizarUsuario = async ({ nome, telefone }) => {
+    await withHandling(
+      () => authService.atualizarUsuario({ nome, telefone }),
+      'Erro ao atualizar usuário'
+    )
+    usuario.value = authService.getCurrentUser()
+  }
+
+  const alterarSenha = async ({ senhaAtual, novaSenha }) => {
+    await withHandling(
+      () => authService.alterarSenha({ senhaAtual, novaSenha }),
+      'Erro ao alterar senha'
+    )
+  }
+
+  const alterarEmail = async ({ novoEmail, senha }) => {
+    await withHandling(
+      () => authService.alterarEmail({ novoEmail, senha }),
+      'Erro ao alterar e-mail'
+    )
+    usuario.value = authService.getCurrentUser()
+  }
+
   const isAdmin = () => usuario.value?.role === 'admin'
   const isAuthenticated = () => !!usuario.value
 
@@ -80,6 +98,9 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     sincronizarSessao,
+    atualizarUsuario,
+    alterarSenha,
+    alterarEmail,
     isAdmin,
     isAuthenticated,
   }

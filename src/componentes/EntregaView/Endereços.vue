@@ -31,8 +31,6 @@
 
   function selecionarEndereco(endereco) {
     enderecoSelecionado.value = endereco.cep;
-
-    // Armazena endereço completo no store (para usar no pagamento)
     carrinho.definirEndereco(endereco);
 
     const freteEncontrado = fretes.fretes.find(f => f.cep_entrega === enderecoSelecionado.value);
@@ -48,134 +46,188 @@
 </script>
 
 <template>
-  <div class="products">
-    <div class="topo">
-      <h2># Endereço de Entrega</h2>
+  <div class="sec">
+    <div class="sec-hd">
+      <div class="sec-hd-left">
+        <div class="sec-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            <circle cx="12" cy="9" r="2.5"/>
+          </svg>
+        </div>
+        <span class="sec-title">Endereço de Entrega</span>
+      </div>
     </div>
 
-    <hr>
-    <div class="lista-endereco">
-      <div
-        v-for="endereco in enderecos"
-        :key="endereco.id"
-        class="endereco"
-        :class="{ selecionado: enderecoSelecionado === endereco.cep }"
-        @click="selecionarEndereco(endereco)"
-      >
-        <div class="endereco-esquerda">
-          <div class="endereco-nome">{{ endereco.nome }}</div>
-          <div class="endereco-linha1">
-            {{ endereco.rua }}, {{ endereco.numero }}
-            <span v-if="endereco.complemento"> — {{ endereco.complemento }}</span>
+    <div class="sec-body">
+      <div class="addr-list">
+        <div
+          v-for="endereco in enderecos"
+          :key="endereco.id"
+          class="addr-opt"
+          :class="{ sel: enderecoSelecionado === endereco.cep }"
+          @click="selecionarEndereco(endereco)"
+        >
+          <div class="radio">
+            <div class="radio-dot"></div>
           </div>
-          <div class="endereco-linha2">
-            {{ endereco.bairro }} - {{ endereco.cidade }} - {{ endereco.estado }} - {{ endereco.cep }}
+          <div class="addr-info">
+            <div class="addr-nome">{{ endereco.nome }}</div>
+            <div class="addr-linha">{{ endereco.rua }}, {{ endereco.numero }}<span v-if="endereco.complemento"> — {{ endereco.complemento }}</span></div>
+            <div class="addr-linha">{{ endereco.bairro }} · {{ endereco.cidade }} · {{ endereco.estado }} · {{ endereco.cep }}</div>
           </div>
         </div>
 
-        <div class="endereco-botoes">
-          <!--<button class="editar">Editar</button>-->
-          <!--<button class="excluir" @click="excluirEndereco(endereco)">Excluir</button>-->
+        <div v-if="!enderecos.length" class="sem-endereco">
+          <svg width="32" height="32" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <p>Nenhum endereço cadastrado.</p>
         </div>
-      </div>
-
-      <div v-if="!enderecos.length" class="sem-endereco">
-        <p>Nenhum endereço cadastrado.</p>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-    main{
-        width: 1400px;
-        margin: 0 auto;
-        font-family: var(--font-family-base);
-        font-weight: 300;
-    }
-    .container1{
-        width: 100%;
-        display: flex;
-        gap: 2.9rem;
-        justify-content: space-evenly;
-        align-items: flex-start;
-        margin-bottom: 2rem;
-    }
-    .products{
-        width: 60rem;
-        border-radius: 20px;
-        border: 2px solid var(--color-primary);
-        text-align: center;
-        padding: 2rem 2rem;
-    }
-    .topo{
-        display: flex;
-    }
-    .topo h2{
-        margin: 0;
-        margin-right: 1rem;
-    }
-    .topo h4{
-        margin: 0;
-        line-height: 2.4rem;
-        font-weight: lighter;
-    }
-    .lista-endereco{
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-    .endereco{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        padding: 12px;
-        border: 2px solid var(--color-border-input);
-        border-radius: 6px;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-    .endereco.selecionado {
-        border-color: var(--color-text);
-        background: var(--color-bg-muted);
-        transform: scale(1.02);
-    } 
-    .endereco-esquerda {
-        display: flex;
-        flex-direction: column;
-        text-align: left;
-    }
-    .endereco-nome {
-        font-size: 16px;
-        font-weight: bold;
-        margin-bottom: 4px;
-    }
-    .endereco-linha1, .endereco-linha2 {
-        font-size: 14px;
-        color: var(--color-muted);
-        margin-bottom: 2px;
-    }
-    .endereco-botoes {
-        display: flex;
-        gap: 10px;
-    }
-    .editar, .excluir {
-        background: var(--color-surface);
-        border: 1px solid var(--color-primary);
-        color: var(--color-primary);
-        padding: 5px 14px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 13px;
-    }
-    .excluir:hover, .editar:hover {
-        transform: scale(1.03);
-    }
-    .sem-endereco {
-        text-align: center;
-        color: var(--color-muted);
-        font-size: 14px;
-        padding: 1.5rem 0;
-    }
+  .sec {
+    background: #fff;
+    border: 1px solid #e4e9f2;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 8px rgba(17, 71, 152, .08);
+  }
+
+  .sec-hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 22px;
+    border-bottom: 1px solid #eef1f8;
+  }
+
+  .sec-hd-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sec-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #2C18A0, #114798);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .sec-icon svg {
+    width: 16px;
+    height: 16px;
+    stroke: none;
+    fill: #fff;
+  }
+
+  .sec-title {
+    font-family: 'Syne', var(--font-family-base), sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: #141824;
+  }
+
+  .sec-body {
+    padding: 20px 22px;
+  }
+
+  .addr-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .addr-opt {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1.5px solid #d6dcea;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .18s;
+    background: #fff;
+  }
+
+  .addr-opt:hover {
+    border-color: #114798;
+    background: #f4f7ff;
+  }
+
+  .addr-opt.sel {
+    border-color: #114798;
+    background: #f0f4ff;
+    box-shadow: 0 0 0 3px rgba(17, 71, 152, .08);
+  }
+
+  .radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #b8c1d8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color .18s;
+  }
+
+  .addr-opt.sel .radio {
+    border-color: #114798;
+  }
+
+  .radio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #114798;
+    opacity: 0;
+    transition: opacity .18s;
+  }
+
+  .addr-opt.sel .radio-dot {
+    opacity: 1;
+  }
+
+  .addr-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 2px;
+  }
+
+  .addr-nome {
+    font-size: 14px;
+    font-weight: 700;
+    color: #141824;
+  }
+
+  .addr-linha {
+    font-size: 13px;
+    color: #6b7a9a;
+    line-height: 1.6;
+  }
+
+  .sem-endereco {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 2rem 0;
+    color: #8f9db8;
+    font-size: 14px;
+  }
+
+  .sem-endereco svg {
+    stroke: none;
+    fill: #d6dcea;
+  }
 </style>

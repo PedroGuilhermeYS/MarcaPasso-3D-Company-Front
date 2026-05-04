@@ -9,4 +9,7 @@ export const {
   verificaLoginNaApi,
   doLogoutNaApi,
   doCadastroNaApi,
+  doAtualizarUsuarioNaApi,
+  doAlterarSenhaNaApi,
+  doAlterarEmailNaApi,
 } = authApi
