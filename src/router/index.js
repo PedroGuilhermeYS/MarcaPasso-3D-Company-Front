@@ -11,9 +11,9 @@ import CarrinhoView from '@/views/CarrinhoView.vue'
 import ContatosView from '@/views/ContatosView.vue'
 import PainelUserView from '@/views/PainelUserView.vue'
 import EntregaView from '@/views/EntregaView.vue'
-import FormaPagamentoView from '@/views/FormaPagamentoView.vue'
 import EncomendasView from '@/views/EncomendasView.vue'
 import SomenteLogoLayout from '@/layouts/SomenteLogoLayout.vue'
+import CadastroUserView from '../views/CadastroUserView.vue'
 
 // Lazy-loaded / heavier views
 const ProdutoView = () => import('@/views/ProdutoView.vue')
@@ -38,7 +38,6 @@ const routes = [
     component: LoginLayout,
     children: [
       { path: 'login', name: 'Login', component: LoginView },
-      { path: 'formapagamento', name: 'FormaPagamento', component: FormaPagamentoView, meta: { requiresAuth: true } },
       { path: 'conta/painel', name: 'PainelUsuario', component: PainelUserView, meta: { requiresAuth: true } }
     ]
   },
@@ -52,7 +51,8 @@ const routes = [
       { path: 'enderecoentrega', name: 'EnderecoEntrega', component: EntregaView },
       { path: 'encomendas', name: 'Encomendas', component: EncomendasView },
       { path: 'carrinho', name: 'Carrinho', component: CarrinhoView },
-      { path: 'favoritos', name: 'Favoritos', component: FavoritosView }
+      { path: 'favoritos', name: 'Favoritos', component: FavoritosView },
+      { path: 'cadastro', name: 'Cadastro', component: CadastroUserView }
     ]
   },
 

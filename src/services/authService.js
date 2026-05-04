@@ -3,6 +3,9 @@ import {
   verificaLoginNaApi,
   doLogoutNaApi,
   doCadastroNaApi,
+  doAtualizarUsuarioNaApi,
+  doAlterarSenhaNaApi,
+  doAlterarEmailNaApi,
 } from '@/api/auth'
 
 const TOKEN_KEY = 'jwt_token'
@@ -32,34 +35,31 @@ export function useAuthService() {
     return !!payload && payload.exp && payload.exp > Math.floor(Date.now() / 1000)
   }
 
+  function salvarUsuario(u) {
+    localStorage.setItem('usuario', JSON.stringify({
+      id: u.id,
+      email: u.email,
+      role: u.role,
+      nome: u.nome,
+      cpf: u.cpf,
+      telefone: u.telefone,
+    }))
+  }
+
   async function login(email, password) {
     const res = await doLoginNaApi(email, password)
     if (res?.ok && res.token) {
       setToken(res.token)
-      // Salva usuário no localStorage
-      const u = res.user ?? res
-      localStorage.setItem('usuario', JSON.stringify({
-        id: u.id,
-        email: u.email,
-        role: u.role,
-        nome: u.nome,
-      }))
+      salvarUsuario(res.user ?? res)
     }
     return res
   }
 
-  // Merge da Ari: cadastro aceita nome, cpf e telefone
   async function register(email, senha, nome, cpf, telefone) {
     const res = await doCadastroNaApi(email, senha, nome, cpf, telefone)
     if (res?.ok && res.token) {
       setToken(res.token)
-      const u = res.user ?? res
-      localStorage.setItem('usuario', JSON.stringify({
-        id: u.id,
-        email: u.email,
-        role: u.role,
-        nome: u.nome,
-      }))
+      salvarUsuario(res.user ?? res)
     }
     return res
   }
@@ -101,6 +101,30 @@ export function useAuthService() {
     return t ? { Authorization: `Bearer ${t}` } : {}
   }
 
+  async function atualizarUsuario({ nome, telefone }) {
+    const current = getCurrentUser()
+    const res = await doAtualizarUsuarioNaApi(current?.id, { nome, telefone })
+    if (res?.ok) {
+      salvarUsuario({ ...current, nome, telefone })
+    }
+    return res
+  }
+
+  async function alterarSenha({ senhaAtual, novaSenha }) {
+    const current = getCurrentUser()
+    return await doAlterarSenhaNaApi(current?.id, { senhaAtual, novaSenha })
+  }
+
+  async function alterarEmail({ novoEmail, senha }) {
+    const current = getCurrentUser()
+    const res = await doAlterarEmailNaApi(current?.id, { novoEmail, senha })
+    if (res?.ok && res.token) {
+      setToken(res.token)
+      salvarUsuario(res)
+    }
+    return res
+  }
+
   return {
     login,
     register,
@@ -109,5 +133,8 @@ export function useAuthService() {
     isAuthenticated,
     verificaLogin,
     getAuthHeader,
+    atualizarUsuario,
+    alterarSenha,
+    alterarEmail,
   }
 }

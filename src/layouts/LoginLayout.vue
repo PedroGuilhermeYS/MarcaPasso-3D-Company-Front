@@ -5,7 +5,7 @@ import AppFooter from '@/componentes/layout/AppFooter.vue'
 
 <template>
   <AppNavbar />
-  <main>
+  <main class="users">
     <router-view />
   </main>
   <AppFooter />

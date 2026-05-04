@@ -29,7 +29,7 @@ function calculardata(cepatual) {
 </script>
 
 <template>
-    <main>
+    <main main class="users">
         <div class="bc">
             <router-link to="/">Home</router-link>
             <span class="bc-sep">›</span>

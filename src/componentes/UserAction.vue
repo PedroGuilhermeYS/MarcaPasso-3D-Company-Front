@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useCarrinhoStore } from '@/stores/useCarrinhoStore'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { formatarPreco } from '@/composables/useFormatadorPreco.js'
@@ -10,6 +10,9 @@ const auth = useAuthStore()
 const usuarioLogado = computed(() => auth.usuario)
 const acessar = computed(() => {
   return auth.isAdmin()
+})
+onMounted(async () => {
+  await carrinho.carregarCarrinho()
 })
 </script>
 

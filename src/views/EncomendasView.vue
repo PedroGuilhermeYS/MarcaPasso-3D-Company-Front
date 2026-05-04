@@ -1,29 +1,21 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { formatarPreco } from '@/composables/useFormatadorPreco.js'
 import { useEncomendasStore } from '@/stores/useEncomendasStore'
 import DetalheEncomenda from '@/componentes/EncomendasView/DetalheEncomenda.vue'
 
 const encomendasStore = useEncomendasStore()
 const pedidoSelecionadoId = ref(null)
+const filtroAtivo = ref('todos')
 
 onMounted(async () => {
   await encomendasStore.carregarEncomendas()
 })
 
 async function selecionarPedido(id) {
-  if (pedidoSelecionadoId.value === id) {
-    pedidoSelecionadoId.value = null
-    encomendasStore.encomendaDetalhe = null
-    return
-  }
+  if (pedidoSelecionadoId.value === id) return
   pedidoSelecionadoId.value = id
   await encomendasStore.carregarDetalhe(id)
-}
-
-function fecharDetalhe() {
-  pedidoSelecionadoId.value = null
-  encomendasStore.encomendaDetalhe = null
 }
 
 function formatarDataHora(dataHora) {
@@ -35,308 +27,538 @@ function formatarDataHora(dataHora) {
   })
 }
 
-const statusLabel = (status) => {
-  const map = {
-    PENDENTE: 'Pendente',
-    PAGO: 'Pago',
-    ENVIADO: 'Enviado',
-    ENTREGUE: 'Entregue',
-    CANCELADO: 'Cancelado',
-  }
-  return map[status] ?? status
-}
+const statusLabel = (status) => ({
+  PENDENTE: 'Pendente', PAGO: 'Pago', ENVIADO: 'Enviado',
+  ENTREGUE: 'Entregue', CANCELADO: 'Cancelado',
+})[status] ?? status
 
-const statusClass = (status) => {
-  const map = {
-    PENDENTE: 'status-pendente',
-    PAGO: 'status-pago',
-    ENVIADO: 'status-enviado',
-    ENTREGUE: 'status-entregue',
-    CANCELADO: 'status-cancelado',
+const statusClass = (status) => ({
+  PENDENTE: 'status-pendente', PAGO: 'status-pago', ENVIADO: 'status-enviado',
+  ENTREGUE: 'status-entregue', CANCELADO: 'status-cancelado',
+})[status] ?? ''
+
+const stats = computed(() => {
+  const lista = encomendasStore.encomendas
+  return {
+    total: lista.length,
+    entregues: lista.filter(p => p.status === 'ENTREGUE').length,
+    andamento: lista.filter(p => ['ENVIADO', 'PENDENTE', 'PAGO'].includes(p.status)).length,
+    totalGasto: lista.reduce((acc, p) => acc + (p.total ?? 0), 0),
   }
-  return map[status] ?? ''
-}
+})
+
+const filtros = [
+  { key: 'todos', label: 'Todos' },
+  { key: 'enviado', label: 'Enviados' },
+  { key: 'entregue', label: 'Entregues' },
+  { key: 'pendente', label: 'Pendentes' },
+]
+
+const pedidosFiltrados = computed(() => {
+  const lista = encomendasStore.encomendas
+  if (filtroAtivo.value === 'todos') return lista
+  return lista.filter(p => p.status === filtroAtivo.value.toUpperCase())
+})
 </script>
 
 <template>
-  <main>
-    <div class="container1">
+  <main class="users mp-main">
 
-      <div class="lista-header">
-        <h1 class="page-title">Meus Pedidos</h1>
-        <span v-if="encomendasStore.encomendas.length" class="total-badge">
-          {{ encomendasStore.encomendas.length }} pedido(s)
-        </span>
-      </div>
+    <!-- Cabeçalho -->
+    <div class="page-head">
+      <h1 class="page-titulo">Minhas Encomendas</h1>
+    </div>
 
-      <!-- Carregando -->
-      <div v-if="encomendasStore.carregando" class="estado-info">
-        <span class="spinner"></span>
-        <p>Carregando pedidos...</p>
-      </div>
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <span>Home</span>
+      <span class="sep">›</span>
+      <span class="atual">Minhas Encomendas</span>
+    </div>
 
-      <!-- Erro -->
-      <div v-else-if="encomendasStore.erro" class="estado-erro">
-        <p>{{ encomendasStore.erro }}</p>
-      </div>
+    <!-- Layout: lista (esq) + painel (dir) -->
+    <div class="layout-dois">
 
-      <!-- Vazio -->
-      <div v-else-if="!encomendasStore.encomendas.length" class="estado-vazio">
-        <p>Você ainda não realizou nenhum pedido.</p>
-      </div>
+      <!-- Lista de pedidos -->
+      <div class="coluna-lista">
 
-      <!-- Cards + detalhe inline -->
-      <template v-for="pedido in encomendasStore.encomendas" :key="pedido.id">
-
-        <!-- Card do pedido -->
-        <div
-          class="pedido-card"
-          :class="{ ativo: pedidoSelecionadoId === pedido.id }"
-          @click="selecionarPedido(pedido.id)"
-          role="button"
-          :aria-expanded="pedidoSelecionadoId === pedido.id"
-        >
-          <div class="pedido-header">
-
-            <div class="col">
-              <span class="label">PEDIDO</span>
-              <span class="value orange">{{ pedido.numeroPedido }}</span>
+        <!-- Stats dentro da coluna (mesma largura da lista) -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon icon-blue">
+              <svg viewBox="0 0 24 24">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
             </div>
-
-            <div class="col">
-              <span class="label">DATA / HORA</span>
-              <span class="value">{{ formatarDataHora(pedido.dataHora) }}</span>
+            <div>
+              <div class="stat-num">{{ stats.total }}</div>
+              <div class="stat-lbl">Total de pedidos</div>
             </div>
-
-            <div class="col">
-              <span class="label">PAGAMENTO</span>
-              <span class="value pagamento-pill" :class="'pag-' + pedido.formaPagamento">
-                {{ pedido.formaPagamento === 'pix' ? 'PIX' : 'Cartão' }}
-              </span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon icon-green">
+              <svg viewBox="0 0 24 24">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
             </div>
-
-            <div class="col">
-              <span class="label">STATUS</span>
-              <span class="badge" :class="statusClass(pedido.status)">
-                {{ statusLabel(pedido.status) }}
-              </span>
+            <div>
+              <div class="stat-num">{{ stats.entregues }}</div>
+              <div class="stat-lbl">Entregue</div>
             </div>
-
-            <div class="col valor-col">
-              <span class="label">TOTAL</span>
-              <span class="value bold">{{ formatarPreco(pedido.total) }}</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon icon-warn">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
             </div>
-
-            <div class="seta" :class="{ girar: pedidoSelecionadoId === pedido.id }">›</div>
-
+            <div>
+              <div class="stat-num">{{ stats.andamento }}</div>
+              <div class="stat-lbl">Em andamento</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon icon-red">
+              <svg viewBox="0 0 24 24">
+                <line x1="12" y1="1" x2="12" y2="23" />
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            </div>
+            <div>
+              <div class="stat-num">{{ formatarPreco(stats.totalGasto) }}</div>
+              <div class="stat-lbl">Total gasto</div>
+            </div>
           </div>
         </div>
 
-        <!-- Detalhe abre ABAIXO do card clicado -->
-        <transition name="expand">
-          <div
-            v-if="pedidoSelecionadoId === pedido.id"
-            class="detalhe-inline"
-          >
-            <DetalheEncomenda
-              :encomenda="encomendasStore.encomendaDetalhe"
-              :carregando="encomendasStore.carregandoDetalhe"
-              @fechar="fecharDetalhe"
-            />
+        <!-- Card da lista -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Histórico de pedidos</div>
+            <div class="filtros">
+              <button v-for="f in filtros" :key="f.key" class="filtro-btn" :class="{ ativo: filtroAtivo === f.key }"
+                @click="filtroAtivo = f.key">{{ f.label }}</button>
+            </div>
           </div>
-        </transition>
 
-      </template>
+          <div v-if="encomendasStore.carregando" class="estado-info">
+            <span class="spinner"></span>
+            <p>Carregando pedidos...</p>
+          </div>
+
+          <div v-else-if="encomendasStore.erro" class="estado-erro">
+            <p>{{ encomendasStore.erro }}</p>
+          </div>
+
+          <div v-else-if="!pedidosFiltrados.length" class="estado-vazio">
+            <svg viewBox="0 0 24 24">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+            <p>Nenhum pedido encontrado.</p>
+          </div>
+
+          <div v-for="pedido in pedidosFiltrados" :key="pedido.id" class="pedido-item"
+            :class="{ selecionado: pedidoSelecionadoId === pedido.id }" @click="selecionarPedido(pedido.id)"
+            role="button">
+            <div class="pedido-icone">
+              <svg viewBox="0 0 24 24">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+            </div>
+            <div class="pedido-info">
+              <div class="pedido-num">{{ pedido.numeroPedido }}</div>
+              <div class="pedido-data">{{ formatarDataHora(pedido.dataHora) }}</div>
+              <div class="pedido-produtos">
+                {{pedido.itens?.map(i => i.nomeProduto + (i.quantidade > 1 ? ` (×${i.quantidade})` : '')).join(' · ')
+                }}
+              </div>
+            </div>
+            <div class="pedido-direita">
+              <div class="pedido-valor">{{ formatarPreco(pedido.total) }}</div>
+              <span class="status" :class="statusClass(pedido.status)">{{ statusLabel(pedido.status) }}</span>
+            </div>
+            <span class="pedido-seta">›</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Painel lateral fixo -->
+      <div class="coluna-painel">
+        <div class="card painel-card">
+          <DetalheEncomenda :encomenda="encomendasStore.encomendaDetalhe"
+            :carregando="encomendasStore.carregandoDetalhe" :selecionado="pedidoSelecionadoId !== null" />
+        </div>
+      </div>
 
     </div>
   </main>
 </template>
 
 <style scoped>
-main {
-  width: 1400px;
-  max-width: 100%;
-  margin: 0 auto;
-  font-family: var(--font-family-base);
-  font-weight: 300;
-  padding: 0 1rem;
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@200..900&display=swap');
+
+.mp-main {
+  color: #252f4a;
 }
 
-.container1 {
+.page-titulo {
+  font-family: 'Source Sans 3', sans-serif;
+  padding: 0px 28px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #141824;
+  margin: 0;
+}
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  padding: 14px 28px;
+  display: flex;
+  gap: 6px;
+  font-size: 13px;
+  color: #9aa3bb;
+}
+
+.breadcrumb .sep {
+  color: #cbd2e0;
+}
+
+.breadcrumb .atual {
+  color: #252f4a;
+  font-weight: 600;
+}
+
+/* ── Stats ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: #fff;
+  border: 1px solid #e4e9f2;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 2px 10px rgba(17, 71, 152, .07);
+}
+
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke-width: 1.5;
+}
+
+.icon-blue {
+  background: #eeeffe;
+}
+
+.icon-blue svg {
+  stroke: #2C18A0;
+}
+
+.icon-green {
+  background: #e4f5ef;
+}
+
+.icon-green svg {
+  stroke: #049377;
+}
+
+.icon-warn {
+  background: #fff8ee;
+}
+
+.icon-warn svg {
+  stroke: #e17055;
+}
+
+.icon-red {
+  background: #fff0f0;
+}
+
+.icon-red svg {
+  stroke: #d63031;
+}
+
+.stat-num {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #141824;
+}
+
+.stat-lbl {
+  font-size: 12px;
+  color: #8f9db8;
+  margin-top: 2px;
+}
+
+/* ── Layout dois ── */
+.layout-dois {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+.coluna-lista {
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-bottom: 3rem;
 }
 
-/* ── Header da lista ───────────────────── */
-.lista-header {
+/* ── Card ── */
+.card {
+  background: #fff;
+  border: 1px solid #e4e9f2;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(17, 71, 152, .07);
+}
+
+/* ── Painel ── */
+.coluna-painel {
+  position: sticky;
+  top: 20px;
+}
+
+.painel-card {
+  overflow: visible;
+}
+
+/* ── Header da lista ── */
+.card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px 22px;
+  border-bottom: 1px solid #eef1f8;
 }
 
-.page-title {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--color-text);
-}
-
-.total-badge {
-  font-size: .75rem;
+.card-title {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px;
   font-weight: 600;
-  background: var(--color-primary);
-  color: #fff;
-  padding: .25rem .75rem;
-  border-radius: 999px;
+  color: #141824;
 }
 
-/* ── Card de pedido ────────────────────── */
-.pedido-card {
-  background: var(--color-surface);
-  border-radius: 12px;
-  border: 2px solid transparent;
-  box-shadow: 0 2px 8px #00000010;
-  padding: 1.2rem;
-  margin-bottom: .75rem;
-  cursor: pointer;
-  transition: border-color .15s, background .15s, box-shadow .15s;
-}
-
-.pedido-card:hover {
-  background: var(--color-bg-hover, #f9f9f9);
-  box-shadow: 0 4px 14px #00000018;
-}
-
-.pedido-card.ativo {
-  border-color: var(--color-primary);
-  background: var(--color-bg-hover, #f9f9f9);
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  margin-bottom: 0;
-}
-
-.pedido-header {
+/* ── Filtros ── */
+.filtros {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
-.col {
+.filtro-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid #d6dcea;
+  background: #fff;
+  color: #8f9db8;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+}
+
+.filtro-btn:hover {
+  border-color: #114798;
+  color: #114798;
+}
+
+.filtro-btn.ativo {
+  background: #114798;
+  color: #fff;
+  border-color: #114798;
+}
+
+/* ── Pedido item ── */
+.pedido-item {
   display: flex;
-  flex-direction: column;
-  text-align: left;
-  min-width: 120px;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 22px;
+  border-bottom: 1px solid #eef1f8;
+  cursor: pointer;
+  transition: background .15s;
 }
 
-.label {
-  font-size: .65rem;
+.pedido-item:last-child {
+  border-bottom: none;
+}
+
+.pedido-item:hover {
+  background: #f7f9fc;
+}
+
+.pedido-item.selecionado {
+  background: #f0f4ff;
+  border-left: 3px solid #2C18A0;
+  padding-left: 19px;
+}
+
+.pedido-icone {
+  width: 42px;
+  height: 42px;
+  background: #eef1f8;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pedido-icone svg {
+  width: 20px;
+  height: 20px;
+  stroke: #2C18A0;
+  fill: none;
+  stroke-width: 1.5;
+  opacity: .6;
+}
+
+.pedido-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pedido-num {
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: .6px;
-  color: var(--color-text-muted, #999);
-  text-transform: uppercase;
-  margin-bottom: .2rem;
+  color: #2C18A0;
+  margin-bottom: 2px;
+  font-family: 'Source Sans 3', sans-serif;
 }
 
-.value {
-  font-size: .85rem;
-  color: var(--color-text);
+.pedido-data {
+  font-size: 12px;
+  color: #8f9db8;
 }
 
-.orange { color: var(--color-warning, #f57c00); font-weight: 700; }
-.bold   { font-weight: 700; }
-
-.valor-col { margin-left: auto; text-align: right; min-width: 100px; }
-
-/* ── Seta indicadora ───────────────────── */
-.seta {
-  font-size: 1.4rem;
-  color: var(--color-text-muted, #bbb);
-  margin-left: auto;
-  transition: transform .25s;
-  line-height: 1;
-}
-.seta.girar { transform: rotate(90deg); color: var(--color-primary); }
-
-/* ── Detalhe inline abaixo do card ─────── */
-.detalhe-inline {
-  border: 2px solid var(--color-primary);
-  border-top: none;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-  background: var(--color-surface);
-  margin-bottom: .75rem;
+.pedido-produtos {
+  font-size: 12px;
+  color: #6b7a9a;
+  margin-top: 2px;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ── Badge de status ────────────────────── */
-.badge {
-  display: inline-block;
-  font-size: .65rem;
+.pedido-direita {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.pedido-valor {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #141824;
+}
+
+.pedido-seta {
+  color: #d6dcea;
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ── Status ── */
+.status {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: .5px;
-  padding: .2rem .55rem;
-  border-radius: 999px;
-  text-transform: uppercase;
-  width: fit-content;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-top: 4px;
 }
-.status-pendente  { background: #fff3e0; color: #e65100; }
-.status-pago      { background: #e8f5e9; color: #2e7d32; }
-.status-enviado   { background: #e3f2fd; color: #1565c0; }
-.status-entregue  { background: #f3e5f5; color: #6a1b9a; }
-.status-cancelado { background: #ffebee; color: #b71c1c; }
 
-/* ── Pagamento pill ─────────────────────── */
-.pagamento-pill {
-  font-size: .72rem;
-  font-weight: 700;
-  padding: .15rem .5rem;
-  border-radius: 6px;
-  width: fit-content;
+.status-pendente {
+  background: #fff3e0;
+  color: #c35a00;
 }
-.pag-pix    { background: #e0f7fa; color: #00838f; }
-.pag-cartao { background: #ede7f6; color: #4527a0; }
 
-/* ── Estados da lista ───────────────────── */
+.status-pago {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-enviado {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.status-entregue {
+  background: #f3e5f5;
+  color: #6a1b9a;
+}
+
+.status-cancelado {
+  background: #ffebee;
+  color: #b71c1c;
+}
+
+/* ── Estados da lista ── */
 .estado-info,
 .estado-vazio,
 .estado-erro {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: var(--color-text-muted, #aaa);
-  font-size: .9rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: .8rem;
+  gap: 12px;
+  padding: 48px 24px;
+  color: #8f9db8;
+  font-size: 14px;
 }
 
-.estado-erro { color: var(--color-danger, #e53935); }
+.estado-vazio svg {
+  width: 40px;
+  height: 40px;
+  fill: none;
+  stroke: #8f9db8;
+  stroke-width: 1.5;
+  opacity: .4;
+}
 
+.estado-erro {
+  color: #d63031;
+}
+
+/* ── Spinner ── */
 .spinner {
-  width: 30px;
-  height: 30px;
-  border: 3px solid var(--color-border, #e0e0e0);
-  border-top-color: var(--color-primary);
+  width: 28px;
+  height: 28px;
+  border: 3px solid #e4e9f2;
+  border-top-color: #2C18A0;
   border-radius: 50%;
   animation: spin .7s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── Animação expand ────────────────────── */
-.expand-enter-active,
-.expand-leave-active {
-  transition: opacity .2s ease, max-height .25s ease;
-  max-height: 2000px;
-  overflow: hidden;
-}
-.expand-enter-from,
-.expand-leave-to {
-  opacity: 0;
-  max-height: 0;
 }
 </style>

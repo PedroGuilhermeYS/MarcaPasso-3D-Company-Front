@@ -3,33 +3,20 @@ import { computed } from 'vue'
 import { formatarPreco } from '@/composables/useFormatadorPreco.js'
 
 const props = defineProps({
-  encomenda: { type: Object, required: true },
+  encomenda: { type: Object, default: null },
   carregando: { type: Boolean, default: false },
+  selecionado: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['fechar'])
+const statusLabel = computed(() => ({
+  PENDENTE: 'Pendente', PAGO: 'Pago', ENVIADO: 'Enviado',
+  ENTREGUE: 'Entregue', CANCELADO: 'Cancelado',
+})[props.encomenda?.status] ?? props.encomenda?.status ?? '—')
 
-const statusLabel = computed(() => {
-  const map = {
-    PENDENTE: 'Pendente',
-    PAGO: 'Pago',
-    ENVIADO: 'Enviado',
-    ENTREGUE: 'Entregue',
-    CANCELADO: 'Cancelado',
-  }
-  return map[props.encomenda?.status] ?? props.encomenda?.status ?? '—'
-})
-
-const statusClass = computed(() => {
-  const map = {
-    PENDENTE: 'status-pendente',
-    PAGO: 'status-pago',
-    ENVIADO: 'status-enviado',
-    ENTREGUE: 'status-entregue',
-    CANCELADO: 'status-cancelado',
-  }
-  return map[props.encomenda?.status] ?? ''
-})
+const statusClass = computed(() => ({
+  PENDENTE: 'status-pendente', PAGO: 'status-pago', ENVIADO: 'status-enviado',
+  ENTREGUE: 'status-entregue', CANCELADO: 'status-cancelado',
+})[props.encomenda?.status] ?? '')
 
 function formatarDataHora(dataHora) {
   if (!dataHora) return '—'
@@ -46,303 +33,385 @@ const ehCartao = computed(() => props.encomenda?.formaPagamento === 'cartao')
 <template>
   <aside class="detalhe-painel">
 
-    <!-- Cabeçalho -->
+    <!-- ── Cabeçalho azul (sempre visível) ── -->
     <div class="detalhe-header">
-      <h2 class="detalhe-titulo">Detalhes do Pedido</h2>
+      <div class="header-esq">
+        <div class="detalhe-titulo">Detalhes do Pedido</div>
+        <div class="detalhe-num">{{ encomenda?.numeroPedido ?? 'Selecione um pedido' }}</div>
+      </div>
+      <span v-if="encomenda" class="badge header-badge" :class="statusClass">{{ statusLabel }}</span>
     </div>
 
-    <!-- Loading -->
+    <!-- ── Loading ── -->
     <div v-if="carregando" class="loading-wrap">
       <span class="spinner"></span>
       <p>Carregando detalhes...</p>
     </div>
 
-    <template v-else-if="encomenda">
+    <!-- ── Vazio (nada selecionado ainda) ── -->
+    <div v-else-if="!encomenda" class="painel-vazio">
+      <svg viewBox="0 0 24 24">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <path d="M16 10a4 4 0 0 1-8 0" />
+      </svg>
+      <p>Clique em um pedido<br>para ver os detalhes</p>
+    </div>
 
-      <!-- Número e status -->
-      <div class="secao info-topo">
-        <div class="linha-destaque">
-          <span class="label">Nº do Pedido</span>
-          <span class="numero-pedido">{{ encomenda.numeroPedido }}</span>
-        </div>
-        <div class="linha-destaque">
-          <span class="label">Data e Hora</span>
-          <span>{{ formatarDataHora(encomenda.dataHora) }}</span>
-        </div>
-        <div class="linha-destaque">
-          <span class="label">Status</span>
-          <span class="badge" :class="statusClass">{{ statusLabel }}</span>
-        </div>
-      </div>
+    <!-- ── Conteúdo ── -->
+    <template v-else>
 
-      <!-- Produtos comprados -->
-      <div class="secao">
-        <h3 class="secao-titulo">Produtos</h3>
-        <div
-          v-for="(item, idx) in encomenda.itens"
-          :key="idx"
-          class="item-produto"
-        >
-          <div class="item-nome">{{ item.nomeProduto }}</div>
-          <div class="item-qtd-preco">
-            <span class="qtd">{{ item.quantidade }}x</span>
-            <span class="preco-unit">{{ formatarPreco(item.precoUnitario) }}</span>
-            <span class="preco-total">= {{ formatarPreco(item.quantidade * item.precoUnitario) }}</span>
+      <!-- Produtos -->
+      <div class="det-secao">
+        <div class="det-secao-titulo">Produtos</div>
+        <div v-for="(item, idx) in encomenda.itens" :key="idx" class="det-produto">
+          <div class="det-produto-nome">{{ item.nomeProduto }}</div>
+          <div class="det-produto-linha">
+            <span class="det-produto-qtd">{{ item.quantidade }}×</span>
+            <span>{{ formatarPreco(item.precoUnitario) }} un.</span>
+            <span class="det-produto-total">{{ formatarPreco(item.quantidade * item.precoUnitario) }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Dados do cliente -->
-      <div class="secao">
-        <h3 class="secao-titulo">Dados do Cliente</h3>
-        <div class="campo"><span class="label">Nome</span><span>{{ encomenda.clienteNome || '—' }}</span></div>
-        <div class="campo"><span class="label">E-mail</span><span>{{ encomenda.clienteEmail || '—' }}</span></div>
-        <div class="campo"><span class="label">CPF</span><span>{{ encomenda.clienteCpf || '—' }}</span></div>
-      </div>
-
-      <!-- Dados de entrega -->
-      <div class="secao">
-        <h3 class="secao-titulo">Dados de Entrega</h3>
-        <div class="campo">
-          <span class="label">Rua e Número</span>
-          <span>{{ encomenda.endRua }}, {{ encomenda.endNumero }}</span>
-        </div>
-        <div v-if="encomenda.endComplemento" class="campo">
-          <span class="label">Complemento</span>
-          <span>{{ encomenda.endComplemento }}</span>
-        </div>
-        <div class="campo"><span class="label">Bairro</span><span>{{ encomenda.endBairro || '—' }}</span></div>
-        <div class="campo">
-          <span class="label">Cidade / Estado</span>
-          <span>{{ encomenda.endCidade }} – {{ encomenda.endEstado }}</span>
-        </div>
-        <div class="campo"><span class="label">CEP</span><span>{{ encomenda.endCep || '—' }}</span></div>
-      </div>
-
       <!-- Resumo de valores -->
-      <div class="secao">
-        <h3 class="secao-titulo">Resumo de Valores</h3>
-        <div class="campo"><span class="label">Subtotal</span><span>{{ formatarPreco(encomenda.subtotal) }}</span></div>
-        <div class="campo"><span class="label">Frete</span><span>{{ formatarPreco(encomenda.frete) }}</span></div>
-        <div v-if="encomenda.desconto > 0" class="campo">
-          <span class="label">Desconto</span>
-          <span class="valor-desconto">– {{ formatarPreco(encomenda.desconto) }}</span>
+      <div class="det-secao">
+        <div class="det-secao-titulo">Resumo de valores</div>
+        <div class="det-linha"><span class="det-lbl">Subtotal</span><span class="det-val">{{
+          formatarPreco(encomenda.subtotal) }}</span></div>
+        <div class="det-linha">
+          <span class="det-lbl">Frete</span>
+          <span class="det-val">{{ encomenda.frete === 0 ? 'Grátis' : formatarPreco(encomenda.frete) }}</span>
         </div>
-        <div v-if="encomenda.descontoCupom > 0" class="campo">
-          <span class="label">Desconto Cupom</span>
-          <span class="valor-desconto">– {{ formatarPreco(encomenda.descontoCupom) }}</span>
+        <div v-if="encomenda.desconto > 0" class="det-linha">
+          <span class="det-lbl">Desconto</span>
+          <span class="det-val valor-desconto">— {{ formatarPreco(encomenda.desconto) }}</span>
         </div>
-        <div class="campo total-linha">
-          <span class="label">Total</span>
-          <span class="total-valor">{{ formatarPreco(encomenda.total) }}</span>
+        <div v-if="encomenda.descontoCupom > 0" class="det-linha">
+          <span class="det-lbl">Desconto cupom</span>
+          <span class="det-val valor-desconto">— {{ formatarPreco(encomenda.descontoCupom) }}</span>
+        </div>
+        <div class="det-total">
+          <span class="det-total-lbl">Total pago</span>
+          <span class="det-total-val">{{ formatarPreco(encomenda.total) }}</span>
         </div>
       </div>
 
-      <!-- Forma de pagamento -->
-      <div class="secao">
-        <h3 class="secao-titulo">Forma de Pagamento</h3>
-        <div class="campo">
-          <span class="label">Pagamento</span>
-          <span class="pagamento-tag" :class="'pag-' + encomenda.formaPagamento">
+      <!-- Dados do cliente -->
+      <div class="det-secao">
+        <div class="det-secao-titulo">Dados do cliente</div>
+        <div class="det-linha"><span class="det-lbl">Nome</span> <span class="det-val">{{ encomenda.clienteNome || '—'
+        }}</span></div>
+        <div class="det-linha"><span class="det-lbl">E-mail</span><span class="det-val">{{ encomenda.clienteEmail || '—'
+        }}</span></div>
+        <div class="det-linha"><span class="det-lbl">CPF</span> <span class="det-val">{{ encomenda.clienteCpf || '—'
+        }}</span></div>
+      </div>
+
+      <!-- Endereço -->
+      <div class="det-secao">
+        <div class="det-secao-titulo">Endereço de entrega</div>
+        <div class="det-linha">
+          <span class="det-lbl">Logradouro</span>
+          <span class="det-val">{{ encomenda.endRua }}, {{ encomenda.endNumero }}</span>
+        </div>
+        <div v-if="encomenda.endComplemento" class="det-linha">
+          <span class="det-lbl">Complemento</span><span class="det-val">{{ encomenda.endComplemento }}</span>
+        </div>
+        <div class="det-linha"><span class="det-lbl">Bairro</span> <span class="det-val">{{ encomenda.endBairro || '—'
+        }}</span></div>
+        <div class="det-linha"><span class="det-lbl">Cidade / Estado</span> <span class="det-val">{{ encomenda.endCidade
+        }} – {{ encomenda.endEstado }}</span></div>
+        <div class="det-linha"><span class="det-lbl">CEP</span> <span class="det-val">{{ encomenda.endCep || '—'
+        }}</span></div>
+      </div>
+
+      <!-- Pagamento -->
+      <div class="det-secao">
+        <div class="det-secao-titulo">Forma de pagamento</div>
+        <div class="det-linha">
+          <span class="det-lbl">Método</span>
+          <span class="pay-tag" :class="'pag-' + encomenda.formaPagamento">
             {{ encomenda.formaPagamento === 'pix' ? 'PIX' : 'Cartão' }}
           </span>
         </div>
-
-        <!-- Campos exclusivos de cartão -->
         <template v-if="ehCartao">
-          <div class="campo"><span class="label">Tipo</span><span>{{ encomenda.tipoPagamento || '—' }}</span></div>
-          <div class="campo"><span class="label">Bandeira</span><span>{{ encomenda.bandeiraCartao || '—' }}</span></div>
-          <div class="campo"><span class="label">Parcelamento</span><span>{{ encomenda.parcelamento || '—' }}</span></div>
-          <div class="campo"><span class="label">Titular do Cartão</span><span>{{ encomenda.titularCartao || '—' }}</span></div>
-          <div class="campo"><span class="label">CPF do Titular</span><span>{{ encomenda.cpfTitular || '—' }}</span></div>
-          <div class="campo"><span class="label">BIN do Cartão</span><span>{{ encomenda.binCartao || '—' }}</span></div>
+          <div class="det-linha"><span class="det-lbl">Tipo</span> <span class="det-val">{{ encomenda.tipoPagamento ||
+            '—' }}</span></div>
+          <div class="det-linha"><span class="det-lbl">Bandeira</span> <span class="det-val">{{ encomenda.bandeiraCartao
+            || '—' }}</span></div>
+          <div class="det-linha"><span class="det-lbl">Parcelamento</span> <span class="det-val">{{
+            encomenda.parcelamento || '—' }}</span></div>
+          <div class="det-linha"><span class="det-lbl">Titular</span> <span class="det-val">{{ encomenda.titularCartao
+            || '—' }}</span></div>
+          <div class="det-linha"><span class="det-lbl">CPF do Titular</span><span class="det-val">{{
+            encomenda.cpfTitular || '—' }}</span></div>
+          <div class="det-linha"><span class="det-lbl">BIN do Cartão</span> <span class="det-val">{{ encomenda.binCartao
+            || '—' }}</span></div>
         </template>
       </div>
 
     </template>
-
-    <div v-else class="vazio">
-      <p>Nenhuma informação disponível.</p>
-    </div>
-
   </aside>
 </template>
 
 <style scoped>
+/* ── Painel ── */
 .detalhe-painel {
   width: 100%;
-  background: var(--color-surface);
-  border-radius: 0;
-  border: none;
-  padding: 1.8rem 1.6rem;
-  font-family: var(--font-family-base);
-  font-weight: 300;
+  background: #fff;
+  border-radius: 14px;
+  font-family: 'Source Sans 3', sans-serif;
+  max-height: 620px;
+  overflow-y: auto;
   overflow-x: hidden;
-  box-sizing: border-box;
 }
 
+/* ── Cabeçalho azul ── */
 .detalhe-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.4rem;
+  padding: 18px 22px;
+  background: linear-gradient(135deg, #2C18A0, #114798);
+  color: #fff;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .detalhe-titulo {
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: .4px;
-  color: var(--color-text);
-  margin: 0;
-}
-
-/* ── Seções ─────────────────────────────── */
-.secao {
-  border-top: 1px solid var(--color-border, #e0e0e0);
-  padding: 1rem 0 .4rem;
-}
-.secao:first-of-type { border-top: none; }
-
-.secao-titulo {
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: .8px;
-  text-transform: uppercase;
-  color: var(--color-primary);
-  margin: 0 0 .75rem;
-}
-
-/* ── Info topo ──────────────────────────── */
-.info-topo .linha-destaque {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: .55rem;
-}
-
-.numero-pedido {
-  font-weight: 700;
-  color: var(--color-warning, #f57c00);
-  font-size: .9rem;
-}
-
-/* ── Campos ─────────────────────────────── */
-.campo {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: .5rem;
-  margin-bottom: .45rem;
-  font-size: .82rem;
-}
-
-.label {
-  font-size: .7rem;
-  font-weight: 600;
-  letter-spacing: .3px;
-  color: var(--color-text-muted, #888);
-  white-space: nowrap;
-  padding-top: .05rem;
-}
-
-/* ── Itens do pedido ────────────────────── */
-.item-produto {
-  background: var(--color-bg-hover, #f9f9f9);
-  border-radius: 8px;
-  padding: .65rem .8rem;
-  margin-bottom: .5rem;
-}
-
-.item-nome {
-  font-size: .83rem;
-  font-weight: 600;
-  margin-bottom: .3rem;
-  color: var(--color-text);
-}
-
-.item-qtd-preco {
-  display: flex;
-  gap: .6rem;
-  align-items: center;
-  font-size: .78rem;
-  color: var(--color-text-muted, #666);
-}
-
-.qtd { font-weight: 700; color: var(--color-primary); }
-
-.preco-total {
-  margin-left: auto;
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-/* ── Total ──────────────────────────────── */
-.total-linha {
-  margin-top: .6rem;
-  padding-top: .6rem;
-  border-top: 1px dashed var(--color-border, #ddd);
-}
-
-.total-valor {
-  font-size: 1rem;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px;
   font-weight: 800;
-  color: var(--color-primary);
+  color: #fff;
 }
 
-.valor-desconto { color: var(--color-success, #43a047); font-weight: 600; }
+.detalhe-num {
+  font-size: 12px;
+  color: rgba(255, 255, 255, .65);
+  margin-top: 3px;
+}
 
-/* ── Badge de status ────────────────────── */
-.badge {
-  font-size: .68rem;
-  font-weight: 700;
-  letter-spacing: .5px;
-  padding: .25rem .65rem;
-  border-radius: 999px;
+.header-badge {
+  flex-shrink: 0;
+  font-size: 11px !important;
+  padding: 4px 12px !important;
+}
+
+/* ── Seções ── */
+.det-secao {
+  padding: 18px 22px;
+  border-bottom: 1px solid #eef1f8;
+}
+
+.det-secao:last-child {
+  border-bottom: none;
+}
+
+.det-secao-titulo {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .1em;
   text-transform: uppercase;
+  color: #2C18A0;
+  margin-bottom: 14px;
 }
-.status-pendente  { background: #fff3e0; color: #e65100; }
-.status-pago      { background: #e8f5e9; color: #2e7d32; }
-.status-enviado   { background: #e3f2fd; color: #1565c0; }
-.status-entregue  { background: #f3e5f5; color: #6a1b9a; }
-.status-cancelado { background: #ffebee; color: #b71c1c; }
 
-/* ── Pagamento tag ──────────────────────── */
-.pagamento-tag {
-  font-size: .75rem;
+/* ── Linhas ── */
+.det-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+
+.det-linha:last-child {
+  margin-bottom: 0;
+}
+
+.det-lbl {
+  color: #8f9db8;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.det-val {
+  color: #252f4a;
+  font-weight: 500;
+  text-align: right;
+}
+
+/* ── Produtos ── */
+.det-produto {
+  background: #f7f9fc;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+
+.det-produto:last-child {
+  margin-bottom: 0;
+}
+
+.det-produto-nome {
+  font-size: 13px;
+  font-weight: 600;
+  color: #252f4a;
+  margin-bottom: 5px;
+}
+
+.det-produto-linha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #6b7a9a;
+}
+
+.det-produto-qtd {
   font-weight: 700;
-  padding: .2rem .6rem;
-  border-radius: 6px;
-  letter-spacing: .5px;
+  color: #114798;
 }
-.pag-pix    { background: #e0f7fa; color: #00838f; }
-.pag-cartao { background: #ede7f6; color: #4527a0; }
 
-/* ── Loading ────────────────────────────── */
+.det-produto-total {
+  font-weight: 700;
+  color: #252f4a;
+  margin-left: auto;
+}
+
+/* ── Total ── */
+.det-total {
+  background: linear-gradient(135deg, #f0f4ff, #e8f0ff);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.det-total-lbl {
+  font-size: 13px;
+  font-weight: 700;
+  color: #252f4a;
+}
+
+.det-total-val {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: #114798;
+}
+
+.valor-desconto {
+  color: #049377 !important;
+  font-weight: 600;
+}
+
+/* ── Status badges ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 20px;
+}
+
+.status-pendente {
+  background: #fff3e0;
+  color: #c35a00;
+}
+
+.status-pago {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-enviado {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.status-entregue {
+  background: #f3e5f5;
+  color: #6a1b9a;
+}
+
+.status-cancelado {
+  background: #ffebee;
+  color: #b71c1c;
+}
+
+/* ── Pagamento ── */
+.pay-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 8px;
+}
+
+.pag-pix {
+  background: #e0f7fa;
+  color: #00838f;
+}
+
+.pag-cartao {
+  background: #ede7f6;
+  color: #4527a0;
+}
+
+/* ── Loading ── */
 .loading-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: .8rem;
-  padding: 2.5rem 0;
-  color: var(--color-text-muted, #888);
-  font-size: .85rem;
+  gap: 12px;
+  padding: 40px 0;
+  color: #8f9db8;
+  font-size: 14px;
 }
 
 .spinner {
   width: 28px;
   height: 28px;
-  border: 3px solid var(--color-border, #e0e0e0);
-  border-top-color: var(--color-primary);
+  border: 3px solid #e4e9f2;
+  border-top-color: #2C18A0;
   border-radius: 50%;
   animation: spin .7s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-.vazio {
+/* ── Vazio ── */
+.painel-vazio {
+  padding: 40px;
   text-align: center;
-  color: var(--color-text-muted, #aaa);
-  padding: 2rem 0;
-  font-size: .85rem;
+  flex-direction: column;
+  align-items: center;
+}
+
+.painel-vazio svg {
+  width: 48px;
+  height: 48px;
+  opacity: .35;
+  fill: none;
+  stroke-width: 1.5;
+  stroke: #8f9db8;
+}
+
+.painel-vazio p {
+  font-size: 14px;
+  line-height: 1.6;
 }
 </style>
