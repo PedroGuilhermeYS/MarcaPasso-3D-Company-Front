@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --color-brand-indigo: #2C18A0;
+  --color-brand-blue: #114798;
+  --color-brand-blue-l: #1a5bb8;
+  --color-brand-green: #049377;
+  --color-brand-green-l:#05b090;
+  --color-brand-green-d:#037a64;
+
+  --color-g50: #f7f9fc; --color-g100: #eef1f8;
+  --color-g150: #e4e9f2;  --color-g200: #d6dcea;
+  --color-g300: #b8c1d8;  --color-g400: #8f9db8;
+  --color-g500: #6b7a9a;  --color-g600: #4d5b78;
+  --color-g800: #252f4a;  --color-g900: #141824;
+
+
+  --color-primary: var(--color-brand-blue);
+  --color-primary-hover: var(--color-brand-blue-l);
+  --color-success: var(--color-brand-green);
+  --color-danger: #d63031;
+  --color-warning: #e17055;
+  --color-surface: #ffffff;
+
+  --font-family-base: 'DM Sans', sans-serif;
+  --font-family-head: 'Syne', sans-serif;
+
+  --radius: 10px;
+  --radius-lg: 14px;
+  --shadow: 0 2px 12px rgba(17,71,152,.08);
+  --shadow-md: 0 4px 24px rgba(17,71,152,.13);
+}
+
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+body { 
+    font-family: var(--font-family-base); 
+    background: var(--color-g50); 
+    color: var(--color-g800); 
+    font-size: 15px; 
+    overflow-x: hidden; 
+}

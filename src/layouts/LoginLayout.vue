@@ -1,14 +1,12 @@
 <script setup>
-import UserActionSimples from '@/componentes/UserActionSimples.vue';
-import Footer from '@/componentes/Footer.vue';
-import LogoTop from '@/componentes/LogoTop.vue';
+import AppNavbar from '@/componentes/layout/AppNavbar.vue'
+import AppFooter from '@/componentes/layout/AppFooter.vue'
 </script>
 
 <template>
-    <LogoTop></LogoTop>
-    <UserActionSimples></UserActionSimples>
-    <main>
-        <router-view />
-    </main>
-    <Footer></Footer>
+  <AppNavbar />
+  <main>
+    <router-view />
+  </main>
+  <AppFooter />
 </template>
