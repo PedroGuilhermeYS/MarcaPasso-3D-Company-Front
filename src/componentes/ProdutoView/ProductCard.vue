@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { formatarPreco } from '@/composables/useFormatadorPreco.js'
 
@@ -10,13 +11,35 @@ const props = defineProps({
 })
 
 const router = useRouter()
+
+const badgeLabel = computed(() => {
+  if (props.produto.badge) return props.produto.badge
+  if (props.produto.id === '1') return '🔥 Top 1'
+  if (props.produto.id === '2') return 'Promoção'
+  if (props.produto.id === '3') return 'Frete grátis'
+  return props.produto.personalizavel ? 'Novo' : props.produto.categoria
+})
+
+const badgeClass = computed(() => {
+  if (badgeLabel.value.includes('Promo')) return 'promo'
+  if (badgeLabel.value.includes('Frete')) return 'free'
+  if (badgeLabel.value.includes('Top')) return 'hot'
+  return 'new'
+})
 </script>
 
 <template>
   <div class="prod-card" @click="router.push({ name: 'Produto', params: { id: produto.id } })">
     <div class="prod-img" style="background:#eef2ff;">
-      <img v-if="produto.imagemPrincipal" :src="produto.imagemPrincipal" :alt="produto.nome" style="width: 80%; height: 160px; object-fit: cover;" />
+      <img v-if="produto.imagemPrincipal" :src="produto.imagemPrincipal" :alt="produto.nome" />
       <svg v-else class="ph" viewBox="0 0 24 24" style="color:var(--indigo)"><polyline points="12 2 22 6.5 22 17.5 12 22 2 17.5 2 6.5 12 2"/><line x1="12" y1="22" x2="12" y2="11.5"/><polyline points="22 6.5 12 11.5 2 6.5"/></svg>
+
+      <div class="prod-badges">
+        <span class="pbadge" :class="badgeClass">{{ badgeLabel }}</span>
+      </div>
+      <button class="btn-wish" type="button" aria-label="Favoritar" @click.stop>
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
 
       <div class="prod-img-overlay"></div>
       <div class="prod-quick"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Adicionar ao carrinho</div>
@@ -76,6 +99,13 @@ const router = useRouter()
   width: 80px;
   height: 80px;
   opacity: .11;
+}
+
+.prod-img img {
+  width: 80%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
 }
 
 .prod-img-overlay {

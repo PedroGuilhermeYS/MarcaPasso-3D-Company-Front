@@ -3,20 +3,6 @@
 
 <template>
   <footer>
-    <div class="information">
-      <div class="info-inner">
-        <div class="info-text">
-          <h3>Boletim Informativo</h3>
-          <p>Receba notícias, ofertas e comunicações em seu e-mail!</p>
-        </div>
-        <form action="" @submit.prevent> 
-          <input type="text" placeholder="Digite seu nome" required>
-          <input type="email" placeholder="Digite seu e-mail" required>
-          <button type="submit" class="button-register">CADASTRAR</button>
-        </form>
-      </div>
-    </div>
-
     <div class="ft-inner">
       <div>
         <div class="ft-brand">
@@ -68,7 +54,7 @@
 
 <style scoped>
 footer {
-  background: var(--g900);
+  background: var(--color-g900);
   color: #fff;
 }
 
@@ -89,7 +75,7 @@ footer {
 }
 
 .info-text h3 {
-  font-family: var(--fh);
+  font-family: var(--font-family-head);
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 6px;
@@ -97,7 +83,7 @@ footer {
 
 .info-text p {
   font-size: 13px;
-  color: var(--g400);
+  color: var(--color-g400);
   margin: 0;
 }
 
@@ -113,7 +99,7 @@ footer {
   color: #fff;
   padding: 10px 16px;
   border-radius: 8px;
-  font-family: var(--fb);
+  font-family: var(--font-family-base);
   font-size: 13px;
   outline: none;
   width: 220px;
@@ -124,17 +110,17 @@ footer {
 }
 
 .information input:focus {
-  border-color: var(--blue-l);
+  border-color: var(--color-brand-blue-l);
   background: rgba(255,255,255,.12);
 }
 
 .button-register {
-  background: var(--green);
+  background: var(--color-brand-green);
   color: #fff;
   border: none;
   padding: 10px 24px;
   border-radius: 8px;
-  font-family: var(--fh);
+  font-family: var(--font-family-head);
   font-weight: 700;
   font-size: 12px;
   cursor: pointer;
@@ -142,7 +128,7 @@ footer {
 }
 
 .button-register:hover {
-  background: var(--green-l);
+  background: var(--color-brand-green-l);
 }
 
 .ft-inner {
@@ -167,7 +153,7 @@ footer {
 .logo-cube {
   width: 30px;
   height: 30px;
-  background: var(--green);
+  background: var(--color-brand-green);
   border-radius: 7px;
   display: flex;
   align-items: center;
@@ -182,7 +168,7 @@ footer {
 
 .ft-desc {
   font-size: 13px;
-  color: var(--g400);
+  color: var(--color-g400);
   line-height: 1.7;
 }
 
@@ -202,7 +188,7 @@ footer {
 
 .ft-col ul li {
   font-size: 13px;
-  color: var(--g400);
+  color: var(--color-g400);
   margin-bottom: 9px;
   cursor: pointer;
   transition: color .2s;
@@ -214,7 +200,7 @@ footer {
 
 .ft-contact {
   font-size: 13px;
-  color: var(--g400);
+  color: var(--color-g400);
   line-height: 1.9;
 }
 
@@ -243,7 +229,7 @@ footer {
   padding: 16px 28px;
   text-align: center;
   font-size: 12px;
-  color: var(--g400);
+  color: var(--color-g400);
   max-width: 1300px;
   margin: 0 auto;
 }

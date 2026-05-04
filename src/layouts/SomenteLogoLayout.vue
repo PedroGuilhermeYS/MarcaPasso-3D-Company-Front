@@ -1,10 +1,12 @@
 <script setup>
-import LogoTop from '@/componentes/LogoTop.vue';
+import AppNavbar from '@/componentes/layout/AppNavbar.vue'
+import AppFooter from '@/componentes/layout/AppFooter.vue'
 </script>
 
 <template>
-    <LogoTop></LogoTop>
-    <main>
-        <router-view />
-    </main>
+  <AppNavbar />
+  <main>
+    <router-view />
+  </main>
+  <AppFooter />
 </template>

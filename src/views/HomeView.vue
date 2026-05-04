@@ -1,8 +1,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { usePesquisaStore } from '@/stores/usePesquisaStore'
-import ProductCard from '@/componentes/produto/ProductCard.vue'
+import { formatarPreco } from '@/composables/useFormatadorPreco'
+import ProductCard from '@/componentes/ProdutoView/ProductCard.vue'
 
+const router = useRouter()
 const pesquisa = usePesquisaStore()
 
 onMounted(async () => {
@@ -15,6 +18,12 @@ onMounted(async () => {
 
 const produtosMaisVendidos = computed(() => pesquisa.produtosFiltrados.slice(0, 6))
 const produtosLancamentos = computed(() => pesquisa.produtosFiltrados.slice(6, 12))
+const produtosDestaqueHero = computed(() => {
+  if (pesquisa.produtosFiltrados.length === 0) return []
+  return [...pesquisa.produtosFiltrados]
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 3)
+})
 
 const posC1 = ref(0)
 const posC2 = ref(0)
@@ -58,30 +67,20 @@ const track2Style = computed(() => ({ transform: `translateX(-${posC2.value * ca
               <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
               Ver catálogo
             </button>
-            <button class="btn-hero-sec">Personalizar agora →</button>
+            <!-- <button class="btn-hero-sec">Personalizar agora →</button> -->
           </div>
         </div>
         <div class="hero-cards">
-          <div class="hero-mini-card">
+          <div class="hero-mini-card" v-for="p in produtosDestaqueHero" :key="p.id" @click="router.push({ name: 'Produto', params: { id: p.id } })">
             <div class="hmc-icon"><svg viewBox="0 0 24 24"><polyline points="12 2 22 6.5 22 17.5 12 22 2 17.5 2 6.5 12 2"/></svg></div>
-            <div class="hmc-name">Vaso 3D</div>
-            <div class="hmc-price">R$ 89,90</div>
-          </div>
-          <div class="hero-mini-card">
-            <div class="hmc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></div>
-            <div class="hmc-name">Pulseira</div>
-            <div class="hmc-price">R$ 34,90</div>
-          </div>
-          <div class="hero-mini-card">
-            <div class="hmc-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-            <div class="hmc-name">Colar</div>
-            <div class="hmc-price">R$ 49,90</div>
+            <div class="hmc-name">{{ p.nome }}</div>
+            <div class="hmc-price">{{ formatarPreco(p.preco) }}</div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="trust-bar">
+    <!-- <div class="trust-bar">
       <div class="trust-inner">
         <div class="trust-item green">
           <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/></svg>
@@ -104,7 +103,7 @@ const track2Style = computed(() => ({ transform: `translateX(-${posC2.value * ca
           Atendimento personalizado
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="section">
       <div class="sec-hd">
@@ -116,6 +115,10 @@ const track2Style = computed(() => ({ transform: `translateX(-${posC2.value * ca
           </div>
         </div>
         <div class="sec-hd-right">
+          <button class="btn-see-all">
+            Ver todos
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
           <div class="carousel-nav">
             <button class="cnav-btn" :disabled="posC1 === 0" @click="prevC1">
               <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -146,14 +149,38 @@ const track2Style = computed(() => ({ transform: `translateX(-${posC2.value * ca
           <div class="banner-title">Personalize seu produto com <em>nome, cor e forma</em></div>
           <div class="banner-sub">Cada peça é produzida sob encomenda exclusivamente para você. Escolha o design, adicione seu toque e receba em casa.</div>
         </div>
-        <button class="btn-banner">
+        <!-- <button class="btn-banner">
           <svg width="16" height="16" viewBox="0 0 24 24" stroke="white"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg>
           Personalizar agora
-        </button>
+        </button> -->
       </div>
     </div>
 
     <div class="section" style="padding-bottom:60px;">
+      <div class="sec-hd">
+        <div class="sec-hd-left">
+          <div class="sec-accent grn"></div>
+          <div>
+            <div class="sec-label grn">Acabaram de chegar</div>
+            <div class="sec-title-txt">✨ Lançamentos</div>
+          </div>
+        </div>
+        <div class="sec-hd-right">
+          <button class="btn-see-all">
+            Ver todos
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div class="carousel-nav">
+            <button class="cnav-btn" :disabled="posC2 === 0" @click="prevC2">
+              <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="cnav-btn" :disabled="posC2 >= maxPosC2" @click="nextC2">
+              <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="carousel-track-wrap">
         <div class="carousel-track" :style="track2Style">
           <ProductCard v-for="p in produtosLancamentos" :key="p.id" :produto="p" />
@@ -168,6 +195,11 @@ const track2Style = computed(() => ({ transform: `translateX(-${posC2.value * ca
 </template>
 
 <style scoped>
+main {
+  background: var(--color-g50);
+  overflow-x: hidden;
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -358,6 +390,8 @@ svg {
   padding: 20px;
   width: 150px;
   text-align: center;
+  cursor: pointer;
+  transition: all .2s ease;
 }
 
 .hero-mini-card:nth-child(2) {
@@ -366,6 +400,12 @@ svg {
 
 .hero-mini-card:nth-child(3) {
   margin-top: 12px;
+}
+
+.hero-mini-card:hover {
+  background: rgba(255,255,255,.18);
+  border-color: rgba(255,255,255,.35);
+  transform: translateY(-4px);
 }
 
 .hmc-icon {

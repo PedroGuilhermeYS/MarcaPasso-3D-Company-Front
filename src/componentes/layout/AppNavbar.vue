@@ -27,15 +27,15 @@ const router = useRouter()
         </div>
       </div>
       <div class="nav-acts">
-        <button class="nbtn">
+        <button class="nbtn" @click="router.push({ name: 'PainelUsuario' })">
           <svg width="14" height="14" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           João Silva
         </button>
-        <button class="nbtn-ic">
+        <button class="nbtn-ic" @click="router.push({ name: 'Favoritos' })">
           <svg width="14" height="14" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           <span class="nbadge">4</span>
         </button>
-        <button class="nbtn-ic">
+        <button class="nbtn-ic" @click="router.push({ name: 'Carrinho' })">
           <svg width="14" height="14" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           <span class="nbadge">2</span>
         </button>
@@ -56,7 +56,7 @@ const router = useRouter()
 
 <style scoped>
 nav {
-  background: linear-gradient(135deg, var(--indigo) 0%, var(--blue) 100%);
+  background: linear-gradient(135deg, var(--color-brand-indigo) 0%, var(--color-brand-blue) 100%);
   box-shadow: 0 3px 20px rgba(44,24,160,.28);
   position: sticky;
   top: 0;
@@ -73,7 +73,7 @@ nav {
 }
 
 .logo {
-  font-family: var(--fh);
+  font-family: var(--font-family-head);
   font-size: 20px;
   font-weight: 800;
   color: #fff;
@@ -86,7 +86,7 @@ nav {
 .logo-cube {
   width: 30px;
   height: 30px;
-  background: var(--green);
+  background: var(--color-brand-green);
   border-radius: 7px;
   display: flex;
   align-items: center;
@@ -152,7 +152,7 @@ nav {
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  font-family: var(--fb);
+  font-family: var(--font-family-base);
   transition: all .18s;
 }
 
@@ -183,7 +183,7 @@ nav {
   position: absolute;
   top: -4px;
   right: -4px;
-  background: var(--green);
+  background: var(--color-brand-green);
   color: #fff;
   font-size: 10px;
   font-weight: 700;
@@ -215,7 +215,7 @@ nav {
   border-radius: 8px 8px 0 0;
   white-space: nowrap;
   cursor: pointer;
-  font-family: var(--fb);
+  font-family: var(--font-family-base);
   transition: all .18s;
 }
 
@@ -225,13 +225,13 @@ nav {
 }
 
 .ntab.hl-g {
-  background: var(--green);
+  background: var(--color-brand-green);
   color: #fff;
   font-weight: 600;
 }
 
 .ntab.hl-w {
-  background: var(--warn);
+  background: var(--color-warning);
   color: #fff;
   font-weight: 600;
 }
