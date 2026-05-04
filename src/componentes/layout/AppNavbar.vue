@@ -4,8 +4,9 @@ import { onMounted, computed, ref } from 'vue'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useCarrinhoStore } from '@/stores/useCarrinhoStore'
 import { useFavoritosStore } from '@/stores/useFavoritosStore'
+import { usePesquisaStore } from '@/stores/usePesquisaStore'
 
-const termoBusca = ref('')
+const pesquisa = usePesquisaStore()
 const carrinho = useCarrinhoStore()
 const favoritosStore = useFavoritosStore()
 const router = useRouter()
@@ -21,9 +22,9 @@ onMounted(async () => {
 })
 
 function buscar() {
-  const termo = termoBusca.value.trim()
-  if (!termo) return
-  router.push({ name: 'Catalogo', query: { q: termo } })
+  if (router.currentRoute.value.name !== 'Catalogo') {
+    router.push({ name: 'Catalogo' })
+  }
 }
 </script>
 
@@ -42,7 +43,7 @@ function buscar() {
       </div>
 
       <div class="srch">
-        <input type="text" placeholder="Buscar produtos 3D…" v-model="termoBusca" @keyup.enter="buscar">
+        <input type="text" placeholder="Buscar produtos 3D…" v-model="pesquisa.termo" @keyup.enter="buscar">
         <div class="srch-ic" @click="buscar">
           <span class="material-symbols-outlined">search</span>
         </div>
