@@ -5,9 +5,9 @@ const pesquisa = usePesquisaStore()
 
 const router = useRouter()
 
-function buscar () {
+function buscar() {
   if (router.currentRoute.value.name !== 'Home') {
-    router.push({ name: 'Home', state: { veioPesquisar: true } });
+    router.push({ name: 'Home' })
   }
 }
 

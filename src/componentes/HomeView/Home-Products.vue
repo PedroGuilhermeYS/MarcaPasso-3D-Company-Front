@@ -13,234 +13,416 @@ onMounted(async () => {
 })
 
 function aplicarModoEntrada() {
-  const veioPesquisar = window.history.state?.veioPesquisar === true
-
+  const veioPesquisar = !!pesquisa.termo
   if (!veioPesquisar) {
     pesquisa.limparFiltros()
     pesquisa.setTerm('')
   }
-
-  if (veioPesquisar) {
-    router.replace({ name: 'Home' })
-  }
 }
 
 watch(
-  () => route.fullPath,
-  () => {
-    aplicarModoEntrada()
-  },
-  { immediate: true }
+    () => route.fullPath,
+    () => {
+        aplicarModoEntrada()
+    },
+    { immediate: true }
 )
 </script>
 
 <template>
-    <div class="container">
-        <div class="filter">
-            <h3 style="margin-left: 10px; align-items: center;" class="MS-Reference"><span
-                    class="material-symbols-outlined">filter_alt</span> Filtre sua busca</h3>
-            <label for="categorias">
-                <select v-model="pesquisa.categoriaSelecionada" class="select-filter">
-                    <option value="">Categorias</option>
-                    <option value="Decoração">Decoração</option>
-                    <option value="Roupas">Roupas</option>
-                    <option value="Acessórios">Acessórios</option>
+    <div class="catalog-page">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Catálogo</h1>
+                <p class="page-subtitle">Encontre os produtos com os filtros ao lado.</p>
+            </div>
+            <div class="header-actions">
+                <select class="sort-select" v-model="pesquisa.ordenacaoSelecionada">
+                    <option value="">Relevância</option>
+                    <option value="az">Nome (A-Z)</option>
+                    <option value="menor">Menor preço</option>
+                    <option value="maior">Maior preço</option>
                 </select>
-            </label>
-            <label for="categorias">
-                <select v-model="pesquisa.precoSelecionado" class="select-filter">
-                    <option value="">Preço</option>
-                    <option value="1">Até R$ 50</option>
-                    <option value="2">De R$ 50 a R$ 100</option>
-                    <option value="3">Acima de R$ 100</option>
-                </select>
-            </label>
-            <label for="categorias">
-                <select v-model="pesquisa.personalizavelSelecionado" class="select-filter">
-                    <option value="">Personalização</option>
-                    <option value="true">Personalizável</option>
-                    <option value="false">Não personalizável</option>
-                </select>
-            </label>
-            <button class="button-filter" @click="pesquisa.limparFiltros">Limpar filtros</button>
+            </div>
         </div>
 
-        <div class="all-products">
-            <h2 class="MS-Reference">Todos os produtos</h2>
-            <label for="categorias">
-                <h3 class="MS-Reference">Ordenar por:
-                    <select v-model="pesquisa.ordenacaoSelecionada" id="relevancia" class="relevance-filter">
-                        <!--Modifica para v-for Categorias-->
-                        <option value="">Relevância</option>
-                        <option value="az">Nome (A-Z)</option>
-                        <option value="menor">Menor Preço</option>
-                        <option value="maior">Maior Preço</option>
+        <div class="breadcrumb">
+            <span>Home</span>
+            <span class="sep">›</span>
+            <span>Catálogo</span>
+        </div>
+
+        <div class="catalog-layout">
+            <aside class="filters-card">
+                <div class="filters-card-header">Filtros</div>
+
+                <div class="filter-section">
+                    <label class="filter-label">Faixa de preço</label>
+                    <select class="filter-select" v-model="pesquisa.precoSelecionado">
+                        <option value="">Todos os preços</option>
+                        <option value="1">Até R$ 50</option>
+                        <option value="2">R$ 50 a R$ 100</option>
+                        <option value="3">Acima de R$ 100</option>
                     </select>
-                </h3>
-            </label>
+                </div>
 
-            <div class="lista-produtos">
-                <div v-if="pesquisa.produtosFiltrados.length === 0" class="nenhum-produto MS-Reference">Nenhum produto
-                    disponível no momento</div>
+                <div class="filter-section">
+                    <label class="filter-label">Categoria</label>
+                    <select class="filter-select" v-model="pesquisa.categoriaSelecionada">
+                        <option value="">Todas</option>
+                        <option value="Decoração">Decoração</option>
+                        <option value="Roupas">Roupas</option>
+                        <option value="Acessórios">Acessórios</option>
+                    </select>
+                </div>
 
-                <div v-else class="lista-produtos">
-                    <div v-for="p in pesquisa.produtosFiltrados" :key="p.id" class="produto">
-                        <img :src="p.imagemPrincipal" :alt="p.nome">
-                        <h3>{{ p.nome }}</h3>
-                        <p class="preco">{{ formatarPreco(p.preco) }}</p>
-                        <p class="avaliacao">★★★★★</p>
+                <div class="filter-section">
+                    <label class="filter-label">Personalização</label>
+                    <select class="filter-select" v-model="pesquisa.personalizavelSelecionado">
+                        <option value="">Todas</option>
+                        <option value="true">Personalizável</option>
+                        <option value="false">Não personalizável</option>
+                    </select>
+                </div>
 
-                        <button @click="$router.push({ name: 'Produto', params: { id: p.id } })"
-                            class="button-de-comprar">Comprar</button>
+                <button class="clear-btn" @click="pesquisa.limparFiltros">
+                    Limpar filtros
+                </button>
+            </aside>
 
+            <section class="products-area">
+                <div class="products-top">
+                    <div>
+                        <h2 class="products-title">Produtos</h2>
+                        <p class="products-count">{{ pesquisa.produtosFiltrados.length }} produtos encontrados</p>
                     </div>
                 </div>
-            </div>
+
+                <div class="products-grid">
+                    <div v-if="pesquisa.produtosFiltrados.length === 0" class="empty">
+                        Nenhum produto encontrado
+                    </div>
+
+                    <article v-for="p in pesquisa.produtosFiltrados" :key="p.id" class="product-card">
+                        <div class="product-image">
+                            <img v-if="p.imagemPrincipal" :src="p.imagemPrincipal" :alt="p.nome" />
+                            <div v-else class="image-placeholder">Imagem</div>
+                        </div>
+                        <div class="product-body">
+                            <p class="product-category">{{ p.categoria }}</p>
+                            <h3 class="product-name">{{ p.nome }}</h3>
+                            <div class="product-meta">
+                                <span class="stars">★★★★★</span>
+                                <span class="rating-text">{{ p.avaliacao }}</span>
+                            </div>
+                            <div class="product-price">
+                                {{ formatarPreco(p.preco) }}
+                            </div>
+                            <p class="product-installments">{{ p.parcelamento }}</p>
+                            <button class="buy-btn" @click="$router.push({ name: 'Produto', params: { id: p.id } })">
+                                Comprar
+                            </button>
+                        </div>
+                    </article>
+                </div>
+            </section>
         </div>
     </div>
 </template>
 
 <style scoped>
-.container {
-    margin-left: 20px;
+:global(*) {
+    box-sizing: border-box;
+}
+
+.catalog-page {
+    min-height: 100vh;
+    background: #f8f9fc;
+    color: #181e33;
+    font-family: "DM Sans", sans-serif;
+    padding: 24px;
+}
+
+.page-header {
+    max-width: 1300px;
+    margin: 0 auto 18px;
     display: flex;
-    align-items: flex-start;
-
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
 }
 
-.filter {
-    width: 250px;
-    height: 300px;
-    border-radius: 20px;
-    border: 2px solid var(--color-primary);
-}
-
-.filter h3 {
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
-.MS-Reference {
-    font-family: var(--font-family-ms-reference);
-    font-weight: 200;
-}
-
-.material-symbols-outlined {
-    font-variation-settings:
-        'FILL' 0,
-        'wght' 300,
-        'GRAD' 0,
-        'opsz' 24;
-    font-size: 25px;
-}
-
-.select-filter {
-    width: 230px;
-    padding: 5px;
-    border-radius: 20px;
-    border-color: var(--color-primary);
-    margin-left: 10px;
-    margin-bottom: 5px;
-}
-
-.button-filter {
-    width: 130px;
-    padding: 5px;
-    border-radius: 20px;
-    color: var(--color-on-primary);
-    background-color: var(--color-primary);
-    border-color: transparent;
-    margin-top: 5px;
-    margin-left: 10px;
-}
-
-.all-products {
-    width: 77%;
-    margin: 0 auto;
-    border-radius: 20px;
-    border: 2px solid var(--color-primary);
-}
-
-.all-products h3 {
-    margin-top: 5px;
-    margin-left: 40px;
-    font-size: .8rem;
-}
-
-.all-products h2 {
-    margin-top: 10px;
-    margin-left: 50px;
-    margin-bottom: 0px;
-}
-
-.relevance-filter {
-    padding: 5px;
-    border-radius: 20px;
-    width: 140px;
-    font-size: .8rem;
-    background-color: var(--color-bg-light-2);
-    border: none;
-}
-
-.lista-produtos {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    ;
-    margin-top: 20px;
-    gap: 20px;
-    padding: 20px;
-    justify-items: center;
-}
-
-.nenhum-produto {
-    grid-column: 1 / -1;
-    padding: 40px 0;
-    color: var(--color-text);
-}
-
-.produto {
-    width: 220px;
-    text-align: center;
-    padding: 10px;
-    border-radius: 10px;
-}
-
-.produto img {
-    width: 80%;
-    height: 160px;
-    object-fit: cover;
-}
-
-.produto h3 {
-    font-size: 16px;
-    margin: 10px 0 5px;
-    height: 2.6em;
-}
-
-.preco {
+.page-title {
+    font-family: "Syne", sans-serif;
+    font-size: 28px;
+    font-weight: 800;
     margin: 0;
-    font-weight: bold;
 }
 
-.avaliacao {
-    color: gold;
-    margin: 0px 0;
+.page-subtitle {
+    margin: 4px 0 0;
+    color: #5a6380;
+    font-size: 13px;
 }
 
-.produto:hover {
-    transform: scale(1.03);
+.header-actions {
+    display: flex;
+    gap: 10px;
 }
 
-.button-de-comprar {
-    background-color: var(--color-primary);
-    color: var(--color-on-primary);
-    border: none;
-    padding: 8px 15px;
-    border-radius: 8px;
+.sort-select {
+    padding: 10px 14px;
+    border: 1px solid #e2e6f0;
+    border-radius: 12px;
+    background: #fff;
+    color: #2a3050;
+    outline: none;
+    font-size: 13px;
+}
+
+.breadcrumb {
+    max-width: 1300px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #9aa3bb;
+}
+
+.breadcrumb span:last-child {
+    color: #2a3050;
+    font-weight: 500;
+}
+
+.sep {
+    color: #c8cedc;
+}
+
+.catalog-layout {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.filters-card {
+    width: 260px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border: 1px solid #e2e6f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(17, 71, 152, 0.08);
+    overflow: hidden;
+}
+
+.filters-card-header {
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #2c18a0, #114798);
+    color: #fff;
+    font-family: "Syne", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.filter-section {
+    padding: 16px 18px;
+    border-bottom: 1px solid #f0f2f7;
+}
+
+.filter-section:last-of-type {
+    border-bottom: none;
+}
+
+.filter-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #5a6380;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e2e6f0;
+    border-radius: 12px;
+    background: #fff;
+    color: #2a3050;
+    font-size: 13px;
+    outline: none;
+}
+
+.filter-select:focus,
+.sort-select:focus {
+    border-color: #114798;
+}
+
+.clear-btn {
+    width: calc(100% - 36px);
+    margin: 0 18px 18px;
+    padding: 11px 14px;
+    border: 1.5px solid #114798;
+    border-radius: 12px;
+    background: transparent;
+    color: #114798;
+    font-weight: 600;
     cursor: pointer;
+    transition: 0.2s ease;
 }
 
-.button-de-comprar:hover {
-    background-color: var(--color-primary-hover);
+.clear-btn:hover {
+    background: #114798;
+    color: #fff;
+}
+
+.products-area {
+    flex: 1;
+    min-width: 0;
+}
+
+.products-top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.products-title {
+    font-family: "Syne", sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.products-count {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: #9aa3bb;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: #9aa3bb;
+}
+
+.product-card {
+    background: #fff;
+    border: 1px solid #e2e6f0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(17, 71, 152, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(17, 71, 152, 0.14);
+}
+
+.product-image {
+    height: 180px;
+    background: #f0f2f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.image-placeholder {
+    color: #9aa3bb;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.product-body {
+    padding: 14px 14px 16px;
+}
+
+.product-category {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #2c18a0;
+}
+
+.product-name {
+    margin: 0 0 8px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #181e33;
+    min-height: 39px;
+}
+
+.product-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.stars {
+    font-size: 12px;
+    color: #f6b900;
+}
+
+.rating-text {
+    font-size: 12px;
+    color: #9aa3bb;
+}
+
+.product-price {
+    font-family: "Syne", sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #049377;
+}
+
+.product-installments {
+    margin: 2px 0 0;
+    font-size: 11px;
+    color: #9aa3bb;
+}
+
+.buy-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2c18a0, #114798);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.buy-btn:hover {
+    opacity: 0.92;
+}
+
+.buy-btn:active {
+    transform: scale(0.98);
 }
 </style>
