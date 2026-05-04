@@ -15,6 +15,7 @@ import EncomendasView from '@/views/EncomendasView.vue'
 import SomenteLogoLayout from '@/layouts/SomenteLogoLayout.vue'
 import CadastroUserView from '../views/CadastroUserView.vue'
 import CatalogoView from '../views/CatalogoView.vue'
+import EnderecosView from '../views/EnderecosView.vue'
 
 // Lazy-loaded / heavier views
 const ProdutoView = () => import('@/views/ProdutoView.vue')
@@ -54,7 +55,8 @@ const routes = [
       { path: 'encomendas', name: 'Encomendas', component: EncomendasView },
       { path: 'carrinho', name: 'Carrinho', component: CarrinhoView },
       { path: 'favoritos', name: 'Favoritos', component: FavoritosView },
-      { path: 'cadastro', name: 'Cadastro', component: CadastroUserView }
+      { path: 'cadastro', name: 'Cadastro', component: CadastroUserView },
+      { path: 'enderecos', name: 'Enderecos', component: EnderecosView }
     ]
   },
 
