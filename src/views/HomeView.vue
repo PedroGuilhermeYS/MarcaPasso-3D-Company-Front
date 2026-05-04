@@ -49,11 +49,6 @@ const track2Style = computed(() => ({ transform: `translateX(-${posC2.value * ca
 <template>
   <main>
     <div class="hero">
-      <div class="hero-bg-shapes">
-        <div class="hs hs1"></div>
-        <div class="hs hs2"></div>
-        <div class="hs hs3"></div>
-      </div>
       <div class="hero-inner">
         <div class="hero-text">
           <div class="hero-eyebrow">
@@ -61,7 +56,7 @@ const track2Style = computed(() => ({ transform: `translateX(-${posC2.value * ca
             Impressão 3D Premium
           </div>
           <div class="hero-title">Produtos únicos<br/>feitos <em>para você</em></div>
-          <div class="hero-sub">Decoração, acessórios e roupas personalizadas com tecnologia de impressão 3D de alto nível. Cada peça é única.</div>
+          <div class="hero-sub">Decoração, acessórios e muito mais com tecnologia de impressão 3D de alto nível. Cada peça é para você.</div>
           <div class="hero-ctas">
             <button class="btn-hero-main">
               <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
@@ -72,7 +67,7 @@ const track2Style = computed(() => ({ transform: `translateX(-${posC2.value * ca
         </div>
         <div class="hero-cards">
           <div class="hero-mini-card" v-for="p in produtosDestaqueHero" :key="p.id" @click="router.push({ name: 'Produto', params: { id: p.id } })">
-            <div class="hmc-icon"><svg viewBox="0 0 24 24"><polyline points="12 2 22 6.5 22 17.5 12 22 2 17.5 2 6.5 12 2"/></svg></div>
+            <div class="hmc-icon"><img :src="p.imagemPrincipal" :alt="p.nome"></div>
             <div class="hmc-name">{{ p.nome }}</div>
             <div class="hmc-price">{{ formatarPreco(p.preco) }}</div>
           </div>
@@ -111,14 +106,10 @@ const track2Style = computed(() => ({ transform: `translateX(-${posC2.value * ca
           <div class="sec-accent ind"></div>
           <div>
             <div class="sec-label ind">Top produtos</div>
-            <div class="sec-title-txt">🔥 Mais Vendidos</div>
+            <div class="sec-title-txt">🔥 Recomendados por nós</div>
           </div>
         </div>
         <div class="sec-hd-right">
-          <button class="btn-see-all">
-            Ver todos
-            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
           <div class="carousel-nav">
             <button class="cnav-btn" :disabled="posC1 === 0" @click="prevC1">
               <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -146,8 +137,8 @@ const track2Style = computed(() => ({ transform: `translateX(-${posC2.value * ca
     <div class="banner-strip">
       <div class="banner-inner">
         <div class="banner-text">
-          <div class="banner-title">Personalize seu produto com <em>nome, cor e forma</em></div>
-          <div class="banner-sub">Cada peça é produzida sob encomenda exclusivamente para você. Escolha o design, adicione seu toque e receba em casa.</div>
+          <div class="banner-title">Peça seu produto <em></em></div>
+          <div class="banner-sub">Cada peça é produzida sob encomenda para você. Escolha o que te chama atenção e receba em casa.</div>
         </div>
         <!-- <button class="btn-banner">
           <svg width="16" height="16" viewBox="0 0 24 24" stroke="white"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg>

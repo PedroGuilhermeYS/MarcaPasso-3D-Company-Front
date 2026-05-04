@@ -1,16 +1,15 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useCarrinhoStore } from '@/stores/useCarrinhoStore'
 import { useFavoritosStore } from '@/stores/useFavoritosStore'
-import { formatarPreco } from '@/composables/useFormatadorPreco.js'
 
+const termoBusca = ref('')
 const carrinho = useCarrinhoStore()
 const favoritosStore = useFavoritosStore()
 const router = useRouter()
 const auth = useAuthStore()
-
 const usuarioLogado = computed(() => auth.usuario)
 const acessar = computed(() => {
   return auth.isAdmin()
@@ -21,6 +20,11 @@ onMounted(async () => {
   await favoritosStore.carregarFavoritos()
 })
 
+function buscar() {
+  const termo = termoBusca.value.trim()
+  if (!termo) return
+  router.push({ name: 'Catalogo', query: { q: termo } })
+}
 </script>
 
 <template>
@@ -29,38 +33,37 @@ onMounted(async () => {
       <div class="logo" @click="router.push({ name: 'Home' })" style="cursor: pointer;">
         <div class="logo-cube">
           <svg viewBox="0 0 24 24" stroke="white">
-            <polyline points="12 2 22 6.5 22 17.5 12 22 2 17.5 2 6.5 12 2"/>
-            <line x1="12" y1="22" x2="12" y2="11.5"/>
-            <polyline points="22 6.5 12 11.5 2 6.5"/>
+            <polyline points="12 2 22 6.5 22 17.5 12 22 2 17.5 2 6.5 12 2" />
+            <line x1="12" y1="22" x2="12" y2="11.5" />
+            <polyline points="22 6.5 12 11.5 2 6.5" />
           </svg>
         </div>
         MarcaPasso 3D
       </div>
+
       <div class="srch">
-        <input type="text" placeholder="Buscar produtos 3D…">
-        <div class="srch-ic">
-          <svg width="15" height="15" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
+        <input type="text" placeholder="Buscar produtos 3D…" v-model="termoBusca" @keyup.enter="buscar">
+        <div class="srch-ic" @click="buscar">
+          <span class="material-symbols-outlined">search</span>
         </div>
       </div>
 
       <div class="nav-acts">
         <button class="nbtn" @click="router.push({ name: 'PainelUsuario' })">
-          <svg width="14" height="14" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          João Silva
+          <span class="material-symbols-outlined">person</span>
+          {{ usuarioLogado?.nome }}
         </button>
+
         <button class="nbtn-ic" @click="router.push({ name: 'Favoritos' })">
-          <svg width="14" height="14" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span class="material-symbols-outlined">favorite</span>
           <span class="nbadge">{{ favoritosStore.quantidade }}</span>
         </button>
+
         <button class="nbtn-ic" @click="router.push({ name: 'Carrinho' })">
-          <svg width="14" height="14" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="material-symbols-outlined">shopping_cart</span>
           <span class="nbadge">{{ carrinho.itens.length }}</span>
         </button>
       </div>
-
     </div>
   </nav>
 </template>
@@ -68,7 +71,7 @@ onMounted(async () => {
 <style scoped>
 nav {
   background: linear-gradient(135deg, var(--color-brand-indigo) 0%, var(--color-brand-blue) 100%);
-  box-shadow: 0 3px 20px rgba(44,24,160,.28);
+  box-shadow: 0 3px 20px rgba(44, 24, 160, .28);
   position: sticky;
   top: 0;
   z-index: 200;
@@ -119,8 +122,8 @@ nav {
 .srch input {
   width: 100%;
   padding: 10px 42px 10px 18px;
-  background: rgba(255,255,255,.15);
-  border: 1.5px solid rgba(255,255,255,.22);
+  background: rgba(255, 255, 255, .15);
+  border: 1.5px solid rgba(255, 255, 255, .22);
   border-radius: 50px;
   color: #fff;
   font-size: 13.5px;
@@ -129,12 +132,12 @@ nav {
 }
 
 .srch input::placeholder {
-  color: rgba(255,255,255,.5);
+  color: rgba(255, 255, 255, .5);
 }
 
 .srch input:focus {
-  background: rgba(255,255,255,.22);
-  border-color: rgba(255,255,255,.5);
+  background: rgba(255, 255, 255, .22);
+  border-color: rgba(255, 255, 255, .5);
 }
 
 .srch-ic {
@@ -142,7 +145,14 @@ nav {
   right: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255,255,255,.6);
+  color: rgba(255, 255, 255, .6);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.srch-ic .material-symbols-outlined {
+  font-size: 18px;
 }
 
 .nav-acts {
@@ -153,8 +163,8 @@ nav {
 }
 
 .nbtn {
-  background: rgba(255,255,255,.12);
-  border: 1.5px solid rgba(255,255,255,.18);
+  background: rgba(255, 255, 255, .12);
+  border: 1.5px solid rgba(255, 255, 255, .18);
   color: #fff;
   padding: 8px 14px;
   border-radius: 50px;
@@ -168,12 +178,16 @@ nav {
 }
 
 .nbtn:hover {
-  background: rgba(255,255,255,.22);
+  background: rgba(255, 255, 255, .22);
+}
+
+.nbtn .material-symbols-outlined {
+  font-size: 16px;
 }
 
 .nbtn-ic {
-  background: rgba(255,255,255,.12);
-  border: 1.5px solid rgba(255,255,255,.18);
+  background: rgba(255, 255, 255, .12);
+  border: 1.5px solid rgba(255, 255, 255, .18);
   color: #fff;
   width: 38px;
   height: 38px;
@@ -187,7 +201,11 @@ nav {
 }
 
 .nbtn-ic:hover {
-  background: rgba(255,255,255,.22);
+  background: rgba(255, 255, 255, .22);
+}
+
+.nbtn-ic .material-symbols-outlined {
+  font-size: 18px;
 }
 
 .nbadge {

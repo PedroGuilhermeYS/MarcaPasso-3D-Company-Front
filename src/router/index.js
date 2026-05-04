@@ -14,6 +14,7 @@ import EntregaView from '@/views/EntregaView.vue'
 import EncomendasView from '@/views/EncomendasView.vue'
 import SomenteLogoLayout from '@/layouts/SomenteLogoLayout.vue'
 import CadastroUserView from '../views/CadastroUserView.vue'
+//import CatalogoView from '../views/CatalogoView.vue'
 
 // Lazy-loaded / heavier views
 const ProdutoView = () => import('@/views/ProdutoView.vue')
@@ -28,6 +29,7 @@ const routes = [
     component: PadraoLayout,
     children: [
       { path: '', name: 'Home', component: HomeView },
+      //{ path: '', name: 'Catalogo', component: CatalogoView },
       { path: 'produto/:id', name: 'Produto', component: ProdutoView, props: true },
       { path: 'contatos', name: 'Contatos', component: ContatosView },
     ]
