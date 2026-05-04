@@ -50,6 +50,12 @@ function buscar() {
       </div>
 
       <div class="nav-acts">
+
+        <button class="nbtn nbtn-admin" v-if="acessar" @click="router.push({ name: 'Crud' })">
+          <span class="material-symbols-outlined">admin_panel_settings</span>
+          Admin
+        </button>
+
         <button class="nbtn" @click="router.push({ name: 'PainelUsuario' })">
           <span class="material-symbols-outlined">person</span>
           {{ usuarioLogado?.nome }}
@@ -184,6 +190,16 @@ nav {
 
 .nbtn .material-symbols-outlined {
   font-size: 16px;
+}
+
+.nbtn-admin {
+  background: rgba(255, 255, 255, .2);
+  border-color: rgba(255, 255, 255, .4);
+  font-weight: 700;
+}
+
+.nbtn-admin:hover {
+  background: rgba(255, 255, 255, .32);
 }
 
 .nbtn-ic {
