@@ -39,6 +39,7 @@ const Home = () => router.push({ name: 'Home' });
 const Encomendas = () => router.push({ name: 'Encomendas' });
 const Favoritos = () => router.push({ name: 'Favoritos' });
 const Cadastro = () => router.push({ name: 'Cadastro' });
+const Enderecos = () => router.push({ name: 'Enderecos' });
 </script>
 
 <template>
@@ -115,7 +116,7 @@ const Cadastro = () => router.push({ name: 'Cadastro' });
         <div class="sc-desc">Produtos salvos para depois</div>
       </div>
 
-      <div class="sc-card">
+      <div class="sc-card" @click="Enderecos">
         <div class="sc-icon-wrap grn">📍</div>
         <div class="sc-name">Meus Endereços</div>
         <div class="sc-desc">Gerencie seus endereços de entrega</div>
@@ -168,7 +169,9 @@ const Cadastro = () => router.push({ name: 'Cadastro' });
 .welcome-card::before {
   content: "";
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 5px;
   background: linear-gradient(90deg, #2c18a0, #114798, #049377);
 }
@@ -197,8 +200,10 @@ const Cadastro = () => router.push({ name: 'Cadastro' });
 
 .avatar-online {
   position: absolute;
-  bottom: 4px; right: 4px;
-  width: 15px; height: 15px;
+  bottom: 4px;
+  right: 4px;
+  width: 15px;
+  height: 15px;
   background: #049377;
   border-radius: 50%;
   border: 3px solid #ffffff;
@@ -252,14 +257,19 @@ const Cadastro = () => router.push({ name: 'Cadastro' });
   cursor: pointer;
   border: 0;
 }
-.btn-edit:hover { transform: translateY(-2px); }
+
+.btn-edit:hover {
+  transform: translateY(-2px);
+}
 
 .welcome-meta {
   display: flex;
   gap: 16px;
 }
 
-.meta-item { text-align: center; }
+.meta-item {
+  text-align: center;
+}
 
 .meta-num {
   font-family: "Syne", sans-serif;
@@ -267,14 +277,18 @@ const Cadastro = () => router.push({ name: 'Cadastro' });
   font-weight: 800;
 }
 
-.meta-green { color: #049377; }
+.meta-green {
+  color: #049377;
+}
 
 .meta-lbl {
   font-size: 11px;
   color: #8f9db8;
 }
 
-.sec-title-row { margin-bottom: 20px; }
+.sec-title-row {
+  margin-bottom: 20px;
+}
 
 .sec-title {
   font-family: "Syne", sans-serif;
@@ -310,7 +324,9 @@ const Cadastro = () => router.push({ name: 'Cadastro' });
   box-shadow: 0 16px 34px rgba(17, 71, 152, 0.14);
 }
 
-.sc-card.danger:hover { border-color: #d63031; }
+.sc-card.danger:hover {
+  border-color: #d63031;
+}
 
 .sc-icon-wrap {
   width: 5rem;
@@ -322,10 +338,21 @@ const Cadastro = () => router.push({ name: 'Cadastro' });
   font-size: 30px;
 }
 
-.sc-icon-wrap.ind { background: linear-gradient(rgba(44,24,160,.12), rgba(0,102,255,.14)); }
-.sc-icon-wrap.grn { background: linear-gradient(135deg, rgba(4,147,119,.12), rgba(5,176,144,.16)); }
-.sc-icon-wrap.warn { background: linear-gradient(135deg, rgba(255,186,8,.14), rgba(255,152,0,.16)); }
-.sc-icon-wrap.red { background: linear-gradient(135deg, rgba(214,48,49,.12), rgba(214,48,49,.16)); }
+.sc-icon-wrap.ind {
+  background: linear-gradient(rgba(44, 24, 160, .12), rgba(0, 102, 255, .14));
+}
+
+.sc-icon-wrap.grn {
+  background: linear-gradient(135deg, rgba(4, 147, 119, .12), rgba(5, 176, 144, .16));
+}
+
+.sc-icon-wrap.warn {
+  background: linear-gradient(135deg, rgba(255, 186, 8, .14), rgba(255, 152, 0, .16));
+}
+
+.sc-icon-wrap.red {
+  background: linear-gradient(135deg, rgba(214, 48, 49, .12), rgba(214, 48, 49, .16));
+}
 
 .sc-notif {
   background: #049377;
@@ -339,7 +366,9 @@ const Cadastro = () => router.push({ name: 'Cadastro' });
   align-items: center;
 }
 
-.sc-notif.warn-bg { background: #ff0b0b; }
+.sc-notif.warn-bg {
+  background: #ff0b0b;
+}
 
 .sc-name {
   font-family: "Syne", sans-serif;
@@ -348,8 +377,13 @@ const Cadastro = () => router.push({ name: 'Cadastro' });
   transition: color 0.22s;
 }
 
-.sc-card:hover .sc-name { color: #114798; }
-.sc-card.danger:hover .sc-name { color: #d63031; }
+.sc-card:hover .sc-name {
+  color: #114798;
+}
+
+.sc-card.danger:hover .sc-name {
+  color: #d63031;
+}
 
 .sc-desc {
   font-size: 12px;
