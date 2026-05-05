@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --color-brand-indigo: #2C18A0;
@@ -22,8 +22,8 @@
   --color-warning: #e17055;
   --color-surface: #ffffff;
 
-  --font-family-base: 'DM Sans', sans-serif;
-  --font-family-head: 'Syne', sans-serif;
+  --font-family-base: 'Source Sans 3', sans-serif;
+  --font-family-head: 'Source Sans 3', sans-serif;
 
   --radius: 10px;
   --radius-lg: 14px;
