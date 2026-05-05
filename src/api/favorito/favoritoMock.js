@@ -45,9 +45,6 @@ export async function removeTodosFavoritosNaApi() {
     return favoritos
 }
 
-// favoritos podem ser atualizados? No estado atual, teoricamente sim,
-// no entanto, caso implemente a relação entre favorito e produto, então
-// não vai precisar, já que vai estar sempre "atualizado".
 export async function atualizaFavoritoNaApi(id, favorito) {
     const favoritoEncontrado = favoritos.find(p => p.id == id);
     if (!favoritoEncontrado) {

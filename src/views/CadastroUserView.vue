@@ -82,10 +82,8 @@ async function salvarEmail() {
     </div>
     <div class="welcome-card account-form-card">
 
-      <!-- Botão alterar e-mail -->
       <button class="alter-email" type="button" @click="abrirModalEmail">ALTERAR E-MAIL</button>
 
-      <!-- Grid de campos -->
       <div class="account-form-grid">
         <div class="field field-full locked">
           <label>E-mail</label>
@@ -124,7 +122,6 @@ async function salvarEmail() {
       </div>
     </div>
 
-    <!-- ── Modal: Alterar E-mail ────────────────────────────── -->
     <Teleport to="body">
       <div v-if="modalEmail" class="modal-backdrop" @click.self="modalEmail = false">
         <div class="modal-card">

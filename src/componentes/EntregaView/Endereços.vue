@@ -87,7 +87,6 @@ async function onEnderecoSalvo() {
         <span class="sec-title">Endereço de Entrega</span>
       </div>
 
-      <!-- Botão alterar só aparece se já tem um selecionado e não está no modo escolha -->
       <button
         v-if="enderecoSelecionado && !modoEscolha"
         class="btn-alterar"
@@ -100,7 +99,6 @@ async function onEnderecoSalvo() {
 
     <div class="sec-body">
 
-      <!-- ── Endereço selecionado (modo compacto) ───────── -->
       <div v-if="enderecoSelecionado && !modoEscolha" class="addr-selecionado">
         <div class="addr-sel-icon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -121,7 +119,6 @@ async function onEnderecoSalvo() {
         <div class="addr-sel-badge">✓</div>
       </div>
 
-      <!-- ── Lista de escolha ──────────────────────────── -->
       <div v-else-if="modoEscolha || (!enderecoSelecionado && enderecos.length)" class="addr-list">
         <div
           v-for="endereco in enderecos"
@@ -143,12 +140,10 @@ async function onEnderecoSalvo() {
           </div>
         </div>
 
-        <!-- Botão adicionar novo dentro da lista -->
         <button class="btn-novo-inline" type="button" @click="abrirModalAdicionar">
           <span class="btn-novo-plus">+</span> Adicionar novo endereço
         </button>
 
-        <!-- Botão cancelar se estava alterando -->
         <button
           v-if="enderecoSelecionado && modoEscolha"
           class="btn-cancelar-escolha"
@@ -159,7 +154,6 @@ async function onEnderecoSalvo() {
         </button>
       </div>
 
-      <!-- ── Nenhum endereço cadastrado ────────────────── -->
       <div v-else class="sem-endereco">
         <svg width="32" height="32" viewBox="0 0 24 24">
           <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>

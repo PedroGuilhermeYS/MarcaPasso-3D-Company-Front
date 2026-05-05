@@ -82,17 +82,12 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
     itens.value = itens.value.filter(i => String(i.id) !== String(id))
   }
 
-  /**
-   * Deleta cada item individualmente no backend via DELETE /api/carrinho/item/{id}
-   * e depois zera o estado local. Não depende de um endpoint "limpar tudo".
-   */
   async function limparCarrinho() {
     const ids = itens.value.map(i => i.id)
 
     await Promise.all(
       ids.map(id =>
         carrinhoService.removerItem(id).catch(err => {
-          // Loga mas não interrompe os outros deletes
           console.warn(`Falha ao remover item ${id} do carrinho:`, err)
         })
       )

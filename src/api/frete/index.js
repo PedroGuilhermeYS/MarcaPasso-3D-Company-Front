@@ -1,4 +1,3 @@
-// Fretes ainda não implementado no backend — usando mock
 export const {
   getTodosFretesNaApi,
   getFreteNaApi,

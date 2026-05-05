@@ -17,7 +17,6 @@ import CadastroUserView from '../views/CadastroUserView.vue'
 import CatalogoView from '../views/CatalogoView.vue'
 import EnderecosView from '../views/EnderecosView.vue'
 
-// Lazy-loaded / heavier views
 const ProdutoView = () => import('@/views/ProdutoView.vue')
 const FavoritosView = () => import('@/views/FavoritosView.vue')
 const CrudView = () => import('@/views/CrudView.vue')
