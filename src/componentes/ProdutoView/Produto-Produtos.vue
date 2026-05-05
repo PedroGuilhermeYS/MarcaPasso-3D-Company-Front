@@ -30,6 +30,30 @@
     const router = useRouter()
     const isAdmin = computed(() => auth.isAdmin())
 
+    const sugestoes = computed(() => {
+        const lista = produtosStore.produtos || []
+        const filtrada = lista.filter(p => produto.value ? String(p.id) !== String(produto.value.id) : true)
+        return filtrada.slice(0, 4)
+    })
+
+    const sugViewport = ref(null)
+
+    function scrollNext() {
+        if (!sugViewport.value) return
+        const w = sugViewport.value.clientWidth
+        sugViewport.value.scrollBy({ left: w * 0.9, behavior: 'smooth' })
+    }
+
+    function scrollPrev() {
+        if (!sugViewport.value) return
+        const w = sugViewport.value.clientWidth
+        sugViewport.value.scrollBy({ left: -w * 0.9, behavior: 'smooth' })
+    }
+
+    function gotoProduto(id) {
+        router.push({ name: 'Produto', params: { id: String(id) } })
+    }
+
     onMounted(async () => {
 
         await produtosStore.carregarProdutos()
@@ -217,50 +241,26 @@
             </div>
         </div>
 
-        <!-- SUGESTÕES -->
+        <!-- SUGESTÕES: carrossel de produtos -->
         <div class="sugestoes">
             <div class="sug-title">Você também pode gostar</div>
-            <div class="sug-grid">
-                <div class="sug-card">
-                    <div class="sug-img">
-                        <svg width="60" height="60" viewBox="0 0 24 24" style="color:var(--color-brand-green);opacity:.3"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
-                    </div>
-                    <div class="sug-body">
-                        <div class="sug-name">Pulseira Personaliz​ável Impressão 3D</div>
-                        <div class="sug-price">R$ 34,90</div>
-                        <button class="sug-btn">Comprar</button>
-                    </div>
-                </div>
-                <div class="sug-card">
-                    <div class="sug-img">
-                        <svg width="60" height="60" viewBox="0 0 24 24" style="color:var(--color-brand-indigo);opacity:.3"><rect x="2" y="7" width="20" height="14" rx="2"/></svg>
-                    </div>
-                    <div class="sug-body">
-                        <div class="sug-name">Porta-Objetos Hexagonal 3D Desk</div>
-                        <div class="sug-price">R$ 129,90</div>
-                        <button class="sug-btn">Comprar</button>
+            <div class="sug-carousel">
+                <button class="sug-nav prev" @click="scrollPrev" aria-label="Anterior">‹</button>
+                <div class="sug-viewport" ref="sugViewport">
+                    <div class="sug-track">
+                        <div v-for="p in sugestoes" :key="p.id" class="sug-card" role="link" tabindex="0" :aria-label="`Abrir ${p.nome}`" @click="gotoProduto(p.id)" @keyup.enter="gotoProduto(p.id)" @keydown.space.prevent="gotoProduto(p.id)">
+                            <div class="sug-img" style="cursor:pointer">
+                                <img v-if="p.imagemPrincipal" :src="p.imagemPrincipal" :alt="p.nome" style="width:100%;height:100%;object-fit:cover" />
+                                <svg v-else width="60" height="60" viewBox="0 0 24 24" style="opacity:.15;color:var(--color-brand-indigo)"><rect x="2" y="7" width="20" height="14" rx="2"/></svg>
+                            </div>
+                            <div class="sug-body">
+                                <div class="sug-name">{{ p.nome }}</div>
+                                <div class="sug-price">{{ formatarPreco(p.preco) }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="sug-card">
-                    <div class="sug-img">
-                        <svg width="60" height="60" viewBox="0 0 24 24" style="color:var(--color-brand-green);opacity:.3"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    </div>
-                    <div class="sug-body">
-                        <div class="sug-name">Colar Estrela 3D Artesanal Exclusivo</div>
-                        <div class="sug-price">R$ 49,90</div>
-                        <button class="sug-btn">Comprar</button>
-                    </div>
-                </div>
-                <div class="sug-card">
-                    <div class="sug-img">
-                        <svg width="60" height="60" viewBox="0 0 24 24" style="color:var(--color-brand-indigo);opacity:.3"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                    </div>
-                    <div class="sug-body">
-                        <div class="sug-name">Quadro 3D Mandala para Parede</div>
-                        <div class="sug-price">R$ 159,90</div>
-                        <button class="sug-btn">Comprar</button>
-                    </div>
-                </div>
+                <button class="sug-nav next" @click="scrollNext" aria-label="Próximo">›</button>
             </div>
         </div>
     </div>
@@ -742,6 +742,26 @@
 
 .sug-btn:hover {
     opacity: 0.9;
+}
+
+/* carrossel */
+.sug-carousel{display:flex;align-items:center;gap:12px;position:relative}
+.sug-viewport{overflow:hidden;flex:1}
+.sug-track{display:flex;gap:18px;padding-bottom:4px}
+.sug-card{flex:0 0 calc((100% - 3*18px)/4);min-width:180px}
+.sug-nav{background:rgba(255,255,255,0.95);border:1px solid var(--color-g200);width:36px;height:36px;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px}
+.sug-nav:hover{transform:scale(1.03)}
+
+/* responsividade: 4 → 3 → 2 → 1 */
+@media (max-width: 1200px) {
+    .sug-card{flex:0 0 calc((100% - 2*18px)/3)}
+}
+@media (max-width: 900px) {
+    .sug-card{flex:0 0 calc((100% - 1*18px)/2)}
+}
+@media (max-width: 520px) {
+    .sug-card{flex:0 0 100%;min-width:0}
+    .sug-carousel{padding:0 12px}
 }
 
 a {
