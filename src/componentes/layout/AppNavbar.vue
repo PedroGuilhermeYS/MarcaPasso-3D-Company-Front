@@ -26,6 +26,7 @@ function buscar() {
     router.push({ name: 'Catalogo' })
   }
 }
+const NovoCrud = () => router.push({ name: 'NovoCrud' });
 </script>
 
 <template>
@@ -51,7 +52,7 @@ function buscar() {
 
       <div class="nav-acts">
 
-        <button class="nbtn nbtn-admin" v-if="acessar" @click="router.push({ name: 'Crud' })">
+        <button class="nbtn nbtn-admin" v-if="acessar" @click="router.push({ name: 'NovoCrud' })">
           <span class="material-symbols-outlined">admin_panel_settings</span>
           Admin
         </button>

@@ -39,7 +39,8 @@ const Home = () => router.push({ name: 'Home' });
 const Encomendas = () => router.push({ name: 'Encomendas' });
 const Favoritos = () => router.push({ name: 'Favoritos' });
 const Cadastro = () => router.push({ name: 'Cadastro' });
-const Enderecos = () => router.push({ name: 'Enderecos' });
+const Enderecos = () => router.push({ name: 'Endereco' });
+const NovoCrud = () => router.push({ name: 'NovoCrud' });
 </script>
 
 <template>

@@ -21,6 +21,7 @@ import EnderecosView from '../views/EnderecosView.vue'
 const ProdutoView = () => import('@/views/ProdutoView.vue')
 const FavoritosView = () => import('@/views/FavoritosView.vue')
 const CrudView = () => import('@/views/CrudView.vue')
+const NovoCrudView = () => import('@/views/NovoCrudView.vue')
 const AdminProdutosView = () => import('@/views/AdicionarProdutosView.vue')
 const AtualizarProdutoView = () => import('@/views/AtualizarProdutoView.vue')
 
@@ -30,9 +31,9 @@ const routes = [
     component: PadraoLayout,
     children: [
       { path: '', name: 'Home', component: HomeView },
-      { path: 'catalogo', name: 'Catalogo', component: CatalogoView },
       { path: 'produto/:id', name: 'Produto', component: ProdutoView, props: true },
       { path: 'contatos', name: 'Contatos', component: ContatosView },
+      { path: 'catalogo', name: 'Catalogo', component: ContatosView }
     ]
   },
 
@@ -56,7 +57,7 @@ const routes = [
       { path: 'carrinho', name: 'Carrinho', component: CarrinhoView },
       { path: 'favoritos', name: 'Favoritos', component: FavoritosView },
       { path: 'cadastro', name: 'Cadastro', component: CadastroUserView },
-      { path: 'enderecos', name: 'Enderecos', component: EnderecosView }
+      { path: 'endereco', name: 'Endereco', component: EnderecosView }
     ]
   },
 
@@ -66,6 +67,7 @@ const routes = [
     meta: { requiresAuth: true, requiresAdmin: true },
     children: [
       { path: 'crud', name: 'Crud', component: CrudView },
+      { path: 'novocrud', name: 'NovoCrud', component: NovoCrudView },
       { path: 'adicionar', name: 'AdicionarProdutos', component: AdminProdutosView },
     ]
   },

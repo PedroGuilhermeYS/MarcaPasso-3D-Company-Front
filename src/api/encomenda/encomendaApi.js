@@ -12,6 +12,12 @@ function mapearResumo(e) {
   };
 }
 
+// GET — todas as encomendas (admin)
+export async function getTodosEncomendasAdminNaApi() {
+  const { data } = await axiosInstance.get('/api/encomendas/admin/todas')
+  return data
+}
+
 // GET — lista de pedidos do usuário
 export async function getEncomendasDoUsuarioNaApi(idUsuario) {
   const { data } = await axiosInstance.get(`/api/encomendas/${idUsuario}`);
