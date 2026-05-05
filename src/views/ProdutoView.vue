@@ -1,12 +1,10 @@
 <script setup>
     import ProdutoProdutos from '@/componentes/ProdutoView/Produto-Produtos.vue';
-    import ProdutoDescrição from '@/componentes/ProdutoView/Produto-Descrição.vue';
 </script>
 
 <template>
     <main>
         <ProdutoProdutos></ProdutoProdutos>
-        <ProdutoDescrição></ProdutoDescrição>
     </main>
 </template>
 
