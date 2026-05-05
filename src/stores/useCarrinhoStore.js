@@ -9,6 +9,7 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
   const itens = ref([])
   const freteSelecionado = ref(null)
   const enderecoSelecionado = ref(null)
+  const formaPagamento = ref(null)
   const carregando = ref(false)
   const erro = ref(null)
 
@@ -100,6 +101,7 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
     itens.value = []
     freteSelecionado.value = null
     enderecoSelecionado.value = null
+    formaPagamento.value = null
   }
 
   function definirFrete(frete) {
@@ -110,10 +112,15 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
     enderecoSelecionado.value = endereco
   }
 
+  function definirFormaPagamento(metodo) {
+    formaPagamento.value = metodo
+  }
+
   return {
     itens,
     freteSelecionado,
     enderecoSelecionado,
+    formaPagamento,
     carregando,
     erro,
     total,
@@ -124,5 +131,6 @@ export const useCarrinhoStore = defineStore('carrinho', () => {
     limparCarrinho,
     definirFrete,
     definirEndereco,
+    definirFormaPagamento,
   }
 })

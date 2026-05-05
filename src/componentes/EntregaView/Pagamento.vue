@@ -16,7 +16,7 @@ const cartao = ref({
 
 function selecionar(metodo) {
   selecionado.value = metodo
-  carrinho.formaPagamento = metodo
+  carrinho.definirFormaPagamento(metodo)
 }
 
 function formatarNumero(e) {

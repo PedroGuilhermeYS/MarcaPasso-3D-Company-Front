@@ -36,7 +36,7 @@
             <div v-for="item in carrinho.itens" :key="item.id">
                 <div class="sold-by">Vendido e entregue por: <strong>MarcaPasso Official</strong></div>
                 <div class="ct-item">
-                    <div class="ct-img" @click="$router.push({ name: 'Produto', params: { id: item.id } })">
+                    <div class="ct-img">
                         <img v-if="item.imagem" :src="item.imagem" :alt="item.nome">
                         <svg v-else viewBox="0 0 24 24"><polyline points="12 2 22 6.5 22 17.5 12 22 2 17.5 2 6.5 12 2"/><line x1="12" y1="22" x2="12" y2="11.5"/><polyline points="22 6.5 12 11.5 2 6.5"/></svg>
                     </div>
@@ -183,7 +183,6 @@
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        cursor: pointer;
     }
     .ct-img img { width: 100%; height: 100%; object-fit: cover; }
     .ct-img svg { width: 36px; height: 36px; opacity: .3; stroke: #2C18A0; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }

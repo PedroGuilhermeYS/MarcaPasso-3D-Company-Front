@@ -33,7 +33,7 @@ const routes = [
       { path: '', name: 'Home', component: HomeView },
       { path: 'produto/:id', name: 'Produto', component: ProdutoView, props: true },
       { path: 'contatos', name: 'Contatos', component: ContatosView },
-      { path: 'catalogo', name: 'Catalogo', component: ContatosView }
+      { path: 'catalogo', name: 'Catalogo', component: CatalogoView }
     ]
   },
 

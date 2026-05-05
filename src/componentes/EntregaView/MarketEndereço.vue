@@ -13,7 +13,19 @@ const authStore = useAuthStore()
 const encomendasStore = useEncomendasStore()
 const cupons = useCupomStore()
 
-const ValorFrete = computed(() => carrinho.freteSelecionado)
+// Tabela de frete fixo por CEP
+const FRETES_POR_CEP = {
+  '55535000': 15,
+  '51160220': 20,
+}
+
+const ValorFrete = computed(() => {
+  const cepEndereco = (carrinho.enderecoSelecionado?.cep ?? '').replace(/\D/g, '')
+  if (cepEndereco && FRETES_POR_CEP[cepEndereco] !== undefined) {
+    return FRETES_POR_CEP[cepEndereco]
+  }
+  return carrinho.freteSelecionado
+})
 
 const cupomDigitado = ref('')
 const percentualDesconto = ref(0)
@@ -23,17 +35,22 @@ const cupomValido = ref(false)
 const enviando = ref(false)
 const erroMsg = ref('')
 
+const totalComDesconto = computed(() => {
+  const subtotal = carrinho.total + (ValorFrete.value ?? 0)
+  return percentualDesconto.value > 0 ? subtotal * (1 - percentualDesconto.value) : subtotal
+})
+
 const totalPrazo = computed(() => {
-  const base = carrinho.total * 1.05
-  return base + (ValorFrete.value ?? 0)
+  const base = totalComDesconto.value * 1.05
+  return base
 })
 
 const totalVista = computed(() => {
-  return carrinho.total + (ValorFrete.value ?? 0)
+  return totalComDesconto.value
 })
 
 const podeContinuar = computed(() => {
-  return carrinho.freteSelecionado !== null && carrinho.formaPagamento !== null
+  return ValorFrete.value !== null && carrinho.formaPagamento !== null
 })
 
 onMounted(async () => {
@@ -41,8 +58,18 @@ onMounted(async () => {
 })
 
 function aplicarCupom() {
+  const codigo = cupomDigitado.value.trim().toUpperCase()
+
+  // Cupom local fixo
+  if (codigo === 'PRIMEIRACOMPRA') {
+    percentualDesconto.value = 0.15
+    msgCupom.value = 'Cupom aplicado! 15% de desconto no valor final'
+    cupomValido.value = true
+    return
+  }
+
   const cupom = cupons.cupons.find(c =>
-    c.cupom_nome === cupomDigitado.value.trim().toUpperCase()
+    c.cupom_nome === codigo
   )
 
   if (cupom) {
@@ -67,10 +94,10 @@ function montarPayload() {
       precoUnitario: Number(item.preco),
     })),
     subtotal: carrinho.total,
-    frete: carrinho.freteSelecionado ?? 0,
-    desconto: percentualDesconto.value > 0 ? carrinho.total * percentualDesconto.value : 0,
-    descontoCupom: percentualDesconto.value > 0 ? carrinho.total * percentualDesconto.value : 0,
-    total: carrinho.total + (carrinho.freteSelecionado ?? 0),
+    frete: ValorFrete.value ?? 0,
+    desconto: percentualDesconto.value > 0 ? (carrinho.total + (ValorFrete.value ?? 0)) * percentualDesconto.value : 0,
+    descontoCupom: percentualDesconto.value > 0 ? (carrinho.total + (ValorFrete.value ?? 0)) * percentualDesconto.value : 0,
+    total: totalComDesconto.value,
 
     endRua: end.rua ?? '',
     endNumero: end.numero ?? '',
@@ -92,7 +119,7 @@ function montarPayload() {
 async function salvarFreteNoCarrinho() {
   erroMsg.value = ''
 
-  if (carrinho.freteSelecionado === null || carrinho.freteSelecionado === undefined) {
+  if (ValorFrete.value === null || ValorFrete.value === undefined) {
     erroMsg.value = 'Selecione um endereço de entrega.'
     return
   }
@@ -174,6 +201,13 @@ async function salvarFreteNoCarrinho() {
           <span class="sum-row-lbl">Frete</span>
           <span class="sum-row-val" :class="{ ok: ValorFrete !== null }">
             {{ ValorFrete !== null ? formatarPreco(ValorFrete) : '—' }}
+          </span>
+        </div>
+
+        <div class="sum-row" v-if="percentualDesconto > 0">
+          <span class="sum-row-lbl">Desconto ({{ Math.round(percentualDesconto * 100) }}%)</span>
+          <span class="sum-row-val" style="color: #e53935;">
+            - {{ formatarPreco((carrinho.total + (ValorFrete ?? 0)) * percentualDesconto) }}
           </span>
         </div>
       </div>
