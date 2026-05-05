@@ -214,14 +214,6 @@
                 <div class="pd-desc-body">
                     {{ produto.descricao || 'Produto impressionante de alta qualidade. Confira os detalhes técnicos e especificações abaixo.' }}
                 </div>
-                <div class="pd-specs">
-                    <div class="pd-spec"><div class="pd-spec-lbl">Dimensões</div><div class="pd-spec-val">{{ produto.dimensoes || '15 × 15 × 22 cm' }}</div></div>
-                    <div class="pd-spec"><div class="pd-spec-lbl">Peso</div><div class="pd-spec-val">{{ produto.peso || '280 g' }}</div></div>
-                    <div class="pd-spec"><div class="pd-spec-lbl">Material</div><div class="pd-spec-val">{{ produto.material || 'PLA Biodegradável' }}</div></div>
-                    <div class="pd-spec"><div class="pd-spec-lbl">Prazo de produção</div><div class="pd-spec-val">{{ produto.prazoProducao || 'Até 3 dias úteis' }}</div></div>
-                    <div class="pd-spec"><div class="pd-spec-lbl">Cores disponíveis</div><div class="pd-spec-val">{{ produto.coresDisponiveis || '12 opções' }}</div></div>
-                    <div class="pd-spec"><div class="pd-spec-lbl">Código</div><div class="pd-spec-val">{{ produto.sku || produto.id }}</div></div>
-                </div>
             </div>
         </div>
 
@@ -662,33 +654,7 @@
     line-height: 1.9;
 }
 
-.pd-specs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 18px;
-}
-
-.pd-spec {
-    background: var(--color-g50);
-    border-radius: var(--radius);
-    padding: 12px 16px;
-}
-
-.pd-spec-lbl {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--color-g400);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 3px;
-}
-
-.pd-spec-val {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--color-g800);
-}
+/* especificações removidas */
 
 /* ─── SUGESTÕES DE PRODUTOS ─── */
 .sugestoes {
