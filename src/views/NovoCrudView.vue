@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import LogoTop from '@/componentes/LogoTop.vue'
+import LogoTop from '@/componentes/layout/AppNavbar.vue'
 import { useProdutosStore } from '@/stores/useProdutosStore'
 import { getTodosUsuariosNaApi } from '@/api/usuario/usuarioApi.js'
 import { getTodosEncomendasAdminNaApi } from '@/api/encomenda'
@@ -246,7 +246,7 @@ onMounted(async () => {
 }
 
 .btn-adicionar {
-  background: var(--color-primary);
+  background: var(--color-brand-blue) ;
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -274,7 +274,7 @@ onMounted(async () => {
   align-items: center;
   gap: 1rem;
   background: var(--color-surface);
-  border: 2px solid var(--color-primary);
+  border: 2px solid var(--color-brand-blue) ;
   border-radius: 14px;
   padding: 1.2rem 1.5rem;
   box-shadow: 0 2px 8px #00000010;
@@ -311,7 +311,7 @@ onMounted(async () => {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid var(--color-primary);
+  border-bottom: 2px solid var(--color-brand-blue) ;
   padding-bottom: 0;
 }
 
@@ -328,7 +328,7 @@ onMounted(async () => {
   transition: background 0.15s, color 0.15s;
 }
 .aba-btn.ativa {
-  background: var(--color-primary);
+  background: var(--color-brand-blue) ;
   color: #fff;
 }
 .aba-btn:not(.ativa):hover {
@@ -340,7 +340,7 @@ onMounted(async () => {
 /* ── Tabela ────────────────────────────────────────────────── */
 .tabela-wrapper {
   overflow-x: auto;
-  border: 2px solid var(--color-primary);
+  border: 2px solid var(--color-brand-blue) ;
   border-radius: 14px;
 }
 
@@ -351,7 +351,7 @@ onMounted(async () => {
 }
 
 .tabela thead tr {
-  background: var(--color-primary);
+  background: var(--color-brand-blue) ;
   color: #fff;
 }
 
@@ -404,8 +404,8 @@ onMounted(async () => {
 .badge.user  { background: #e0f2fe; color: #0369a1; }
 .badge.categoria {
   background: var(--color-surface, #f3f4f6);
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
+  color: var(--color-brand-blue) ;
+  border: 1px solid var(--color-brand-blue) ;
 }
 
 /* ── Ações ──────────────────────────────────────────────────── */
@@ -424,7 +424,7 @@ onMounted(async () => {
   transition: transform 0.12s;
 }
 .btn-acao:hover { transform: scale(1.05); }
-.btn-acao.azul    { background: var(--color-primary); color: #fff; }
+.btn-acao.azul    { background: var(--color-brand-blue); color: #fff; }
 .btn-acao.vermelho { background: var(--color-error, #ef4444); color: #fff; }
 
 /* ── Estado vazio ───────────────────────────────────────────── */
@@ -433,7 +433,7 @@ onMounted(async () => {
   padding: 3rem;
   color: var(--color-muted, #888);
   font-size: 1rem;
-  border: 2px dashed var(--color-primary);
+  border: 2px dashed var(--color-brand-blue);
   border-radius: 14px;
 }
 </style>
