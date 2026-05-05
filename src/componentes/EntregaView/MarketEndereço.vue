@@ -306,6 +306,12 @@ async function salvarFreteNoCarrinho() {
     background: #f5f5f5;
     border-radius: 8px;
 }
+.sum-item-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
 
 .sum-item-name {
     font-size: 14px;

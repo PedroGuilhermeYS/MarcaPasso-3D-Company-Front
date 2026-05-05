@@ -44,6 +44,8 @@
 
   const track1Style = computed(() => ({ transform: `translateX(-${posC1.value * cardWidth.value}px)` }))
   const track2Style = computed(() => ({ transform: `translateX(-${posC2.value * cardWidth.value}px)` }))
+
+  const Catalogo = () => router.push({ name: 'Catalogo' });
   </script>
 
   <template>
@@ -58,7 +60,7 @@
             <div class="hero-title">Produtos únicos<br/>feitos <em>para você</em></div>
             <div class="hero-sub">Decoração, acessórios e muito mais com tecnologia de impressão 3D de alto nível. Cada peça é para você.</div>
             <div class="hero-ctas">
-              <button class="btn-hero-main">
+              <button class="btn-hero-main" @click="Catalogo">
                 <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                 Ver catálogo
               </button>
@@ -701,4 +703,10 @@
   .btn-banner svg {
     stroke: white;
   }
+  .hmc-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
   </style>

@@ -107,19 +107,23 @@ async function atualizarProduto() {
     }
     input, textarea {
         padding: 12px;
-        border: 1px solid var(--color-border-input);
+        border: 1px solid var(--color-brand-blue);
         border-radius: 10px;
         font-size: 1rem;
         outline: none;
     }
     input:focus, textarea:focus {
-        border-color: var(--color-primary);
+        border-color: var(--color-brand-blue);
     }
     .checkbox-area {
         display: flex;
         align-items: center;
         gap: 8px;
         font-weight: 600;
+    }
+
+    .btn-submit {
+        background: var(--color-brand-blue);
     }
 
 </style>

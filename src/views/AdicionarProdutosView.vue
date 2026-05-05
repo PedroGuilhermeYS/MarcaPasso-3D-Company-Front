@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import LogoTop from '@/componentes/LogoTop.vue'
+import LogoTop from '@/componentes/layout/AppNavbar.vue'
 import { useProdutosStore } from '@/stores/useProdutosStore'
 import { useRouter } from 'vue-router'
 
@@ -121,7 +121,7 @@ async function cadastrarProduto() {
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
-    border: 2px solid var(--color-primary);
+    border: 2px solid var(--color-brand-blue);
     border-radius: 14px;
     padding: 2rem;
   }
@@ -145,7 +145,7 @@ async function cadastrarProduto() {
     outline: none;
   }
   input:focus, textarea:focus {
-    border-color: var(--color-primary);
+    border-color: var(--color-brand-blue);
   }
   .row {
     display: flex;
@@ -158,7 +158,7 @@ async function cadastrarProduto() {
     font-weight: 600;
   }
   .btn-submit {
-    background: var(--color-primary);
+    background: var(--color-brand-blue);
     color: white;
     border: none;
     border-radius: 10px;
