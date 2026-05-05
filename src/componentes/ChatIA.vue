@@ -1,37 +1,28 @@
 <script setup>
-// Imports do Vue
 import { ref, nextTick } from 'vue'
 
-// Imports do Vue Router (para navegar entre páginas)
 import { useRouter } from 'vue-router'
 
-// Stores do Pinia (gerenciamento de estado global)
-import { usePesquisaStore } from '@/stores/usePesquisaStore'   // filtros de busca
-import { useProdutosStore } from '@/stores/useProdutosStore'   // lista de produtos
-import { useFavoritosStore } from '@/stores/useFavoritosStore' // favoritos
-import { useAuthStore } from '@/stores/useAuthStore'           // usuário logado
+import { usePesquisaStore } from '@/stores/usePesquisaStore'
+import { useProdutosStore } from '@/stores/useProdutosStore'
+import { useFavoritosStore } from '@/stores/useFavoritosStore'
+import { useAuthStore } from '@/stores/useAuthStore'
 
-// A função que chama nosso backend (que por sua vez chama a IA)
-// Toda a lógica de prompt e chave de API ficou no backend
 import { enviarMensagemChatIA } from '@/api/chatiaApi'
 
-// Link do WhatsApp para quando não houver resultados
 const WHATSAPP_LINK = 'https://wa.me/5581997076382'
 
-// Inicializa as dependências
 const router = useRouter()
 const pesquisaStore = usePesquisaStore()
 const produtosStore = useProdutosStore()
 const favoritosStore = useFavoritosStore()
 const authStore = useAuthStore()
 
-// Estados reativos do componente
-const isOpen = ref(false)          // chat aberto ou fechado
-const inputTexto = ref('')         // texto digitado pelo usuário
-const carregando = ref(false)      // true enquanto aguarda resposta
-const messagesRef = ref(null)      // referência ao elemento da lista de mensagens
+const isOpen = ref(false)
+const inputTexto = ref('')
+const carregando = ref(false)
+const messagesRef = ref(null)
 
-// Lista de mensagens exibidas no chat
 const mensagens = ref([
   {
     tipo: 'ia',
@@ -39,7 +30,6 @@ const mensagens = ref([
   }
 ])
 
-// Rola a lista de mensagens para o final (para mostrar a mensagem mais recente)
 const scrollToBottom = async () => {
   await nextTick()
   if (messagesRef.value) {
@@ -47,27 +37,21 @@ const scrollToBottom = async () => {
   }
 }
 
-// Envia a mensagem do usuário para o backend e processa a resposta
 const enviarMensagem = async () => {
   const texto = inputTexto.value.trim()
   if (!texto || carregando.value) return
 
-  // Adiciona a mensagem do usuário na tela
   mensagens.value.push({ tipo: 'usuario', texto })
   inputTexto.value = ''
   carregando.value = true
   await scrollToBottom()
 
   try {
-    // Chama o backend — ele cuida de tudo (prompt, IA, parse)
-    // e devolve um objeto como: { acao: "filtrar", filtros: {...}, mensagem: "..." }
     const resultado = await enviarMensagemChatIA(texto)
 
-    // Processa a ação retornada pelo backend
     await processarAcao(resultado)
 
   } catch {
-    // Qualquer erro de rede ou do backend
     mensagens.value.push({
       tipo: 'ia',
       texto: 'Desculpe, não consegui processar sua mensagem. Tente novamente.',
@@ -79,12 +63,10 @@ const enviarMensagem = async () => {
   }
 }
 
-// Processa a ação retornada pelo backend e executa a navegação/ação correspondente
 const processarAcao = async (resultado) => {
   switch (resultado.acao) {
 
     case 'filtrar': {
-      // Aplica os filtros na store de pesquisa e navega para a home de produtos
       const f = resultado.filtros || {}
       pesquisaStore.limparFiltros()
       pesquisaStore.setTerm(f.termo || '')
@@ -155,19 +137,16 @@ const processarAcao = async (resultado) => {
 
     case 'chat':
     default: {
-      // Resposta de conversa geral — só exibe o texto
       mensagens.value.push({ tipo: 'ia', texto: resultado.mensagem })
       break
     }
   }
 }
 
-// Navega para uma rota quando o usuário clica no botão de ação dentro do chat
 const navegarPorAcao = async (rota) => {
   await router.push(rota)
 }
 
-// Envia mensagem ao pressionar Enter (Shift+Enter = quebra de linha)
 const handleKeydown = (e) => {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault()
@@ -175,7 +154,6 @@ const handleKeydown = (e) => {
   }
 }
 
-// Abre/fecha o chat
 const toggleChat = () => {
   isOpen.value = !isOpen.value
   if (isOpen.value) scrollToBottom()
@@ -184,28 +162,23 @@ const toggleChat = () => {
 
 <template>
   <div class="chat-ia-wrapper">
-    <!-- Botão flutuante para abrir/fechar o chat -->
     <button
       class="chat-toggle-btn"
       :class="{ 'chat-toggle-btn--open': isOpen }"
       @click="toggleChat"
       :aria-label="isOpen ? 'Fechar chat' : 'Abrir chat com assistente'"
     >
-      <!-- Ícone de chat quando fechado -->
       <svg v-if="!isOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2.546 20.5a1 1 0 0 0 1.278 1.278l3.332-.892A9.956 9.956 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2ZM8 13a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm4 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm4 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
       </svg>
-      <!-- Ícone de X quando aberto -->
       <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
         <path d="M18 6 6 18M6 6l12 12"/>
       </svg>
     </button>
 
-    <!-- Janela do chat (visível só quando isOpen = true) -->
     <Transition name="chat-slide">
       <div v-if="isOpen" class="chat-window">
 
-        <!-- Cabeçalho do chat -->
         <div class="chat-header">
           <div class="chat-header__avatar">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -221,7 +194,6 @@ const toggleChat = () => {
           </div>
         </div>
 
-        <!-- Lista de mensagens -->
         <div class="chat-messages" ref="messagesRef">
           <div
             v-for="(msg, i) in mensagens"
@@ -230,10 +202,8 @@ const toggleChat = () => {
             :class="`chat-msg--${msg.tipo}`"
           >
             <div class="chat-msg__bubble">
-              <!-- Texto da mensagem -->
               <p class="chat-msg__text">{{ msg.texto }}</p>
 
-              <!-- Botão de ação (ex: "Ver produtos", "Abrir produto") -->
               <button
                 v-if="msg.acao"
                 class="chat-msg__action-btn"
@@ -242,7 +212,6 @@ const toggleChat = () => {
                 {{ msg.acao.label }}
               </button>
 
-              <!-- Link externo (ex: WhatsApp) -->
               <a
                 v-if="msg.link"
                 :href="msg.link.url"
@@ -255,7 +224,6 @@ const toggleChat = () => {
             </div>
           </div>
 
-          <!-- Indicador de "digitando" (3 pontinhos animados) -->
           <div v-if="carregando" class="chat-msg chat-msg--ia">
             <div class="chat-msg__bubble chat-msg__bubble--typing">
               <span></span><span></span><span></span>
@@ -263,7 +231,6 @@ const toggleChat = () => {
           </div>
         </div>
 
-        <!-- Área de digitação -->
         <div class="chat-input-area">
           <textarea
             v-model="inputTexto"
@@ -291,7 +258,6 @@ const toggleChat = () => {
 </template>
 
 <style scoped>
-/* ─── Posicionamento: canto inferior direito, acima de tudo ── */
 .chat-ia-wrapper {
   position: fixed;
   bottom: 24px;

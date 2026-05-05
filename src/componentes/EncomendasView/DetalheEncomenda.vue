@@ -33,7 +33,6 @@ const ehCartao = computed(() => props.encomenda?.formaPagamento === 'cartao')
 <template>
   <aside class="detalhe-painel">
 
-    <!-- ── Cabeçalho azul (sempre visível) ── -->
     <div class="detalhe-header">
       <div class="header-esq">
         <div class="detalhe-titulo">Detalhes do Pedido</div>
@@ -42,13 +41,11 @@ const ehCartao = computed(() => props.encomenda?.formaPagamento === 'cartao')
       <span v-if="encomenda" class="badge header-badge" :class="statusClass">{{ statusLabel }}</span>
     </div>
 
-    <!-- ── Loading ── -->
     <div v-if="carregando" class="loading-wrap">
       <span class="spinner"></span>
       <p>Carregando detalhes...</p>
     </div>
 
-    <!-- ── Vazio (nada selecionado ainda) ── -->
     <div v-else-if="!encomenda" class="painel-vazio">
       <svg viewBox="0 0 24 24">
         <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
@@ -58,10 +55,8 @@ const ehCartao = computed(() => props.encomenda?.formaPagamento === 'cartao')
       <p>Clique em um pedido<br>para ver os detalhes</p>
     </div>
 
-    <!-- ── Conteúdo ── -->
     <template v-else>
 
-      <!-- Produtos -->
       <div class="det-secao">
         <div class="det-secao-titulo">Produtos</div>
         <div v-for="(item, idx) in encomenda.itens" :key="idx" class="det-produto">
@@ -74,7 +69,6 @@ const ehCartao = computed(() => props.encomenda?.formaPagamento === 'cartao')
         </div>
       </div>
 
-      <!-- Resumo de valores -->
       <div class="det-secao">
         <div class="det-secao-titulo">Resumo de valores</div>
         <div class="det-linha"><span class="det-lbl">Subtotal</span><span class="det-val">{{
@@ -97,7 +91,6 @@ const ehCartao = computed(() => props.encomenda?.formaPagamento === 'cartao')
         </div>
       </div>
 
-      <!-- Dados do cliente -->
       <div class="det-secao">
         <div class="det-secao-titulo">Dados do cliente</div>
         <div class="det-linha"><span class="det-lbl">Nome</span> <span class="det-val">{{ encomenda.clienteNome || '—'
@@ -108,7 +101,6 @@ const ehCartao = computed(() => props.encomenda?.formaPagamento === 'cartao')
         }}</span></div>
       </div>
 
-      <!-- Endereço -->
       <div class="det-secao">
         <div class="det-secao-titulo">Endereço de entrega</div>
         <div class="det-linha">
@@ -126,7 +118,6 @@ const ehCartao = computed(() => props.encomenda?.formaPagamento === 'cartao')
         }}</span></div>
       </div>
 
-      <!-- Pagamento -->
       <div class="det-secao">
         <div class="det-secao-titulo">Forma de pagamento</div>
         <div class="det-linha">

@@ -1,4 +1,3 @@
-// Supabase desabilitado temporariamente para testes com backend local
 export const supabase = {
   storage: {
     from: () => ({

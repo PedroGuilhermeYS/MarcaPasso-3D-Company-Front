@@ -29,7 +29,6 @@ export const useEncomendasStore = defineStore('encomendas', () => {
     return id
   }
 
-  // ── Carrega lista de pedidos ──────────────────────────────
   const carregarEncomendas = async () => {
     const idUsuario = getIdUsuario()
     const lista = await withHandling(
@@ -39,7 +38,6 @@ export const useEncomendasStore = defineStore('encomendas', () => {
     encomendas.value = Array.isArray(lista) ? lista : []
   }
 
-  // ── Carrega detalhe de um pedido ──────────────────────────
   const carregarDetalhe = async (idEncomenda) => {
     const idUsuario = getIdUsuario()
     encomendaDetalhe.value = null
@@ -51,7 +49,6 @@ export const useEncomendasStore = defineStore('encomendas', () => {
     return detalhe
   }
 
-  // ── Cria um novo pedido ───────────────────────────────────
   const adicionarEncomenda = async (encomenda) => {
     const idUsuario = getIdUsuario()
     const criada = await withHandling(
@@ -59,7 +56,6 @@ export const useEncomendasStore = defineStore('encomendas', () => {
       'Erro ao criar encomenda'
     )
     if (criada) {
-      // Adiciona no topo da lista (mais recente primeiro)
       encomendas.value.unshift({
         id: criada.id,
         numeroPedido: criada.numeroPedido,

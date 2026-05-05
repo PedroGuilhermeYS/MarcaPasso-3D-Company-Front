@@ -49,7 +49,6 @@ onMounted(() => {
     <div class="sec-body">
       <div class="payment-list">
 
-        <!-- PIX -->
         <div
           class="payment-opt"
           :class="{ sel: selecionado === 'pix' }"
@@ -73,7 +72,6 @@ onMounted(() => {
           <div class="payment-badge pix-badge">5% OFF</div>
         </div>
 
-        <!-- CARTÃO -->
         <div
           class="payment-opt"
           :class="{ sel: selecionado === 'cartao' }"
@@ -93,7 +91,6 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- CAMPOS DO CARTÃO -->
         <div class="cartao-form" :class="{ visible: selecionado === 'cartao' }">
           <div class="form-row">
             <div class="form-group full">

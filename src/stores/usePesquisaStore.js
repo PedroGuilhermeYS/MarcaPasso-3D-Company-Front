@@ -6,9 +6,9 @@ import { useAsyncHandler } from '@/composables/useAsyncHandler.js'
 export const usePesquisaStore = defineStore('pesquisa', () => {
   const termo = ref('')
   const categoriaSelecionada = ref('')
-  const precoSelecionado = ref('') // '1', '2', '3' conforme sua lógica
-  const personalizavelSelecionado = ref('') // esperado 'true' | 'false' | ''
-  const ordenacaoSelecionada = ref('') // '' | 'az' | 'maior' | 'menor'
+  const precoSelecionado = ref('')
+  const personalizavelSelecionado = ref('')
+  const ordenacaoSelecionada = ref('')
 
   const carregando = ref(false)
   const erro = ref(null)
@@ -54,9 +54,9 @@ export const usePesquisaStore = defineStore('pesquisa', () => {
 
       if (precoSelecionado.value) {
         const preco = getPreco(p)
-        if (precoSelecionado.value === '1' && preco > 50) passa = false // <=50
-        if (precoSelecionado.value === '2' && (preco < 50 || preco > 100)) passa = false // 50..100
-        if (precoSelecionado.value === '3' && preco < 100) passa = false // >=100
+        if (precoSelecionado.value === '1' && preco > 50) passa = false
+        if (precoSelecionado.value === '2' && (preco < 50 || preco > 100)) passa = false
+        if (precoSelecionado.value === '3' && preco < 100) passa = false
       }
 
       if (personalizavelSelecionado.value && String(getPersonalizavel(p)) !== personalizavelSelecionado.value) {

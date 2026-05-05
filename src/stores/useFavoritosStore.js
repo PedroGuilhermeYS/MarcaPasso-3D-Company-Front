@@ -15,7 +15,6 @@ export const useFavoritosStore = defineStore('favoritos', () => {
 
   const { run: withHandling } = useAsyncHandler({ carregando, erro })
 
-  // Pega o ID do usuário logado
   const idUsuario = computed(() => authStore.usuario?.id ?? null)
 
   const total = computed(() =>

@@ -17,7 +17,6 @@ export function useCarrinhoService() {
     return await getItemCarrinhoNaApi(id)
   }
 
-  // Recebe idUsuario e item
   async function adicionarItem(idUsuario, item) {
     return await addItemCarrinhoNaApi(idUsuario, item)
   }

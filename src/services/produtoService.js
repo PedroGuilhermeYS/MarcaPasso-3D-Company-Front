@@ -17,14 +17,12 @@ export function useProdutoService() {
   }
 
   async function adicionarProduto(produto) {
-    // Envia só os campos de texto — imagem como nome de arquivo
     return await addProdutoNaApi({
       nome: produto.nome,
       descricao: produto.descricao,
       preco: produto.preco,
       categoria: produto.categoria,
       personalizavel: produto.personalizavel,
-      // Se o usuário selecionou um arquivo, usa o nome; senão usa o valor direto
       imagemPrincipal: produto.imagemPrincipal?.name ?? produto.imagemPrincipal ?? null,
     })
   }
