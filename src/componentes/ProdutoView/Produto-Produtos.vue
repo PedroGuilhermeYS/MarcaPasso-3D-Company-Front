@@ -220,16 +220,7 @@
                         <button class="btn-edit" @click="editarProduto">✎ Editar</button>
                         <button class="btn-delete" @click="deletarProduto">🗑 Remover</button>
                     </div>
-                </div>
-
-                <div class="pd-card">
-                    <div class="pd-info-row"><span class="pd-info-lbl">📦 Disponibilidade</span><span class="pd-info-val ok">Em estoque</span></div>
-                    <div class="pd-info-row"><span class="pd-info-lbl">🚚 Entrega estimada</span><span class="pd-info-val">3 a 5 dias úteis</span></div>
-                    <div class="pd-info-row"><span class="pd-info-lbl">🔄 Devoluções</span><span class="pd-info-val">30 dias grátis</span></div>
-                    <div class="pd-info-row"><span class="pd-info-lbl">🎨 Personaliz​ável</span><span class="pd-info-val ok">Sim — nome ou mensagem</span></div>
-                    <div class="pd-info-row"><span class="pd-info-lbl">🔒 Garantia</span><span class="pd-info-val">12 meses</span></div>
-                    <div class="pd-info-row"><span class="pd-info-lbl">⚡ Frete grátis</span><span class="pd-info-val ok">Acima de R$ 150</span></div>
-                </div>
+                </div>   
             </div>
 
             <!-- DESCRIPTION full-width -->
