@@ -60,21 +60,11 @@ onMounted(async () => {
 function aplicarCupom() {
   const codigo = cupomDigitado.value.trim().toUpperCase()
 
-  // Cupom local fixo
-  if (codigo === 'PRIMEIRACOMPRA') {
-    percentualDesconto.value = 0.15
-    msgCupom.value = 'Cupom aplicado! 15% de desconto no valor final'
-    cupomValido.value = true
-    return
-  }
-
-  const cupom = cupons.cupons.find(c =>
-    c.cupom_nome === codigo
-  )
+  const cupom = cupons.cupons.find(c => c.nomeCupom === codigo)
 
   if (cupom) {
-    percentualDesconto.value = cupom.desconto / 100
-    msgCupom.value = `Cupom aplicado! ${cupom.desconto}% de desconto`
+    percentualDesconto.value = cupom.valorDesconto / 100
+    msgCupom.value = `Cupom aplicado! ${cupom.valorDesconto}% de desconto`
     cupomValido.value = true
   } else {
     percentualDesconto.value = 0
@@ -173,13 +163,8 @@ async function salvarFreteNoCarrinho() {
         <span class="cupom-label">Cupom de desconto</span>
 
         <div class="cupom-box">
-          <input
-            v-model="cupomDigitado"
-            type="text"
-            placeholder="Digite o cupom"
-            class="input-cupom"
-            @keyup.enter="aplicarCupom"
-          />
+          <input v-model="cupomDigitado" type="text" placeholder="Digite o cupom" class="input-cupom"
+            @keyup.enter="aplicarCupom" />
 
           <button class="btn-cupom" @click="aplicarCupom" type="button">
             Aplicar
@@ -234,12 +219,8 @@ async function salvarFreteNoCarrinho() {
       </div>
 
       <div class="sum-footer">
-        <button
-          class="btn-continuar"
-          @click="salvarFreteNoCarrinho"
-          :disabled="!podeContinuar || enviando"
-          type="button"
-        >
+        <button class="btn-continuar" @click="salvarFreteNoCarrinho" :disabled="!podeContinuar || enviando"
+          type="button">
           <svg width="15" height="15" viewBox="0 0 24 24">
             <path d="M5 12h14M12 5l7 7-7 7" />
           </svg>
@@ -256,56 +237,57 @@ async function salvarFreteNoCarrinho() {
 
 <style scoped>
 .sum-sticky {
-    position: sticky;
-    top: 80px;
+  position: sticky;
+  top: 80px;
 }
 
 .sum-card {
-    background: #fff;
-    border: 1px solid #e4e9f2;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 4px 24px rgba(17, 71, 152, .13);
-    position: sticky;
-    top: 80px;
+  background: #fff;
+  border: 1px solid #e4e9f2;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(17, 71, 152, .13);
+  position: sticky;
+  top: 80px;
 }
 
 .sum-hd {
-    padding: 16px;
-    background: linear-gradient(135deg, #2C18A0, #114798);
-    color: #fff;
+  padding: 16px;
+  background: linear-gradient(135deg, #2C18A0, #114798);
+  color: #fff;
 }
 
 .sum-hd-title {
-    font-size: 16px;
-    font-weight: 800;
+  font-size: 16px;
+  font-weight: 800;
 }
 
 .sum-hd-title svg {
-    opacity: .8;
-    stroke: #fff;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-width: 1.5;
+  opacity: .8;
+  stroke: #fff;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
 }
 
 .sum-items {
-    padding: 16px;
-    border-bottom: 1px solid #eee;
+  padding: 16px;
+  border-bottom: 1px solid #eee;
 }
 
 .sum-item {
-    display: flex;
-    gap: 12px;
+  display: flex;
+  gap: 12px;
 }
 
 .sum-item-img {
-    width: 50px;
-    height: 50px;
-    background: #f5f5f5;
-    border-radius: 8px;
+  width: 50px;
+  height: 50px;
+  background: #f5f5f5;
+  border-radius: 8px;
 }
+
 .sum-item-img img {
   width: 100%;
   height: 100%;
@@ -314,196 +296,196 @@ async function salvarFreteNoCarrinho() {
 }
 
 .sum-item-name {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .sum-item-qty {
-    font-size: 12px;
-    color: #777;
+  font-size: 12px;
+  color: #777;
 }
 
 .sum-item-price {
-    font-weight: bold;
-    color: #049377;
+  font-weight: bold;
+  color: #049377;
 }
 
 .sum-rows {
-    padding: 16px 20px;
-    border-bottom: 1px solid #eef1f8;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eef1f8;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .sum-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
 }
 
 .sum-row-lbl {
-    color: #6b7a9a;
+  color: #6b7a9a;
 }
 
 .sum-row-val {
-    color: #252f4a;
-    font-weight: 500;
+  color: #252f4a;
+  font-weight: 500;
 }
 
 .sum-row-val.ok {
-    color: #049377;
+  color: #049377;
 }
 
 .sum-total-blk {
-    padding: 16px 20px;
-    background: #f7f9fc;
-    border-bottom: 1px solid #eef1f8;
+  padding: 16px 20px;
+  background: #f7f9fc;
+  border-bottom: 1px solid #eef1f8;
 }
 
 .sum-total-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
 }
 
 .sum-total-lbl {
-    font-family: 'Source Sans 3', var(--font-family-base), sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: #252f4a;
+  font-family: 'Source Sans 3', var(--font-family-base), sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #252f4a;
 }
 
 .sum-total-val {
-    font-family: 'Source Sans 3', var(--font-family-base), sans-serif;
-    font-size: 22px;
-    font-weight: 800;
-    color: #252f4a;
+  font-family: 'Source Sans 3', var(--font-family-base), sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #252f4a;
 }
 
 .sum-total-val.ok {
-    color: #049377;
+  color: #049377;
 }
 
 .sum-total-sub {
-    font-size: 11.5px;
-    color: #8f9db8;
-    margin-top: 4px;
+  font-size: 11.5px;
+  color: #8f9db8;
+  margin-top: 4px;
 }
 
 .sum-pix-blk {
-    padding: 14px 20px;
-    border-bottom: 1px solid #eef1f8;
+  padding: 14px 20px;
+  border-bottom: 1px solid #eef1f8;
 }
 
 .pix-val {
-    font-size: 15px;
-    font-weight: 700;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .sum-footer {
-    padding: 16px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .btn-continuar {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #037a64, #049377);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-family: 'Source Sans 3', var(--font-family-base), sans-serif;
-    font-size: 14px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    letter-spacing: .03em;
-    box-shadow: 0 4px 20px rgba(4, 147, 119, .35);
-    cursor: pointer;
-    transition: all .2s;
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #037a64, #049377);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Source Sans 3', var(--font-family-base), sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: .03em;
+  box-shadow: 0 4px 20px rgba(4, 147, 119, .35);
+  cursor: pointer;
+  transition: all .2s;
 }
 
 .btn-continuar:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 28px rgba(4, 147, 119, .45);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(4, 147, 119, .45);
 }
 
 .btn-continuar svg {
-    stroke: #fff;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-width: 2;
+  stroke: #fff;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
 }
 
 .btn-voltar {
-    width: 100%;
-    padding: 11px;
-    background: #fff;
-    color: #6b7a9a;
-    border: 1.5px solid #d6dcea;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all .18s;
+  width: 100%;
+  padding: 11px;
+  background: #fff;
+  color: #6b7a9a;
+  border: 1.5px solid #d6dcea;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .18s;
 }
 
 .btn-voltar:hover {
-    border-color: #114798;
-    color: #114798;
+  border-color: #114798;
+  color: #114798;
 }
 
 .sum-cupom {
-    padding: 16px 20px;
-    border-bottom: 1px solid #eef1f8;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eef1f8;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .cupom-label {
-    font-size: 13px;
-    color: #6b7a9a;
+  font-size: 13px;
+  color: #6b7a9a;
 }
 
 .cupom-box {
-    display: flex;
-    gap: 8px;
+  display: flex;
+  gap: 8px;
 }
 
 .input-cupom {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #d6dcea;
-    border-radius: 8px;
-    font-size: 13px;
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #d6dcea;
+  border-radius: 8px;
+  font-size: 13px;
 }
 
 .btn-cupom {
-    padding: 10px 14px;
-    background: #114798;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 13px;
-    cursor: pointer;
+  padding: 10px 14px;
+  background: #114798;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
 }
 
 .msg-cupom {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 .msg-cupom.ok {
-    color: #049377;
+  color: #049377;
 }
 
 .msg-cupom.erro {
-    color: #e53935;
+  color: #e53935;
 }
 </style>

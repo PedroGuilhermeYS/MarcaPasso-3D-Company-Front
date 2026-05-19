@@ -31,7 +31,7 @@ onMounted(async () => {
         <div class="crud" v-if="acessar">
           <span></span>
 
-          <router-link :to="{ name: 'Crud' }">
+          <router-link :to="{ name: 'NovoCrud' }">
             <h4>Admin</h4>
           </router-link>
         </div>

@@ -19,10 +19,11 @@ import EnderecosView from '../views/EnderecosView.vue'
 
 const ProdutoView = () => import('@/views/ProdutoView.vue')
 const FavoritosView = () => import('@/views/FavoritosView.vue')
-const CrudView = () => import('@/views/CrudView.vue')
 const NovoCrudView = () => import('@/views/NovoCrudView.vue')
 const AdminProdutosView = () => import('@/views/AdicionarProdutosView.vue')
 const AtualizarProdutoView = () => import('@/views/AtualizarProdutoView.vue')
+const AdicionarCupomView = () => import('@/views/AdicionarCupomView.vue')
+const AtualizarCupomView = () => import('@/views/AtualizarCupomView.vue')
 
 const routes = [
   {
@@ -65,9 +66,10 @@ const routes = [
     component: DashboardLayout,
     meta: { requiresAuth: true, requiresAdmin: true },
     children: [
-      { path: 'crud', name: 'Crud', component: CrudView },
       { path: 'novocrud', name: 'NovoCrud', component: NovoCrudView },
       { path: 'adicionar', name: 'AdicionarProdutos', component: AdminProdutosView },
+      { path: 'cupons/novo', name: 'AdicionarCupom', component: AdicionarCupomView },
+      { path: 'cupons/atualizar/:id', name: 'AtualizarCupom', component: AtualizarCupomView, props: true },
     ]
   },
 
