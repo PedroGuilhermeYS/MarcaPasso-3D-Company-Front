@@ -1,34 +1,27 @@
 import {
-    getTodosCuponsNaApi,
-    getCupomNaApi,
-    cadastrarCupomNaApi
+  listarCupons,
+  buscarCupomPorId,
+  criarCupom,
+  atualizarCupom,
+  deletarCupom
 } from '@/api/cupons'
 
-export function useCupomService() {
-    
-    async function getCupom(id) {
-        return await getCupomNaApi(id)
-    }
-    async function getTodosCupons() {
-        return await getTodosCuponsNaApi()
-    }
-    async function addCupom(cupom) {
-        return await cadastrarCupomNaApi(cupom)
-    }
-    async function removeCupom(id) {
-        return await removeCupomNaApi(id)
-    }
-    async function atualizaCupom(id, cupom) {
-        return await atualizaCupomNaApi(id, cupom)
-    }
-
-    return {
-        getCupom,
-        getTodosCupons,
-        addCupom,
-        removeCupom,
-        atualizaCupom
-    }
-
+export async function getTodosCupons() {
+  return await listarCupons()
 }
 
+export async function getCupomPorId(id) {
+  return await buscarCupomPorId(id)
+}
+
+export async function criarNovoCupom(payload) {
+  return await criarCupom(payload)
+}
+
+export async function atualizarCupomService(id, payload) {
+  return await atualizarCupom(id, payload)
+}
+
+export async function deletarCupomService(id) {
+  return await deletarCupom(id)
+}

@@ -1,16 +1,26 @@
-import axiosInstance from "../config";
+import api from '../config'
 
-export async function getTodosCuponsNaApi() {
-    const { data } = await axiosInstance.get('/cupons')
-    return data
+export async function listarCupons() {
+  const { data } = await api.get('/api/cupons')
+  return data
 }
 
-export async function getCupomNaApi(id) {
-    const { data } = await axiosInstance.get(`/cupons/${id}`)
-    return data
+export async function buscarCupomPorId(id) {
+  const { data } = await api.get(`/api/cupons/${id}`)
+  return data
 }
 
-export async function cadastrarCupomNaApi(cupom) {
-    const { data } = await axiosInstance.post('/cupons', cupom)
-    return data
+export async function criarCupom(payload) {
+  const { data } = await api.post('/api/cupons', payload)
+  return data
+}
+
+export async function atualizarCupom(id, payload) {
+  const { data } = await api.put(`/api/cupons/${id}`, payload)
+  return data
+}
+
+export async function deletarCupom(id) {
+  const { data } = await api.delete(`/api/cupons/${id}`)
+  return data
 }

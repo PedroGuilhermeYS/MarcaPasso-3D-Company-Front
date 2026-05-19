@@ -1,87 +1,52 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import { useCupomService } from '@/services/cupomService'
-import { useAsyncHandler } from '@/composables/useAsyncHandler'
-import { normalizarIdObjeto } from '@/composables/useNormalizadorId'
 
-export const useCupomStore = defineStore('cupons', () => {
-  const cupons = ref([])
-  const carregando = ref(false)
-  const erro = ref(null)
+import {
+  getTodosCupons,
+  getCupomPorId,
+  criarNovoCupom,
+  atualizarCupomService,
+  deletarCupomService
+} from '@/services/cupomService'
 
-  const service = useCupomService()
-  const { run: withHandling } = useAsyncHandler({ carregando, erro })
+export const useCupomStore = defineStore('cupom', {
+  state: () => ({
+    cupons: [],
+    cupomAplicado: null,
+    desconto: 0
+  }),
 
-  async function carregarCupons() {
-    const lista = await withHandling(
-      () => service.getTodosCupons(),
-      'Erro ao carregar cupons'
-    )
-    cupons.value = lista.map(normalizarIdObjeto)
-    return cupons.value
-  }
+  actions: {
+    async carregarCupons() {
+      this.cupons = await getTodosCupons()
+    },
 
-  async function buscarCupom(id) {
-    const sid = String(id)
-    const local = cupons.value.find(c => c.id === sid)
-    if (local) return local
-    return await withHandling(
-      () => service.getCupom(sid),
-      'Erro ao buscar cupom'
-    )
-  }
+    async buscarCupom(id) {
+      return await getCupomPorId(id)
+    },
 
-  async function adicionarCupom(cupom) {
-    const criado = await withHandling(
-      () => service.addCupom(cupom),
-      'Erro ao adicionar cupom'
-    )
-    if (!criado) return null
+    async criarCupom(payload) {
+      await criarNovoCupom(payload)
+      await this.carregarCupons()
+    },
 
-    const normalizado = normalizarIdObjeto(criado)
+    async atualizarCupom(id, payload) {
+      await atualizarCupomService(id, payload)
+      await this.carregarCupons()
+    },
 
-    if (!cupons.value.some(c => c.id === normalizado.id)) {
-      cupons.value.push(normalizado)
+    async excluirCupom(id) {
+      await deletarCupomService(id)
+      await this.carregarCupons()
+    },
+
+    aplicarCupom(cupom) {
+      this.cupomAplicado = cupom
+      this.desconto = cupom.valorDesconto
+    },
+
+    removerCupom() {
+      this.cupomAplicado = null
+      this.desconto = 0
     }
-    return normalizado
-  }
-
-  async function atualizarCupom(id, dados) {
-    const sid = String(id)
-    const atualizado = await withHandling(
-      () => service.atualizaCupom(id, dados),
-      'Erro ao atualizar cupom'
-    )
-    if (!atualizado) return null
-
-    const atualizadoNormalizado = normalizarIdObjeto(atualizado)
-
-    cupons.value = cupons.value.map(c => (c.id === sid ? atualizadoNormalizado : c))
-    return atualizadoNormalizado
-  }
-
-  async function removerCupom(id) {
-    const sid = String(id)
-    const removido = await withHandling(
-      () => service.removeCupom(id),
-      'Erro ao remover cupom'
-    )
-    cupons.value = cupons.value.filter(c => c.id !== sid)
-    return removido
-  }
-
-  const totalCupons = computed(() => cupons.value.length)
-
-  return {
-    cupons,
-    carregando,
-    erro,
-
-    carregarCupons,
-    buscarCupom,
-    adicionarCupom,
-    atualizarCupom,
-    removerCupom,
-    totalCupons
   }
 })

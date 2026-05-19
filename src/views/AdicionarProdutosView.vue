@@ -45,7 +45,7 @@ async function cadastrarProduto() {
     imagemPrincipalNome.value = ''
 
     await esperar(2000)
-    router.push({ name: 'Crud' })
+    router.push({ name: 'NovoCrud' })
 
   } catch (error) {
     console.error(error)
