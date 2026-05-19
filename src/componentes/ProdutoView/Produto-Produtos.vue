@@ -165,7 +165,7 @@
                         <a :href="`https://api.whatsapp.com/send?text=${encodeURIComponent('Confira este produto: ' + produto.nome + ' - ' + currentUrl)}`" target="_blank" rel="noopener noreferrer">
                             <button class="share-btn wpp">📱 WhatsApp</button>
                         </a>
-                        <button v-if="usuarioLogado" class="share-btn fav" :style="{ borderColor: favoritos.isFavoritado(produto.id) ? 'var(--color-danger)' : 'var(--color-danger)', backgroundColor: favoritos.isFavoritado(produto.id) ? 'var(--color-danger)' : 'transparent', color: favoritos.isFavoritado(produto.id) ? '#fff' : 'var(--color-danger)' }" @click="onToggleFavorito">♡ {{ favoritos.isFavoritado(produto.id) ? 'Favorito' : 'Favoritar' }}</button>
+                        <button v-if="usuarioLogado" class="share-btn fav" :style="{ borderColor: favoritos.isFavoritado(produto.id) ? 'var(--color-brand-green)' : 'var(--color-brand-green)', backgroundColor: favoritos.isFavoritado(produto.id) ? 'var(--color-brand-green)' : 'transparent', color: favoritos.isFavoritado(produto.id) ? '#fff' : 'var(--color-brand-green)' }" @click="onToggleFavorito">♡ {{ favoritos.isFavoritado(produto.id) ? 'Favorito' : 'Favoritar' }}</button>
                         <router-link v-if="!usuarioLogado" to="/Login">
                             <button class="share-btn fav">♡ Favoritar</button>
                         </router-link>
@@ -414,12 +414,12 @@
 }
 
 .share-btn.fav {
-    border-color: var(--color-danger);
-    color: var(--color-danger);
+    border-color: var(--color-brand-green);
+    color: var(--color-brand-green);
 }
 
 .share-btn.fav:hover {
-    background: var(--color-danger);
+    background: var(--color-brand-green);
     color: #fff;
 }
 

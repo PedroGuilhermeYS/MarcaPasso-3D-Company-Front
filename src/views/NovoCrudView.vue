@@ -5,9 +5,11 @@ import LogoTop from '@/componentes/layout/AppNavbar.vue'
 import { useProdutosStore } from '@/stores/useProdutosStore'
 import { getTodosUsuariosNaApi } from '@/api/usuario/usuarioApi.js'
 import { getTodosEncomendasAdminNaApi } from '@/api/encomenda'
+import { useCupomStore } from '@/stores/useCupomStore'
 
 const router = useRouter()
 const produtosStore = useProdutosStore()
+const cupomStore = useCupomStore()
 
 const usuarios = ref([])
 const encomendas = ref([])
@@ -15,7 +17,7 @@ const carregandoUsuarios = ref(false)
 const carregandoEncomendas = ref(false)
 
 // ── Aba ativa ────────────────────────────────────────────────
-const abas = ['Produtos', 'Clientes']
+const abas = ['Produtos', 'Clientes', 'Cupons']
 const abaAtiva = ref('Produtos')
 
 // ── Estatísticas ─────────────────────────────────────────────
@@ -35,6 +37,7 @@ const formatarData = (iso) => {
 
 // ── Ações produtos ───────────────────────────────────────────
 const adicionarProduto = () => router.push({ name: 'AdicionarProdutos' })
+const adicionarCupom = () => router.push({ name: 'AdicionarCupom' })
 
 const atualizarProduto = (id) =>
   router.push({ name: 'AtualizarProduto', params: { id } })
@@ -48,9 +51,22 @@ const removerProduto = async (id) => {
   }
 }
 
+const atualizarCupom = (id) =>
+  router.push({ name: 'AtualizarCupom', params: { id } })
+
+const excluirCupom = async (id) => {
+  if (!confirm('Deseja excluir este cupom?')) return
+  try {
+    await cupomStore.excluirCupom(id)
+  } catch {
+    alert('Erro ao excluir cupom.')
+  }
+}
+
 // ── Carregamento inicial ─────────────────────────────────────
 onMounted(async () => {
   await produtosStore.carregarProdutos()
+  await cupomStore.carregarCupons()
 
   carregandoUsuarios.value = true
   try {
@@ -76,9 +92,14 @@ onMounted(async () => {
     <!-- ── Cabeçalho ───────────────────────────────────────── -->
     <div class="cabecalho">
       <h1 class="titulo">Painel Administrativo</h1>
-      <button class="btn-adicionar" @click="adicionarProduto">
-        + Adicionar Produto
-      </button>
+      <div class="cabecalho-acoes">
+        <button class="btn-adicionar" @click="adicionarProduto">
+          + Adicionar Produto
+        </button>
+        <button class="btn-adicionar cupom" @click="adicionarCupom">
+          + Adicionar Cupom
+        </button>
+      </div>
     </div>
 
     <!-- ── Cards de estatísticas ─────────────────────────── -->
@@ -99,17 +120,20 @@ onMounted(async () => {
         </div>
       </div>
 
+      <div class="card-stat">
+        <span class="stat-icone">🏷️</span>
+        <div>
+          <p class="stat-label">Total de Cupons</p>
+          <p class="stat-valor">{{ cupomStore.cupons.length }}</p>
+        </div>
+      </div>
+
     </div>
 
     <!-- ── Abas ─────────────────────────────────────────────── -->
     <div class="abas">
-      <button
-        v-for="aba in abas"
-        :key="aba"
-        class="aba-btn"
-        :class="{ ativa: abaAtiva === aba }"
-        @click="abaAtiva = aba"
-      >
+      <button v-for="aba in abas" :key="aba" class="aba-btn" :class="{ ativa: abaAtiva === aba }"
+        @click="abaAtiva = aba">
         {{ aba }}
       </button>
     </div>
@@ -139,11 +163,8 @@ onMounted(async () => {
           <tbody>
             <tr v-for="produto in produtosStore.produtos" :key="produto.id">
               <td>
-                <img
-                  :src="produto.imagemPrincipal || '/imagem-produtos/placeholder.jpg'"
-                  :alt="produto.nome"
-                  class="img-produto"
-                />
+                <img :src="produto.imagemPrincipal || '/imagem-produtos/placeholder.jpg'" :alt="produto.nome"
+                  class="img-produto" />
               </td>
               <td class="nome-cel">{{ produto.nome }}</td>
               <td>{{ formatarPreco(produto.preco ?? 0) }}</td>
@@ -219,6 +240,55 @@ onMounted(async () => {
       </div>
     </div>
 
+    <!-- ══════════════════ ABA: CUPONS ════════════════════ -->
+    <div v-if="abaAtiva === 'Cupons'">
+      <div v-if="cupomStore.carregando" class="estado-vazio">
+        Carregando cupons…
+      </div>
+
+      <div v-else-if="cupomStore.cupons.length === 0" class="estado-vazio">
+        Nenhum cupom cadastrado.
+      </div>
+
+      <div v-else class="tabela-wrapper">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Desconto</th>
+              <th>Validade</th>
+              <th>Expiração</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="cupom in cupomStore.cupons" :key="cupom.id">
+              <td class="nome-cel">{{ cupom.nomeCupom }}</td>
+              <td>
+                <span class="badge categoria">{{ cupom.valorDesconto }}%</span>
+              </td>
+              <td>
+                <span class="badge" :class="cupom.tipoValidade === 'TEMPORARIO' ? 'nao' : 'sim'">
+                  {{ cupom.tipoValidade === 'TEMPORARIO' ? 'Temporário' : 'Indefinido' }}
+                </span>
+              </td>
+              <td>{{ cupom.dataExpiracao ? formatarData(cupom.dataExpiracao) : 'Indefinido' }}</td>
+              <td>
+                <div class="acoes-cel">
+                  <button class="btn-acao azul" @click="atualizarCupom(cupom.id)">
+                    Editar
+                  </button>
+                  <button class="btn-acao vermelho" @click="excluirCupom(cupom.id)">
+                    Excluir
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -246,7 +316,7 @@ onMounted(async () => {
 }
 
 .btn-adicionar {
-  background: var(--color-brand-blue) ;
+  background: var(--color-brand-blue);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -256,9 +326,20 @@ onMounted(async () => {
   cursor: pointer;
   transition: transform 0.15s, opacity 0.15s;
 }
+
 .btn-adicionar:hover {
   transform: scale(1.03);
   opacity: 0.92;
+}
+
+.cabecalho-acoes {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-adicionar.cupom {
+  background: var(--color-brand-blue);
 }
 
 /* ── Cards de estatísticas ─────────────────────────────────── */
@@ -274,11 +355,12 @@ onMounted(async () => {
   align-items: center;
   gap: 1rem;
   background: var(--color-surface);
-  border: 2px solid var(--color-brand-blue) ;
+  border: 2px solid var(--color-brand-blue);
   border-radius: 14px;
   padding: 1.2rem 1.5rem;
   box-shadow: 0 2px 8px #00000010;
 }
+
 .card-stat.destaque {
   border-color: #22c55e;
 }
@@ -296,11 +378,13 @@ onMounted(async () => {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
 .stat-valor {
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
 }
+
 .stat-valor.carregando {
   font-size: 1rem;
   color: var(--color-muted, #aaa);
@@ -311,13 +395,13 @@ onMounted(async () => {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid var(--color-brand-blue) ;
+  border-bottom: 2px solid var(--color-brand-blue);
   padding-bottom: 0;
 }
 
 .aba-btn {
   background: transparent;
-  border: 2px solid var(--color-primary);
+  border: 2px solid var(--color-brand-blue);
   border-bottom: none;
   border-radius: 10px 10px 0 0;
   padding: 0.6rem 1.6rem;
@@ -327,12 +411,14 @@ onMounted(async () => {
   color: var(--color-primary);
   transition: background 0.15s, color 0.15s;
 }
+
 .aba-btn.ativa {
-  background: var(--color-brand-blue) ;
+  background: var(--color-brand-blue);
   color: #fff;
 }
+
 .aba-btn:not(.ativa):hover {
-  background: var(--color-primary);
+  background: var(--color-brand-blue);
   color: #fff;
   opacity: 0.7;
 }
@@ -340,7 +426,7 @@ onMounted(async () => {
 /* ── Tabela ────────────────────────────────────────────────── */
 .tabela-wrapper {
   overflow-x: auto;
-  border: 2px solid var(--color-brand-blue) ;
+  border: 2px solid var(--color-brand-blue);
   border-radius: 14px;
 }
 
@@ -351,7 +437,7 @@ onMounted(async () => {
 }
 
 .tabela thead tr {
-  background: var(--color-brand-blue) ;
+  background: var(--color-brand-blue);
   color: #fff;
 }
 
@@ -398,14 +484,31 @@ onMounted(async () => {
   font-weight: 700;
   white-space: nowrap;
 }
-.badge.sim   { background: #dcfce7; color: #166534; }
-.badge.nao   { background: #fee2e2; color: #991b1b; }
-.badge.admin { background: #ede9fe; color: #5b21b6; }
-.badge.user  { background: #e0f2fe; color: #0369a1; }
+
+.badge.sim {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge.nao {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge.admin {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.badge.user {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
 .badge.categoria {
   background: var(--color-surface, #f3f4f6);
-  color: var(--color-brand-blue) ;
-  border: 1px solid var(--color-brand-blue) ;
+  color: var(--color-brand-blue);
+  border: 1px solid var(--color-brand-blue);
 }
 
 /* ── Ações ──────────────────────────────────────────────────── */
@@ -423,9 +526,20 @@ onMounted(async () => {
   cursor: pointer;
   transition: transform 0.12s;
 }
-.btn-acao:hover { transform: scale(1.05); }
-.btn-acao.azul    { background: var(--color-brand-blue); color: #fff; }
-.btn-acao.vermelho { background: var(--color-error, #ef4444); color: #fff; }
+
+.btn-acao:hover {
+  transform: scale(1.05);
+}
+
+.btn-acao.azul {
+  background: var(--color-brand-blue);
+  color: #fff;
+}
+
+.btn-acao.vermelho {
+  background: var(--color-error, #ef4444);
+  color: #fff;
+}
 
 /* ── Estado vazio ───────────────────────────────────────────── */
 .estado-vazio {

@@ -132,7 +132,7 @@ function limparTudo() {
 
 .header-icon svg {
     height: 24px;
-    fill: #d63031;
+    fill: var(--color-brand-green);
 }
 
 .titulo {
