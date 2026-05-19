@@ -48,7 +48,7 @@ async function onToggleFavorito() {
         class="material-symbols-outlined btn-fav"
         type="button"
         aria-label="Favoritar"
-        :style="{ color: favoritos.isFavoritado(produto.id) ? 'red' : 'var(--color-primary)' }"
+        :style="{ color: favoritos.isFavoritado(produto.id) ? 'var(--color-brand-green)' : 'var(--color-brand-blue)' }"
         @click.stop="onToggleFavorito"
       >
         favorite
