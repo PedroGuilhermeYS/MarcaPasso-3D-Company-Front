@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import LogoTop from '@/componentes/layout/AppNavbar.vue'
 import { useCupomStore } from '@/stores/useCupomStore'
 
 const router = useRouter()
@@ -72,7 +71,6 @@ async function cadastrarCupom() {
 </script>
 
 <template>
-  <LogoTop />
   <main class="admin-wrapper">
     <h1 class="titulo">Cadastrar Novo Cupom</h1>
 

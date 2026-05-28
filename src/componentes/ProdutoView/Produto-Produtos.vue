@@ -141,7 +141,7 @@
                 <div class="pd-gallery">
                     <div class="pd-main-img">
                         <img v-if="imagemAtual" :src="imagemAtual" :alt="produto.nome" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
-                        <svg v-else class="ph" viewBox="0 0 24 24"><polyline points="12 2 22 6.5 22 17.5 12 22 2 17.5 2 6.5 12 2"/><line x1="12" y1="22" x2="12" y2="11.5"/><polyline points="22 6.5 12 11.5 2 6.5"/></svg>
+                        <span v-else class="material-symbols-outlined">view_in_ar</span>
                         <div class="pd-img-badge">
                             <span class="pill pill-g">✦ Personaliz​ável</span>
                         </div>
@@ -150,7 +150,7 @@
                     <div class="pd-thumbs">
                         <div class="pd-thumb" :class="{ act: imagemAtual === produto.imagemPrincipal }" @click="imagemAtual = produto.imagemPrincipal">
                             <img v-if="produto.imagemPrincipal" :src="produto.imagemPrincipal" :alt="produto.nome" style="width: 100%; height: 100%; object-fit: cover;" />
-                            <svg v-else viewBox="0 0 24 24"><polyline points="12 2 22 6.5 22 17.5 12 22 2 17.5 2 6.5 12 2"/></svg>
+                            <span v-else class="material-symbols-outlined">view_in_ar</span>
                         </div>
                         <div v-for="(foto, index) in produto.imagensSecundarias" :key="index" class="pd-thumb" :class="{ act: imagemAtual === foto }" @click="imagemAtual = foto">
                             <img :src="foto" :alt="`Imagem ${index + 1}`" style="width: 100%; height: 100%; object-fit: cover;" />
@@ -159,7 +159,7 @@
 
                     <div class="pd-share">
                         <button class="share-btn" @click="compartilharProduto">
-                            <svg width="13" height="13" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                            <span class="material-symbols-outlined">share</span>
                             Copiar link
                         </button>
                         <a :href="`https://api.whatsapp.com/send?text=${encodeURIComponent('Confira este produto: ' + produto.nome + ' - ' + currentUrl)}`" target="_blank" rel="noopener noreferrer">
@@ -201,19 +201,19 @@
 
                     <div v-if="usuarioLogado">
                         <button class="btn-cart-main" @click="carrinho.adicionarItem(produto, itens)">
-                            <svg width="18" height="18" viewBox="0 0 24 24" stroke="white"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            <span class="material-symbols-outlined">shopping_cart</span>
                             Adicionar ao carrinho
                         </button>
                     </div>
                     <router-link v-if="!usuarioLogado" to="/Login">
                         <button class="btn-cart-main">
-                            <svg width="18" height="18" viewBox="0 0 24 24" stroke="white"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            <span class="material-symbols-outlined">shopping_cart</span>
                             Adicionar ao carrinho
                         </button>
                     </router-link>
 
                     <div class="trust">
-                        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span class="material-symbols-outlined">shield</span>
                         Compra 100% segura e protegida
                     </div>
                     <div v-if="isAdmin" class="admin-ctrls">
@@ -242,7 +242,7 @@
                         <div v-for="p in sugestoes" :key="p.id" class="sug-card" role="link" tabindex="0" :aria-label="`Abrir ${p.nome}`" @click="gotoProduto(p.id)" @keyup.enter="gotoProduto(p.id)" @keydown.space.prevent="gotoProduto(p.id)">
                             <div class="sug-img" style="cursor:pointer">
                                 <img v-if="p.imagemPrincipal" :src="p.imagemPrincipal" :alt="p.nome" style="width:100%;height:100%;object-fit:cover" />
-                                <svg v-else width="60" height="60" viewBox="0 0 24 24" style="opacity:.15;color:var(--color-brand-indigo)"><rect x="2" y="7" width="20" height="14" rx="2"/></svg>
+                                <span v-else class="material-symbols-outlined">inventory_2</span>
                             </div>
                             <div class="sug-body">
                                 <div class="sug-name">{{ p.nome }}</div>

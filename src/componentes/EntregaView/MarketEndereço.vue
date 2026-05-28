@@ -221,9 +221,7 @@ async function salvarFreteNoCarrinho() {
       <div class="sum-footer">
         <button class="btn-continuar" @click="salvarFreteNoCarrinho" :disabled="!podeContinuar || enviando"
           type="button">
-          <svg width="15" height="15" viewBox="0 0 24 24">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
+          <span class="material-symbols-outlined">arrow_forward</span>
           <span>{{ enviando ? 'Processando...' : 'Finalizar pedido' }}</span>
         </button>
 

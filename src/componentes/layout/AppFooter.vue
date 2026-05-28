@@ -7,11 +7,7 @@
       <div>
         <div class="ft-brand">
           <div class="logo-cube">
-            <svg viewBox="0 0 24 24" stroke="white">
-              <polyline points="12 2 22 6.5 22 17.5 12 22 2 17.5 2 6.5 12 2"/>
-              <line x1="12" y1="22" x2="12" y2="11.5"/>
-              <polyline points="22 6.5 12 11.5 2 6.5"/>
-            </svg>
+            <span class="material-symbols-outlined">view_in_ar</span>
           </div>
           MarcaPasso 3D
         </div>
