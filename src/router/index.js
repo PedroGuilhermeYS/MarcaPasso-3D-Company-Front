@@ -16,6 +16,7 @@ import SomenteLogoLayout from '@/layouts/SomenteLogoLayout.vue'
 import CadastroUserView from '../views/CadastroUserView.vue'
 import CatalogoView from '../views/CatalogoView.vue'
 import EnderecosView from '../views/EnderecosView.vue'
+import PersonalizadoView from '../views/PersonalizadoView.vue'
 
 const ProdutoView = () => import('@/views/ProdutoView.vue')
 const FavoritosView = () => import('@/views/FavoritosView.vue')
@@ -57,7 +58,8 @@ const routes = [
       { path: 'carrinho', name: 'Carrinho', component: CarrinhoView },
       { path: 'favoritos', name: 'Favoritos', component: FavoritosView },
       { path: 'cadastro', name: 'Cadastro', component: CadastroUserView },
-      { path: 'endereco', name: 'Endereco', component: EnderecosView }
+      { path: 'endereco', name: 'Endereco', component: EnderecosView },
+      { path: 'personalizar', name: 'Personalizar', component: PersonalizadoView }
     ]
   },
 
@@ -69,7 +71,6 @@ const routes = [
       { path: 'novocrud', name: 'NovoCrud', component: NovoCrudView },
       { path: 'adicionar', name: 'AdicionarProdutos', component: AdminProdutosView },
       { path: 'cupons/novo', name: 'AdicionarCupom', component: AdicionarCupomView },
-      { path: 'cupons/atualizar/:id', name: 'AtualizarCupom', component: AtualizarCupomView, props: true },
     ]
   },
 
@@ -78,7 +79,10 @@ const routes = [
     component: SomenteLogoLayout,
     meta: { requiresAuth: true, requiresAdmin: true },
     children: [
-      { path: 'atualizar/:id', name: 'AtualizarProduto', component: AtualizarProdutoView, props: true }
+      { path: 'atualizar/:id', name: 'AtualizarProduto', component: AtualizarProdutoView, props: true },
+      { path: 'cupons/atualizar/:id', name: 'AtualizarCupom', component: AtualizarCupomView, props: true },
+      { path: 'adicionar', name: 'AdicionarProdutos', component: AdminProdutosView },
+      { path: 'cupons/novo', name: 'AdicionarCupom', component: AdicionarCupomView }
     ]
   }
 ]

@@ -86,11 +86,7 @@ const pedidosFiltrados = computed(() => {
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-icon icon-blue">
-              <svg viewBox="0 0 24 24">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
-              </svg>
+              <span class="material-symbols-outlined">shopping_bag</span>
             </div>
             <div>
               <div class="stat-num">{{ stats.total }}</div>
@@ -99,10 +95,7 @@ const pedidosFiltrados = computed(() => {
           </div>
           <div class="stat-card">
             <div class="stat-icon icon-green">
-              <svg viewBox="0 0 24 24">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                <polyline points="22 4 12 14.01 9 11.01" />
-              </svg>
+              <span class="material-symbols-outlined">check_circle</span>
             </div>
             <div>
               <div class="stat-num">{{ stats.entregues }}</div>
@@ -111,10 +104,7 @@ const pedidosFiltrados = computed(() => {
           </div>
           <div class="stat-card">
             <div class="stat-icon icon-warn">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
+              <span class="material-symbols-outlined">warning</span>
             </div>
             <div>
               <div class="stat-num">{{ stats.andamento }}</div>
@@ -123,10 +113,7 @@ const pedidosFiltrados = computed(() => {
           </div>
           <div class="stat-card">
             <div class="stat-icon icon-red">
-              <svg viewBox="0 0 24 24">
-                <line x1="12" y1="1" x2="12" y2="23" />
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-              </svg>
+              <span class="material-symbols-outlined">payments</span>
             </div>
             <div>
               <div class="stat-num">{{ formatarPreco(stats.totalGasto) }}</div>
@@ -155,11 +142,7 @@ const pedidosFiltrados = computed(() => {
           </div>
 
           <div v-else-if="!pedidosFiltrados.length" class="estado-vazio">
-            <svg viewBox="0 0 24 24">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <path d="M16 10a4 4 0 0 1-8 0" />
-            </svg>
+            <span class="material-symbols-outlined">shopping_bag</span>
             <p>Nenhum pedido encontrado.</p>
           </div>
 
@@ -167,11 +150,7 @@ const pedidosFiltrados = computed(() => {
             :class="{ selecionado: pedidoSelecionadoId === pedido.id }" @click="selecionarPedido(pedido.id)"
             role="button">
             <div class="pedido-icone">
-              <svg viewBox="0 0 24 24">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
-              </svg>
+              <span class="material-symbols-outlined">shopping_bag</span>
             </div>
             <div class="pedido-info">
               <div class="pedido-num">{{ pedido.numeroPedido }}</div>

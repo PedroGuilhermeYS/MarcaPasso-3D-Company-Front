@@ -24,9 +24,7 @@
                             don: step.n < props.currentStep,
                             ina: step.n > props.currentStep
                         }">
-                        <svg v-if="step.n < props.currentStep" width="14" height="14" viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
+                        <span v-if="step.n < props.currentStep" class="material-symbols-outlined">check</span>
                         <span v-else>{{ step.n }}</span>
                     </div>
                     <div class="step-lbl"

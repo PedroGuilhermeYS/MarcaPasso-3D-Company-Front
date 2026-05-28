@@ -23,13 +23,13 @@
                     <span class="ct-count">{{ carrinho.itens.length }} {{ carrinho.itens.length === 1 ? 'item' : 'itens' }}</span>
                 </div>
                 <button class="btn-rm-all" @click="carrinho.itens.forEach(i => carrinho.removerItem(i.id))">
-                    <svg width="13" height="13" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                    <span class="material-symbols-outlined">delete</span>
                     Remover todos
                 </button>
             </div>
 
             <div v-if="carrinho.itens.length === 0" class="ct-empty">
-                <svg width="48" height="48" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                <span class="material-symbols-outlined">shopping_cart</span>
                 <p>Seu carrinho está vazio</p>
             </div>
 
@@ -38,7 +38,7 @@
                 <div class="ct-item">
                     <div class="ct-img">
                         <img v-if="item.imagem" :src="item.imagem" :alt="item.nome">
-                        <svg v-else viewBox="0 0 24 24"><polyline points="12 2 22 6.5 22 17.5 12 22 2 17.5 2 6.5 12 2"/><line x1="12" y1="22" x2="12" y2="11.5"/><polyline points="22 6.5 12 11.5 2 6.5"/></svg>
+                        <span v-else class="material-symbols-outlined">view_in_ar</span>
                     </div>
                     <div class="ct-info">
                         <div class="ct-name">{{ item.nome }}</div>
@@ -65,7 +65,7 @@
         <div class="extras-card">
             <div class="extras-sec">
                 <div class="extras-lbl">
-                    <svg width="14" height="14" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span class="material-symbols-outlined">local_shipping</span>
                     Calcular frete e prazo
                 </div>
                 <div class="extras-row">

@@ -54,14 +54,14 @@
         <div class="hero-inner">
           <div class="hero-text">
             <div class="hero-eyebrow">
-              <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor"><polyline points="12 2 22 6.5 22 17.5 12 22 2 17.5 2 6.5 12 2"/></svg>
+              <span class="material-symbols-outlined">view_in_ar</span>
               Impressão 3D Premium
             </div>
             <div class="hero-title">Produtos únicos<br/>feitos <em>para você</em></div>
             <div class="hero-sub">Decoração, acessórios e muito mais com tecnologia de impressão 3D de alto nível. Cada peça é para você.</div>
             <div class="hero-ctas">
               <button class="btn-hero-main" @click="Catalogo">
-                <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                <span class="material-symbols-outlined">shopping_cart</span>
                 Ver catálogo
               </button>
               <!-- <button class="btn-hero-sec">Personalizar agora →</button> -->
@@ -114,10 +114,10 @@
           <div class="sec-hd-right">
             <div class="carousel-nav">
               <button class="cnav-btn" :disabled="posC1 === 0" @click="prevC1">
-                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+                <span class="material-symbols-outlined">chevron_left</span>
               </button>
               <button class="cnav-btn" :disabled="posC1 >= maxPosC1" @click="nextC1">
-                <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                <span class="material-symbols-outlined">chevron_right</span>
               </button>
             </div>
           </div>
@@ -161,14 +161,14 @@
           <div class="sec-hd-right">
             <button class="btn-see-all">
               Ver todos
-              <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              <span class="material-symbols-outlined">chevron_right</span>
             </button>
             <div class="carousel-nav">
               <button class="cnav-btn" :disabled="posC2 === 0" @click="prevC2">
-                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+                <span class="material-symbols-outlined">chevron_left</span>
               </button>
               <button class="cnav-btn" :disabled="posC2 >= maxPosC2" @click="nextC2">
-                <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                <span class="material-symbols-outlined">chevron_right</span>
               </button>
             </div>
           </div>

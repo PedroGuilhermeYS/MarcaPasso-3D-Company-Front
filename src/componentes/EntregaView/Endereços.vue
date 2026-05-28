@@ -79,10 +79,7 @@ async function onEnderecoSalvo() {
     <div class="sec-hd">
       <div class="sec-hd-left">
         <div class="sec-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-            <circle cx="12" cy="9" r="2.5"/>
-          </svg>
+          <span class="material-symbols-outlined">location_on</span>
         </div>
         <span class="sec-title">Endereço de Entrega</span>
       </div>
@@ -101,10 +98,7 @@ async function onEnderecoSalvo() {
 
       <div v-if="enderecoSelecionado && !modoEscolha" class="addr-selecionado">
         <div class="addr-sel-icon">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-            <circle cx="12" cy="9" r="2.5" fill="#fff"/>
-          </svg>
+          <span class="material-symbols-outlined">location_on</span>
         </div>
         <div class="addr-sel-info">
           <span class="addr-sel-nome">{{ enderecoSelecionado.nome }}</span>
@@ -155,10 +149,7 @@ async function onEnderecoSalvo() {
       </div>
 
       <div v-else class="sem-endereco">
-        <svg width="32" height="32" viewBox="0 0 24 24">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-          <circle cx="12" cy="9" r="2.5"/>
-        </svg>
+        <span class="material-symbols-outlined">location_on</span>
         <p>Nenhum endereço cadastrado.</p>
         <button class="btn-novo-vazio" type="button" @click="abrirModalAdicionar">
           + CADASTRAR ENDEREÇO

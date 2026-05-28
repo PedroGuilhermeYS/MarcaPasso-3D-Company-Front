@@ -168,12 +168,8 @@ const toggleChat = () => {
       @click="toggleChat"
       :aria-label="isOpen ? 'Fechar chat' : 'Abrir chat com assistente'"
     >
-      <svg v-if="!isOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2.546 20.5a1 1 0 0 0 1.278 1.278l3.332-.892A9.956 9.956 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2ZM8 13a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm4 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm4 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
-      </svg>
-      <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <path d="M18 6 6 18M6 6l12 12"/>
-      </svg>
+      <span class="material-symbols-outlined">chat</span>
+      <span class="material-symbols-outlined">close</span>
     </button>
 
     <Transition name="chat-slide">
@@ -181,9 +177,7 @@ const toggleChat = () => {
 
         <div class="chat-header">
           <div class="chat-header__avatar">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2Zm0 12c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4Z"/>
-            </svg>
+            <span class="material-symbols-outlined">account_circle</span>
           </div>
           <div class="chat-header__info">
             <span class="chat-header__name">Assistente MarcaPasso3D</span>
@@ -246,9 +240,7 @@ const toggleChat = () => {
             @click="enviarMensagem"
             aria-label="Enviar mensagem"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/>
-            </svg>
+            <span class="material-symbols-outlined">send</span>
           </button>
         </div>
 
