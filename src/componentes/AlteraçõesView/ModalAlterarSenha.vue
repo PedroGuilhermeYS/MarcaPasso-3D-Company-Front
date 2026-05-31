@@ -28,21 +28,21 @@ async function salvar() {
   mensagem.value = ''
 
   if (novaSenha.value.length < 6) {
-    mensagem.value = '❌ A nova senha deve ter pelo menos 6 caracteres.'
+    mensagem.value = '<span class="material-symbols-outlined">error</span> A nova senha deve ter pelo menos 6 caracteres.'
     return
   }
   if (novaSenha.value !== confirmarSenha.value) {
-    mensagem.value = '❌ As senhas não coincidem.'
+    mensagem.value = '<span class="material-symbols-outlined">error</span> As senhas não coincidem.'
     return
   }
 
   loading.value = true
   try {
     await authStore.alterarSenha({ senhaAtual: senhaAtual.value, novaSenha: novaSenha.value })
-    mensagem.value = '✅ Senha alterada com sucesso!'
+    mensagem.value = '<span class="material-symbols-outlined">check_circle</span> Senha alterada com sucesso!'
     setTimeout(fechar, 1400)
   } catch (e) {
-    mensagem.value = '❌ ' + (e?.message ?? 'Erro ao alterar senha.')
+    mensagem.value = '<span class="material-symbols-outlined">error</span> ' + (e?.message ?? 'Erro ao alterar senha.')
   } finally {
     loading.value = false
   }

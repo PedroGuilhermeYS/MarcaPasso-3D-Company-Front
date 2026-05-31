@@ -55,7 +55,7 @@ const enviarMensagem = async () => {
     mensagens.value.push({
       tipo: 'ia',
       texto: 'Desculpe, não consegui processar sua mensagem. Tente novamente.',
-      link: { texto: '📱 Falar pelo WhatsApp', url: WHATSAPP_LINK }
+      link: { texto: '<span class="material-symbols-outlined">smartphone</span> Falar pelo WhatsApp', url: WHATSAPP_LINK }
     })
   } finally {
     carregando.value = false
@@ -78,7 +78,7 @@ const processarAcao = async (resultado) => {
       mensagens.value.push({
         tipo: 'ia',
         texto: resultado.mensagem,
-        acao: { tipo: 'navegar', label: '🛍️ Ver produtos filtrados', rota: { name: 'Home' } }
+        acao: { tipo: 'navegar', label: '<span class="material-symbols-outlined">shopping_bag</span> Ver produtos filtrados', rota: { name: 'Home' } }
       })
       await router.push({ name: 'Home' })
       break
@@ -101,7 +101,7 @@ const processarAcao = async (resultado) => {
         mensagens.value.push({
           tipo: 'ia',
           texto: 'Para favoritar produtos você precisa estar logado. Que tal fazer login agora?',
-          acao: { tipo: 'navegar', label: '🔑 Fazer login', rota: { name: 'Login' } }
+          acao: { tipo: 'navegar', label: '<span class="material-symbols-outlined">login</span> Fazer login', rota: { name: 'Login' } }
         })
         return
       }
@@ -110,14 +110,14 @@ const processarAcao = async (resultado) => {
       const produto = produtosStore.produtos.find(p => String(p.id) === String(resultado.id))
       if (produto) {
         await favoritosStore.adicionarFavorito(produto)
-        mensagens.value.push({ tipo: 'ia', texto: resultado.mensagem + ' ❤️' })
+        mensagens.value.push({ tipo: 'ia', texto: resultado.mensagem + ' <span class="material-symbols-outlined">favorite</span>' })
       } else {
         // Produto não está carregado na store ainda — tenta carregar primeiro
         await produtosStore.carregarProdutos()
         const produtoRecarregado = produtosStore.produtos.find(p => String(p.id) === String(resultado.id))
         if (produtoRecarregado) {
           await favoritosStore.adicionarFavorito(produtoRecarregado)
-          mensagens.value.push({ tipo: 'ia', texto: resultado.mensagem + ' ❤️' })
+          mensagens.value.push({ tipo: 'ia', texto: resultado.mensagem + ' <span class="material-symbols-outlined">favorite</span>' })
         } else {
           mensagens.value.push({ tipo: 'ia', texto: 'Não encontrei esse produto para favoritar.' })
         }
@@ -130,7 +130,7 @@ const processarAcao = async (resultado) => {
       mensagens.value.push({
         tipo: 'ia',
         texto: resultado.mensagem,
-        link: { texto: '📱 Falar pelo WhatsApp', url: WHATSAPP_LINK }
+        link: { texto: '<span class="material-symbols-outlined">smartphone</span> Falar pelo WhatsApp', url: WHATSAPP_LINK }
       })
       break
     }

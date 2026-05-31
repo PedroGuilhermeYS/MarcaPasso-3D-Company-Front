@@ -31,9 +31,9 @@ async function salvarAlteracoes() {
       nome: nome.value,
       telefone: telefone.value
     })
-    mensagemPerfil.value = '✅ Dados atualizados com sucesso!'
+    mensagemPerfil.value = '<span class="material-symbols-outlined">check_circle</span> Dados atualizados com sucesso!'
   } catch {
-    mensagemPerfil.value = '❌ Erro ao atualizar dados.'
+    mensagemPerfil.value = '<span class="material-symbols-outlined">error</span> Erro ao atualizar dados.'
   } finally {
     loadingPerfil.value = false
   }
@@ -63,12 +63,12 @@ async function salvarEmail() {
       senha: senhaEmail.value
     })
     email.value = authStore.usuario?.email ?? novoEmail.value
-    mensagemEmail.value = '✅ E-mail alterado com sucesso!'
+    mensagemEmail.value = '<span class="material-symbols-outlined">check_circle</span> E-mail alterado com sucesso!'
     setTimeout(() => {
       modalEmail.value = false
     }, 1400)
   } catch (e) {
-    mensagemEmail.value = '❌ ' + (e?.message ?? 'Erro ao alterar e-mail.')
+    mensagemEmail.value = '<span class="material-symbols-outlined">error</span> ' + (e?.message ?? 'Erro ao alterar e-mail.')
   } finally {
     loadingEmail.value = false
   }

@@ -61,11 +61,11 @@ async function salvar() {
       rua: rua.value
     })
 
-    mensagem.value = '✅ Endereço atualizado com sucesso!'
+    mensagem.value = '<span class="material-symbols-outlined">check_circle</span> Endereço atualizado com sucesso!'
     emit('salvo')
     setTimeout(fechar, 1400)
   } catch (e) {
-    mensagem.value = '❌ ' + (e?.message ?? 'Erro ao editar endereço.')
+    mensagem.value = '<span class="material-symbols-outlined">error</span> ' + (e?.message ?? 'Erro ao editar endereço.')
   } finally {
     loading.value = false
   }

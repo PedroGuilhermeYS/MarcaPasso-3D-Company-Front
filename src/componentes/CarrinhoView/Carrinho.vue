@@ -44,7 +44,7 @@
                         <div class="ct-name">{{ item.nome }}</div>
                         <div class="ct-sku">ID: {{ item.idProduto }}</div>
                         <div class="ct-tags">
-                            <span class="ct-tag ct-tag-g">✦ Frete grátis</span>
+                            <span class="ct-tag ct-tag-g"><span class="material-symbols-outlined">star</span> Frete grátis</span>
                             <span class="ct-tag ct-tag-i">Personalizável</span>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                             <button class="ct-qty-btn" @click="carrinho.alterarQuantidade(item.id, item.quantidade - 1)">−</button>
                             <span class="ct-qty-n">{{ item.quantidade }}</span>
                             <button class="ct-qty-btn" @click="carrinho.alterarQuantidade(item.id, item.quantidade + 1)">+</button>
-                            <button class="ct-trash" @click="carrinho.removerItem(item.id)">🗑</button>
+                            <button class="ct-trash" @click="carrinho.removerItem(item.id)"><span class="material-symbols-outlined">delete</span></button>
                         </div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                     <button class="btn-apply" @click="calcularFrete">Calcular</button>
                 </div>
                 <div v-if="props.DiaEntrega" class="frete-resultado">
-                    🚚 Entrega{{ props.cidade }}: <strong>{{ props.DiaEntrega }}</strong>
+                    <span class="material-symbols-outlined">local_shipping</span> Entrega{{ props.cidade }}: <strong>{{ props.DiaEntrega }}</strong>
                 </div>
                 <a href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank" class="cep-help">? Não sei meu CEP</a>
             </div>

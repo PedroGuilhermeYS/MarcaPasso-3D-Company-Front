@@ -28,7 +28,7 @@ function buscar() {
           v-model="pesquisa.termo"
           @keyup.enter="buscar"
         >
-        <span class="icon" @click="buscar">🔍</span>
+        <span class="icon" @click="buscar"><span class="material-symbols-outlined">search</span></span>
       </div>
     </div>
   </main>

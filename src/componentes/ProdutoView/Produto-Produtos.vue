@@ -129,9 +129,9 @@
         <!-- BREADCRUMB -->
         <div class="bc">
             <span>Home</span>
-            <span class="bc-sep">›</span>
+            <span class="bc-sep"><span class="material-symbols-outlined">chevron_right</span></span>
             <span>{{ produto.categoria }}</span>
-            <span class="bc-sep">›</span>
+            <span class="bc-sep"><span class="material-symbols-outlined">chevron_right</span></span>
             <span class="cur">{{ produto.nome }}</span>
         </div>
 
@@ -143,7 +143,7 @@
                         <img v-if="imagemAtual" :src="imagemAtual" :alt="produto.nome" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
                         <span v-else class="material-symbols-outlined">view_in_ar</span>
                         <div class="pd-img-badge">
-                            <span class="pill pill-g">✦ Personaliz​ável</span>
+                            <span class="pill pill-g"><span class="material-symbols-outlined">star</span> Personaliz​ável</span>
                         </div>
                     </div>
 
@@ -163,11 +163,11 @@
                             Copiar link
                         </button>
                         <a :href="`https://api.whatsapp.com/send?text=${encodeURIComponent('Confira este produto: ' + produto.nome + ' - ' + currentUrl)}`" target="_blank" rel="noopener noreferrer">
-                            <button class="share-btn wpp">📱 WhatsApp</button>
+                            <button class="share-btn wpp"><span class="material-symbols-outlined">smartphone</span> WhatsApp</button>
                         </a>
-                        <button v-if="usuarioLogado" class="share-btn fav" :style="{ borderColor: favoritos.isFavoritado(produto.id) ? 'var(--color-brand-green)' : 'var(--color-brand-green)', backgroundColor: favoritos.isFavoritado(produto.id) ? 'var(--color-brand-green)' : 'transparent', color: favoritos.isFavoritado(produto.id) ? '#fff' : 'var(--color-brand-green)' }" @click="onToggleFavorito">♡ {{ favoritos.isFavoritado(produto.id) ? 'Favorito' : 'Favoritar' }}</button>
+                        <button v-if="usuarioLogado" class="share-btn fav" :style="{ borderColor: favoritos.isFavoritado(produto.id) ? 'var(--color-brand-green)' : 'var(--color-brand-green)', backgroundColor: favoritos.isFavoritado(produto.id) ? 'var(--color-brand-green)' : 'transparent', color: favoritos.isFavoritado(produto.id) ? '#fff' : 'var(--color-brand-green)' }" @click="onToggleFavorito"><span class="material-symbols-outlined">favorite_border</span> {{ favoritos.isFavoritado(produto.id) ? 'Favorito' : 'Favoritar' }}</button>
                         <router-link v-if="!usuarioLogado" to="/Login">
-                            <button class="share-btn fav">♡ Favoritar</button>
+                            <button class="share-btn fav"><span class="material-symbols-outlined">favorite_border</span> Favoritar</button>
                         </router-link>
                     </div>
                 </div>
@@ -217,8 +217,8 @@
                         Compra 100% segura e protegida
                     </div>
                     <div v-if="isAdmin" class="admin-ctrls">
-                        <button class="btn-edit" @click="editarProduto">✎ Editar</button>
-                        <button class="btn-delete" @click="deletarProduto">🗑 Remover</button>
+                        <button class="btn-edit" @click="editarProduto"><span class="material-symbols-outlined">edit</span> Editar</button>
+                        <button class="btn-delete" @click="deletarProduto"><span class="material-symbols-outlined">delete</span> Remover</button>
                     </div>
                 </div>   
             </div>
@@ -236,7 +236,7 @@
         <div class="sugestoes">
             <div class="sug-title">Você também pode gostar</div>
             <div class="sug-carousel">
-                <button class="sug-nav prev" @click="scrollPrev" aria-label="Anterior">‹</button>
+                <button class="sug-nav prev" @click="scrollPrev" aria-label="Anterior"><span class="material-symbols-outlined">chevron_left</span></button>
                 <div class="sug-viewport" ref="sugViewport">
                     <div class="sug-track">
                         <div v-for="p in sugestoes" :key="p.id" class="sug-card" role="link" tabindex="0" :aria-label="`Abrir ${p.nome}`" @click="gotoProduto(p.id)" @keyup.enter="gotoProduto(p.id)" @keydown.space.prevent="gotoProduto(p.id)">
@@ -251,7 +251,7 @@
                         </div>
                     </div>
                 </div>
-                <button class="sug-nav next" @click="scrollNext" aria-label="Próximo">›</button>
+                <button class="sug-nav next" @click="scrollNext" aria-label="Próximo"><span class="material-symbols-outlined">chevron_right</span></button>
             </div>
         </div>
     </div>

@@ -72,7 +72,7 @@ const pedidosFiltrados = computed(() => {
     <!-- Breadcrumb -->
     <div class="breadcrumb">
       <span>Home</span>
-      <span class="sep">›</span>
+      <span class="sep"><span class="material-symbols-outlined">chevron_right</span></span>
       <span class="atual">Minhas Encomendas</span>
     </div>
 
@@ -164,7 +164,7 @@ const pedidosFiltrados = computed(() => {
               <div class="pedido-valor">{{ formatarPreco(pedido.total) }}</div>
               <span class="status" :class="statusClass(pedido.status)">{{ statusLabel(pedido.status) }}</span>
             </div>
-            <span class="pedido-seta">›</span>
+            <span class="pedido-seta"><span class="material-symbols-outlined">chevron_right</span></span>
           </div>
         </div>
       </div>

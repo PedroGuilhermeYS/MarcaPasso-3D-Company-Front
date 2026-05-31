@@ -32,7 +32,7 @@ function calculardata(cepatual) {
     <main main class="users">
         <div class="bc">
             <router-link to="/">Home</router-link>
-            <span class="bc-sep">›</span>
+            <span class="bc-sep"><span class="material-symbols-outlined">chevron_right</span></span>
             <span class="bc-cur">Carrinho</span>
         </div>
 
