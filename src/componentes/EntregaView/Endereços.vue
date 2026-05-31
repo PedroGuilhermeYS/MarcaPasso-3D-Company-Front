@@ -79,7 +79,7 @@ async function onEnderecoSalvo() {
     <div class="sec-hd">
       <div class="sec-hd-left">
         <div class="sec-icon">
-          <span class="material-symbols-outlined">location_on</span>
+          <span class="material-symbols-outlined icon">location_on</span>
         </div>
         <span class="sec-title">Endereço de Entrega</span>
       </div>
@@ -98,7 +98,7 @@ async function onEnderecoSalvo() {
 
       <div v-if="enderecoSelecionado && !modoEscolha" class="addr-selecionado">
         <div class="addr-sel-icon">
-          <span class="material-symbols-outlined">location_on</span>
+          <span class="material-symbols-outlined icon">location_on</span>
         </div>
         <div class="addr-sel-info">
           <span class="addr-sel-nome">{{ enderecoSelecionado.nome }}</span>
@@ -254,6 +254,12 @@ async function onEnderecoSalvo() {
   justify-content: center;
   flex-shrink: 0;
   margin-top: 2px;
+}
+
+.icon {
+  font-size: 18px;
+  color: #fff;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
 .addr-sel-info {
