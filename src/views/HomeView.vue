@@ -1,26 +1,26 @@
   <script setup>
   import { ref, computed, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
-  import { usePesquisaStore } from '@/stores/usePesquisaStore'
+  import { useProdutosStore } from '@/stores/useProdutosStore'
   import { formatarPreco } from '@/composables/useFormatadorPreco'
   import ProductCard from '@/componentes/ProdutoView/ProductCard.vue'
 
   const router = useRouter()
-  const pesquisa = usePesquisaStore()
+  const produtosStore = useProdutosStore()
 
   onMounted(async () => {
       try {
-          await pesquisa.init()
+          await produtosStore.carregarProdutos()
       } catch (error) {
           console.warn('sem backend', error.message)
       }
   })
 
-  const produtosMaisVendidos = computed(() => pesquisa.produtosFiltrados.slice(0, 6))
-  const produtosLancamentos = computed(() => pesquisa.produtosFiltrados.slice(6, 12))
+  const produtosMaisVendidos = computed(() => produtosStore.produtos.slice(0, 6))
+  const produtosLancamentos = computed(() => produtosStore.produtos.slice(6, 12))
   const produtosDestaqueHero = computed(() => {
-    if (pesquisa.produtosFiltrados.length === 0) return []
-    return [...pesquisa.produtosFiltrados]
+    if (produtosStore.produtos.length === 0) return []
+    return [...produtosStore.produtos]
       .sort(() => 0.5 - Math.random())
       .slice(0, 3)
   })
@@ -108,7 +108,7 @@
             <div class="sec-accent ind"></div>
             <div>
               <div class="sec-label ind">Top produtos</div>
-              <div class="sec-title-txt">🔥 Recomendados por nós</div>
+              <div class="sec-title-txt"><span class="material-symbols-outlined">local_fire_department</span> Recomendados por nós</div>
             </div>
           </div>
           <div class="sec-hd-right">
@@ -155,7 +155,7 @@
             <div class="sec-accent grn"></div>
             <div>
               <div class="sec-label grn">Acabaram de chegar</div>
-              <div class="sec-title-txt">✨ Lançamentos</div>
+              <div class="sec-title-txt"><span class="material-symbols-outlined">auto_awesome</span> Lançamentos</div>
             </div>
           </div>
           <div class="sec-hd-right">

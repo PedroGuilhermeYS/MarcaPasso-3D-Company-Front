@@ -63,14 +63,14 @@ async function onEnderecoSalvo() {
   <main class="users">
     <div class="breadcrumb">
       <span>Home</span>
-      <span>›</span>
+      <span><span class="material-symbols-outlined">chevron_right</span></span>
       <span>Minha Conta</span>
-      <span>›</span>
+      <span><span class="material-symbols-outlined">chevron_right</span></span>
       <span class="atual">Endereços</span>
     </div>
 
     <div class="page-head">
-      <span class="page-icon">📍</span>
+      <span class="page-icon"><span class="material-symbols-outlined">location_on</span></span>
       <h1 class="page-titulo">ENDEREÇOS</h1>
     </div>
 

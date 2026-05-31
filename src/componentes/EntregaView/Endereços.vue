@@ -110,7 +110,7 @@ async function onEnderecoSalvo() {
             {{ enderecoSelecionado.bairro }} · {{ enderecoSelecionado.cidade }} · {{ enderecoSelecionado.estado }} · {{ enderecoSelecionado.cep }}
           </span>
         </div>
-        <div class="addr-sel-badge">✓</div>
+        <div class="addr-sel-badge"><span class="material-symbols-outlined">check_circle</span></div>
       </div>
 
       <div v-else-if="modoEscolha || (!enderecoSelecionado && enderecos.length)" class="addr-list">

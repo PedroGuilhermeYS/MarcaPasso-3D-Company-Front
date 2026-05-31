@@ -48,7 +48,7 @@ watch(
 
         <div class="breadcrumb">
             <span>Home</span>
-            <span class="sep">›</span>
+            <span class="sep"><span class="material-symbols-outlined">chevron_right</span></span>
             <span>Catálogo</span>
         </div>
 

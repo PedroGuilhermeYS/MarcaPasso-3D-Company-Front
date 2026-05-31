@@ -65,11 +65,11 @@ async function salvar() {
       rua: rua.value
     })
 
-    mensagem.value = '✅ Endereço cadastrado com sucesso!'
+    mensagem.value = '<span class="material-symbols-outlined">check_circle</span> Endereço cadastrado com sucesso!'
     emit('salvo')
     setTimeout(fechar, 1400)
   } catch (e) {
-    mensagem.value = '❌ ' + (e?.message ?? 'Erro ao cadastrar endereço.')
+    mensagem.value = '<span class="material-symbols-outlined">error</span> ' + (e?.message ?? 'Erro ao cadastrar endereço.')
   } finally {
     loading.value = false
   }

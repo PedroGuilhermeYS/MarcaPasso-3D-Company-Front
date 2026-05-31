@@ -37,7 +37,7 @@ onMounted(async () => {
   try {
     const cupom = await cupomStore.buscarCupom(id.value)
     if (!cupom) {
-      mensagem.value = '❌ Cupom não encontrado.'
+      mensagem.value = '<span class="material-symbols-outlined">error</span> Cupom não encontrado.'
       return
     }
 
@@ -47,7 +47,7 @@ onMounted(async () => {
     dataExpiracao.value = paraInputData(cupom.dataExpiracao)
   } catch (e) {
     console.error(e)
-    mensagem.value = '❌ Erro ao carregar cupom.'
+    mensagem.value = '<span class="material-symbols-outlined">error</span> Erro ao carregar cupom.'
   } finally {
     carregandoDados.value = false
   }
@@ -65,11 +65,11 @@ async function atualizarCupom() {
       dataExpiracao: precisaData.value ? dataExpiracao.value : null,
     })
 
-    mensagem.value = '✅ Cupom atualizado com sucesso!'
+    mensagem.value = '<span class="material-symbols-outlined">check_circle</span> Cupom atualizado com sucesso!'
     setTimeout(() => voltarParaCrud(), 1200)
   } catch (error) {
     console.error(error)
-    mensagem.value = '❌ Erro ao atualizar cupom.'
+    mensagem.value = '<span class="material-symbols-outlined">error</span> Erro ao atualizar cupom.'
   } finally {
     loading.value = false
   }

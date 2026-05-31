@@ -17,9 +17,9 @@ function limparTudo() {
     <main class="users favoritos-page">
         <div class="breadcrumb">
             <span>Home</span>
-            <span>›</span>
+            <span><span class="material-symbols-outlined">chevron_right</span></span>
             <span>Minha Conta</span>
-            <span>›</span>
+            <span><span class="material-symbols-outlined">chevron_right</span></span>
             <span class="atual">Favoritos</span>
         </div>
 
@@ -69,7 +69,7 @@ function limparTudo() {
             </div>
 
             <div v-else class="estado-vazio">
-                <div class="vazio-icone">♡</div>
+                <div class="vazio-icone"><span class="material-symbols-outlined">favorite_border</span></div>
                 <h3>Nenhum favorito ainda</h3>
                 <p>Você ainda não adicionou nenhum produto aos favoritos.</p>
             </div>

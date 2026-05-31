@@ -44,7 +44,7 @@ async function cadastrarCupom() {
         : null
     })
 
-    mensagem.value = '✅ Cupom cadastrado com sucesso!'
+    mensagem.value = '<span class="material-symbols-outlined">check_circle</span> Cupom cadastrado com sucesso!'
 
     nomeCupom.value = ''
     valorDesconto.value = ''
@@ -59,9 +59,9 @@ async function cadastrarCupom() {
     console.error(error)
 
     if (error?.response?.data?.message) {
-      mensagem.value = `❌ ${error.response.data.message}`
+      mensagem.value = `<span class="material-symbols-outlined">error</span> ${error.response.data.message}`
     } else {
-      mensagem.value = '❌ Erro ao cadastrar o cupom.'
+      mensagem.value = '<span class="material-symbols-outlined">error</span> Erro ao cadastrar o cupom.'
     }
 
   } finally {

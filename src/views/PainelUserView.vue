@@ -47,7 +47,7 @@ const NovoCrud = () => router.push({ name: 'NovoCrud' });
   <div class="page-wrap">
     <div class="bc">
       <span>Home</span>
-      <span class="bc-sep">›</span>
+      <span class="bc-sep"><span class="material-symbols-outlined">chevron_right</span></span>
       <span class="cur">Minha Conta</span>
     </div>
 
@@ -91,40 +91,40 @@ const NovoCrud = () => router.push({ name: 'NovoCrud' });
 
     <div class="shortcut-grid">
       <div class="sc-card" @click="Cadastro">
-        <div class="sc-icon-wrap ind">🧾</div>
+        <div class="sc-icon-wrap ind"><span class="material-symbols-outlined">person</span></div>
         <div class="sc-name">Meus Dados</div>
         <div class="sc-desc">Dados pessoais e senha</div>
       </div>
 
       <!-- Abre o modal de alterar senha -->
       <div class="sc-card" @click="modalSenhaRef.abrir()">
-        <div class="sc-icon-wrap grn">🔒</div>
+        <div class="sc-icon-wrap grn"><span class="material-symbols-outlined">lock</span></div>
         <div class="sc-name">Trocar Senha</div>
         <div class="sc-desc">Atualize sua senha de acesso</div>
       </div>
 
       <div class="sc-card" @click="Encomendas">
-        <div class="sc-icon-wrap ind">📦</div>
+        <div class="sc-icon-wrap ind"><span class="material-symbols-outlined">inventory_2</span></div>
         <span class="sc-notif">{{ stats.total }}</span>
         <div class="sc-name">Meus Pedidos</div>
         <div class="sc-desc">Acompanhe suas encomendas</div>
       </div>
 
       <div class="sc-card" @click="Favoritos">
-        <div class="sc-icon-wrap warn">❤️</div>
+        <div class="sc-icon-wrap warn"><span class="material-symbols-outlined">favorite</span></div>
         <span class="sc-notif warn-bg">{{ favoritosStore.quantidade }}</span>
         <div class="sc-name">Favoritos</div>
         <div class="sc-desc">Produtos salvos para depois</div>
       </div>
 
       <div class="sc-card" @click="Enderecos">
-        <div class="sc-icon-wrap grn">📍</div>
+        <div class="sc-icon-wrap grn"><span class="material-symbols-outlined">location_on</span></div>
         <div class="sc-name">Meus Endereços</div>
         <div class="sc-desc">Gerencie seus endereços de entrega</div>
       </div>
 
       <div class="sc-card danger" @click="sair">
-        <div class="sc-icon-wrap red">🚪</div>
+        <div class="sc-icon-wrap red"><span class="material-symbols-outlined">logout</span></div>
         <div class="sc-name">Sair</div>
         <div class="sc-desc">Encerrar sessão da conta</div>
       </div>
