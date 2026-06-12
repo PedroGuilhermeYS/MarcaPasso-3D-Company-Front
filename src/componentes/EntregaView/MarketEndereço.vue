@@ -6,6 +6,7 @@ import { useCupomStore } from '@/stores/useCupomStore'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useEncomendasStore } from '@/stores/useEncomendasStore'
+import { criarPreferenceMercadoPago } from '@/api/pagamento/pagamentoMercadoPagoApi'
 
 const router = useRouter()
 const carrinho = useCarrinhoStore()
@@ -106,6 +107,35 @@ function montarPayload() {
   }
 }
 
+/**
+ * Monta o payload da preference para o Mercado Pago.
+ * Envia apenas os campos que o MercadoPagoService espera.
+ */
+function montarPayloadMercadoPago() {
+  const usuario = authStore.usuario
+
+  return {
+    // Itens com nome (necessário para o MP exibir na tela de pagamento)
+    itens: carrinho.itens.map(item => ({
+      nome: item.nome,
+      quantidade: item.quantidade,
+      precoUnitario: Number(item.preco),
+    })),
+
+    frete: ValorFrete.value ?? 0,
+
+    descontoCupom: percentualDesconto.value > 0
+      ? (carrinho.total + (ValorFrete.value ?? 0)) * percentualDesconto.value
+      : 0,
+
+    formaPagamento: carrinho.formaPagamento, // "pix" | "cartao"
+
+    clienteNome:  usuario?.nome  ?? '',
+    clienteEmail: usuario?.email ?? '',
+    clienteCpf:   usuario?.cpf   ?? '',
+  }
+}
+
 async function salvarFreteNoCarrinho() {
   erroMsg.value = ''
 
@@ -121,14 +151,29 @@ async function salvarFreteNoCarrinho() {
 
   enviando.value = true
   try {
+    // ── 1. Salva a encomenda no banco com status PENDENTE ──────
     const payload = montarPayload()
-
     await encomendasStore.adicionarEncomenda(payload)
+
+    // ── 2. Cria a Preference no Mercado Pago ───────────────────
+    const payloadMP = montarPayloadMercadoPago()
+    const { sandboxInitPoint, initPoint } = await criarPreferenceMercadoPago(payloadMP)
+
+    // ── 3. Limpa o carrinho ────────────────────────────────────
     await carrinho.limparCarrinho()
 
-    router.push({ name: 'Home' })
+    // ── 4. Redireciona para o Checkout Pro do Mercado Pago ─────
+    //    Em desenvolvimento use sandboxInitPoint.
+    //    Em produção troque por initPoint.
+    const urlCheckout = import.meta.env.VITE_MP_SANDBOX === 'true'
+      ? sandboxInitPoint
+      : initPoint
+
+    window.location.href = urlCheckout
+
   } catch (err) {
-    erroMsg.value = 'Erro ao finalizar pedido.'
+    console.error(err)
+    erroMsg.value = 'Erro ao finalizar pedido. Tente novamente.'
   } finally {
     enviando.value = false
   }
@@ -214,6 +259,16 @@ async function salvarFreteNoCarrinho() {
         <div class="sum-total-sub">Em até 2× de {{ formatarPreco(totalPrazo / 2) }} sem juros</div>
       </div>
 
+      <!-- Badge do Mercado Pago -->
+      <div class="mp-badge">
+        <img
+          src="https://imgmp.mlstatic.com/org-img/banners/br/medios/online/BR_online_350x90.jpg"
+          alt="Pagamento seguro via Mercado Pago"
+          style="height: 28px; object-fit: contain;"
+        />
+        <span class="mp-badge-txt">Pagamento seguro via Mercado Pago</span>
+      </div>
+
       <div v-if="erroMsg" class="msg-erro">
         {{ erroMsg }}
       </div>
@@ -221,8 +276,8 @@ async function salvarFreteNoCarrinho() {
       <div class="sum-footer">
         <button class="btn-continuar" @click="salvarFreteNoCarrinho" :disabled="!podeContinuar || enviando"
           type="button">
-          <span class="material-symbols-outlined">arrow_forward</span>
-          <span>{{ enviando ? 'Processando...' : 'Finalizar pedido' }}</span>
+          <span class="material-symbols-outlined">lock</span>
+          <span>{{ enviando ? 'Processando...' : 'Pagar com Mercado Pago' }}</span>
         </button>
 
         <router-link :to="{ name: 'Carrinho' }">
@@ -258,15 +313,6 @@ async function salvarFreteNoCarrinho() {
 .sum-hd-title {
   font-size: 16px;
   font-weight: 800;
-}
-
-.sum-hd-title svg {
-  opacity: .8;
-  stroke: #fff;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.5;
 }
 
 .sum-items {
@@ -381,6 +427,21 @@ async function salvarFreteNoCarrinho() {
   font-weight: 700;
 }
 
+/* Badge Mercado Pago */
+.mp-badge {
+  padding: 10px 20px;
+  border-bottom: 1px solid #eef1f8;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f9fafe;
+}
+
+.mp-badge-txt {
+  font-size: 11px;
+  color: #6b7a9a;
+}
+
 .sum-footer {
   padding: 16px 20px;
   display: flex;
@@ -391,7 +452,7 @@ async function salvarFreteNoCarrinho() {
 .btn-continuar {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #037a64, #049377);
+  background: linear-gradient(135deg, #009ee3, #007eb5);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -403,22 +464,19 @@ async function salvarFreteNoCarrinho() {
   justify-content: center;
   gap: 8px;
   letter-spacing: .03em;
-  box-shadow: 0 4px 20px rgba(4, 147, 119, .35);
+  box-shadow: 0 4px 20px rgba(0, 158, 227, .35);
   cursor: pointer;
   transition: all .2s;
 }
 
-.btn-continuar:hover {
+.btn-continuar:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 28px rgba(4, 147, 119, .45);
+  box-shadow: 0 6px 28px rgba(0, 158, 227, .45);
 }
 
-.btn-continuar svg {
-  stroke: #fff;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
+.btn-continuar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-voltar {
@@ -485,5 +543,15 @@ async function salvarFreteNoCarrinho() {
 
 .msg-cupom.erro {
   color: #e53935;
+}
+
+.msg-erro {
+  margin: 0 20px 8px;
+  padding: 10px 14px;
+  background: #fff5f5;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  color: #e53935;
+  font-size: 13px;
 }
 </style>
