@@ -174,13 +174,16 @@ async function atualizarProduto() {
 
         <!-- Botão de troca — sempre disponível -->
         <label v-if="!imagemTrocada" class="btn-trocar-img">
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
-            class="input-file"
-            @change="aoSelecionarNovaImagem"
-          />
-          {{ imagemAtualUrl ? '<span class="material-symbols-outlined">sync</span> Trocar imagem' : '<span class="material-symbols-outlined">photo_camera</span> Adicionar imagem' }}
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="input-file"
+            @change="aoSelecionarNovaImagem" />
+
+          <template v-if="imagemAtualUrl">
+            <span class="material-symbols-outlined">sync</span> Trocar imagem
+          </template>
+
+          <template v-else>
+            <span class="material-symbols-outlined">photo_camera</span> Adicionar imagem
+          </template>
         </label>
 
         <!-- Status do upload -->
@@ -188,7 +191,8 @@ async function atualizarProduto() {
           <div class="spinner"></div>
           <span>Enviando nova imagem...</span>
         </div>
-        <p v-if="erroUpload" class="upload-erro"><span class="material-symbols-outlined">warning</span> {{ erroUpload }}</p>
+        <p v-if="erroUpload" class="upload-erro"><span class="material-symbols-outlined">warning</span> {{ erroUpload }}
+        </p>
       </div>
       <!-- ─────────────────────────────────────────────────────────────────── -->
 
@@ -207,12 +211,14 @@ async function atualizarProduto() {
   margin: 2rem auto;
   font-family: var(--font-family-base);
 }
+
 .titulo {
   text-align: center;
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 2rem;
 }
+
 .admin-card {
   display: flex;
   flex-direction: column;
@@ -221,18 +227,22 @@ async function atualizarProduto() {
   border-radius: 14px;
   padding: 2rem;
 }
+
 .input-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
+
 .input-group label {
   font-weight: 600;
 }
+
 .row {
   display: flex;
   gap: 1.5rem;
 }
+
 input:not([type='checkbox']):not([type='file']),
 textarea {
   padding: 12px;
@@ -241,10 +251,12 @@ textarea {
   font-size: 1rem;
   outline: none;
 }
+
 input:focus,
 textarea:focus {
   border-color: var(--color-brand-blue);
 }
+
 .checkbox-area {
   display: flex;
   align-items: center;
@@ -258,6 +270,7 @@ textarea:focus {
   display: inline-block;
   width: 100%;
 }
+
 .preview-img {
   width: 100%;
   max-height: 220px;
@@ -265,6 +278,7 @@ textarea:focus {
   border-radius: 10px;
   border: 1px solid var(--color-border-input);
 }
+
 .badge-novo,
 .badge-atual {
   position: absolute;
@@ -276,12 +290,15 @@ textarea:focus {
   font-weight: 700;
   color: white;
 }
+
 .badge-novo {
   background: #16a34a;
 }
+
 .badge-atual {
   background: #3b82f6;
 }
+
 .btn-remover-img {
   position: absolute;
   top: 8px;
@@ -294,6 +311,7 @@ textarea:focus {
   cursor: pointer;
   font-size: 0.85rem;
 }
+
 .sem-imagem {
   display: flex;
   align-items: center;
@@ -303,9 +321,11 @@ textarea:focus {
   border-radius: 10px;
   color: var(--color-muted, #9ca3af);
 }
+
 .btn-trocar-img {
   display: inline-flex;
   align-items: center;
+  justify-content: center; 
   gap: 6px;
   margin-top: 8px;
   padding: 8px 16px;
@@ -317,12 +337,15 @@ textarea:focus {
   font-size: 0.9rem;
   transition: background 0.2s;
 }
+
 .btn-trocar-img:hover {
   background: rgba(59, 130, 246, 0.08);
 }
+
 .input-file {
   display: none;
 }
+
 .upload-status {
   display: flex;
   align-items: center;
@@ -331,6 +354,7 @@ textarea:focus {
   font-weight: 600;
   margin-top: 6px;
 }
+
 .spinner {
   width: 18px;
   height: 18px;
@@ -339,9 +363,13 @@ textarea:focus {
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
+
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
+
 .upload-erro {
   color: #dc2626;
   font-weight: 600;
@@ -358,14 +386,21 @@ textarea:focus {
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
+
 .btn-submit:hover:not(:disabled) {
   transform: scale(1.02);
 }
+
 .btn-submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 .mensagem {
   text-align: center;
   font-weight: 600;
