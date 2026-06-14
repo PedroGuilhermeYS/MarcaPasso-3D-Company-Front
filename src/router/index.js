@@ -17,6 +17,7 @@ import CadastroUserView from '../views/CadastroUserView.vue'
 import CatalogoView from '../views/CatalogoView.vue'
 import EnderecosView from '../views/EnderecosView.vue'
 import PersonalizadoView from '../views/PersonalizadoView.vue'
+import MeusPersonalizadosView from '../views/MeusPersonalizadosView.vue'
 
 const ProdutoView = () => import('@/views/ProdutoView.vue')
 const FavoritosView = () => import('@/views/FavoritosView.vue')
@@ -59,7 +60,8 @@ const routes = [
       { path: 'favoritos', name: 'Favoritos', component: FavoritosView },
       { path: 'cadastro', name: 'Cadastro', component: CadastroUserView },
       { path: 'endereco', name: 'Endereco', component: EnderecosView },
-      { path: 'personalizar', name: 'Personalizar', component: PersonalizadoView }
+      { path: 'personalizar', name: 'Personalizar', component: PersonalizadoView },
+      { path: 'personalizados', name: 'MeusPersonalizados', component: MeusPersonalizadosView }
     ]
   },
 

@@ -11,10 +11,8 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('jwt_token')
-    console.log('>>> [axios] Token no localStorage:', token ? 'EXISTE' : 'NÃO EXISTE')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
-      console.log('>>> [axios] Header Authorization definido')
     } else {
       console.warn('>>> [axios] Nenhum token! Request vai sem autenticação.')
     }

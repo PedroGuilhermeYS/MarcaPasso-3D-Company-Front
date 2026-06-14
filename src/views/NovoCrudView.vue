@@ -6,6 +6,10 @@ import { useProdutosStore } from '@/stores/useProdutosStore'
 import { getTodosUsuariosNaApi } from '@/api/usuario/usuarioApi.js'
 import { getTodosEncomendasAdminNaApi } from '@/api/encomenda'
 import { useCupomStore } from '@/stores/useCupomStore'
+import {
+  getTodosPersonalizadosAdminNaApi,
+  atualizarStatusPersonalizadoNaApi,
+} from '@/api/personalizado'
 
 const router = useRouter()
 const produtosStore = useProdutosStore()
@@ -13,12 +17,63 @@ const cupomStore = useCupomStore()
 
 const usuarios = ref([])
 const encomendas = ref([])
+const personalizados = ref([])
 const carregandoUsuarios = ref(false)
 const carregandoEncomendas = ref(false)
+const carregandoPersonalizados = ref(false)
+const erroUsuarios = ref(null)
+const erroEncomendas = ref(null)
+const erroPersonalizados = ref(null)
 
 // ── Aba ativa ────────────────────────────────────────────────
-const abas = ['Produtos', 'Clientes', 'Cupons']
+const abas = ['Produtos', 'Clientes', 'Cupons', 'Personalizações']
 const abaAtiva = ref('Produtos')
+
+// ── Mapa de status: valor interno → label exibido ────────────
+const STATUS_OPTIONS = [
+  { valor: 'AGUARDANDO_ORCAMENTO', label: 'Aguardando orçamento' },
+  { valor: 'ORCAMENTO_ENVIADO', label: 'Orçamento enviado' },
+  { valor: 'APROVADO', label: 'Aprovado' },
+  { valor: 'EM_PRODUCAO', label: 'Em produção' },
+  { valor: 'CONCLUIDO', label: 'Concluído' },
+  { valor: 'CANCELADO', label: 'Cancelado' },
+]
+
+const STATUS_LABEL = Object.fromEntries(STATUS_OPTIONS.map(o => [o.valor, o.label]))
+const STATUS_CLASS = {
+  AGUARDANDO_ORCAMENTO: 'st-aguardando',
+  ORCAMENTO_ENVIADO: 'st-orcamento',
+  APROVADO: 'st-aprovado',
+  EM_PRODUCAO: 'st-producao',
+  CONCLUIDO: 'st-concluido',
+  CANCELADO: 'st-cancelado',
+}
+
+const statusLabel = (s) => STATUS_LABEL[s] ?? s
+const statusClass = (s) => STATUS_CLASS[s] ?? ''
+
+// ── Estado de edição de status (por pedido) ──────────────────
+// Guarda o valor selecionado no <select> antes de salvar
+const statusEditando = ref({})
+
+function initStatusEditando(lista) {
+  lista.forEach(p => {
+    statusEditando.value[p.id] = p.status
+  })
+}
+
+async function salvarStatus(pedido) {
+  const novoStatus = statusEditando.value[pedido.id]
+  if (!novoStatus || novoStatus === pedido.status) return
+  try {
+    const atualizado = await atualizarStatusPersonalizadoNaApi(pedido.id, novoStatus)
+    const idx = personalizados.value.findIndex(p => p.id === pedido.id)
+    if (idx !== -1) personalizados.value[idx] = atualizado
+  } catch {
+    alert('Erro ao atualizar status. Tente novamente.')
+    statusEditando.value[pedido.id] = pedido.status // reverte
+  }
+}
 
 // ── Estatísticas ─────────────────────────────────────────────
 const totalProdutos = computed(() => produtosStore.produtos.length)
@@ -71,6 +126,9 @@ onMounted(async () => {
   carregandoUsuarios.value = true
   try {
     usuarios.value = await getTodosUsuariosNaApi()
+  } catch (e) {
+    erroUsuarios.value = e?.message || 'Erro ao carregar clientes'
+    console.error('Erro ao carregar usuários:', e)
   } finally {
     carregandoUsuarios.value = false
   }
@@ -78,8 +136,22 @@ onMounted(async () => {
   carregandoEncomendas.value = true
   try {
     encomendas.value = await getTodosEncomendasAdminNaApi()
+  } catch (e) {
+    erroEncomendas.value = e?.message || 'Erro ao carregar encomendas'
+    console.error('Erro ao carregar encomendas:', e)
   } finally {
     carregandoEncomendas.value = false
+  }
+
+  carregandoPersonalizados.value = true
+  try {
+    personalizados.value = await getTodosPersonalizadosAdminNaApi()
+    initStatusEditando(personalizados.value)
+  } catch (e) {
+    erroPersonalizados.value = e?.message || 'Erro ao carregar pedidos personalizados'
+    console.error('Erro ao carregar personalizados:', e)
+  } finally {
+    carregandoPersonalizados.value = false
   }
 })
 </script>
@@ -128,6 +200,13 @@ onMounted(async () => {
         </div>
       </div>
 
+      <div class="card-stat">
+        <span class="stat-icone">🖨️</span>
+        <div>
+          <p class="stat-label">Pedidos Personalizados</p>
+          <p class="stat-valor">{{ personalizados.length }}</p>
+        </div>
+      </div>
     </div>
 
     <!-- ── Abas ─────────────────────────────────────────────── -->
@@ -280,6 +359,65 @@ onMounted(async () => {
                   </button>
                   <button class="btn-acao vermelho" @click="excluirCupom(cupom.id)">
                     Excluir
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════ ABA: PERSONALIZAÇÕES ══════════════════ -->
+    <div v-if="abaAtiva === 'Personalizações'">
+      <div v-if="carregandoPersonalizados" class="estado-vazio">
+        Carregando pedidos personalizados…
+      </div>
+
+      <div v-else-if="erroPersonalizados" class="estado-vazio" style="color:#d63031; border-color:#d63031">
+        {{ erroPersonalizados }}
+      </div>
+
+      <div v-else-if="personalizados.length === 0" class="estado-vazio">
+        Nenhum pedido personalizado encontrado.
+      </div>
+
+      <div v-else class="tabela-wrapper">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Cliente</th>
+              <th>WhatsApp</th>
+              <th>Produto solicitado</th>
+              <th>Qtd</th>
+              <th>Recebido em</th>
+              <th>Situação</th>
+              <th>Alterar situação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="p in personalizados" :key="p.id">
+              <td class="id-cel">{{ p.id }}</td>
+              <td class="nome-cel">{{ p.nomeCliente }}</td>
+              <td>{{ p.whatsapp }}</td>
+              <td class="nome-cel">{{ p.nomePedido }}</td>
+              <td>{{ p.quantidade }}</td>
+              <td>{{ formatarData(p.criadoEm) }}</td>
+              <td>
+                <span class="badge" :class="statusClass(p.status)">
+                  {{ statusLabel(p.status) }}
+                </span>
+              </td>
+              <td>
+                <div class="acoes-cel">
+                  <select v-model="statusEditando[p.id]" class="select-status">
+                    <option v-for="opt in STATUS_OPTIONS" :key="opt.valor" :value="opt.valor">
+                      {{ opt.label }}
+                    </option>
+                  </select>
+                  <button class="btn-acao azul" :disabled="statusEditando[p.id] === p.status" @click="salvarStatus(p)">
+                    Salvar
                   </button>
                 </div>
               </td>
@@ -444,7 +582,7 @@ onMounted(async () => {
 .tabela th,
 .tabela td {
   padding: 0.85rem 1rem;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid var(--color-border-input, #e5e7eb);
 }
 
@@ -475,7 +613,7 @@ onMounted(async () => {
   min-width: 40px;
 }
 
-/* ── Badges ─────────────────────────────────────────────────── */
+/* ── Badges de status ───────────────────────────────────────── */
 .badge {
   display: inline-block;
   padding: 3px 10px;
@@ -511,10 +649,61 @@ onMounted(async () => {
   border: 1px solid var(--color-brand-blue);
 }
 
+/* Status personalizado */
+.st-aguardando {
+  background: #fff8ee;
+  color: #c35a00;
+}
+
+.st-orcamento {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.st-aprovado {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.st-producao {
+  background: #eeeffe;
+  color: #2C18A0;
+}
+
+.st-concluido {
+  background: #f3e5f5;
+  color: #6a1b9a;
+}
+
+.st-cancelado {
+  background: #ffebee;
+  color: #b71c1c;
+}
+
+/* ── Select de status ───────────────────────────────────────── */
+.select-status {
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1.5px solid var(--color-brand-blue);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  background: #fff;
+  cursor: pointer;
+  outline: none;
+  min-width: 170px;
+}
+
+.select-status:focus {
+  box-shadow: 0 0 0 2px rgba(44, 24, 160, 0.2);
+}
+
 /* ── Ações ──────────────────────────────────────────────────── */
 .acoes-cel {
   display: flex;
   gap: 8px;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-acao {
@@ -524,11 +713,16 @@ onMounted(async () => {
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.12s;
+  transition: transform 0.12s, opacity 0.12s;
 }
 
-.btn-acao:hover {
+.btn-acao:hover:not(:disabled) {
   transform: scale(1.05);
+}
+
+.btn-acao:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .btn-acao.azul {

@@ -6,20 +6,22 @@ import { formatarPreco } from '@/composables/useFormatadorPreco.js'
 import { useFavoritosStore } from '@/stores/useFavoritosStore'
 import { useEncomendasStore } from '@/stores/useEncomendasStore'
 import ModalAlterarSenha from '@/componentes/AlteraçõesView/ModalAlterarSenha.vue'
+import { usePersonalizadoStore } from '@/stores/usePersonalizadoStore'
 
 const authStore = useAuthStore();
 const router = useRouter();
 const favoritosStore = useFavoritosStore()
 const encomendasStore = useEncomendasStore()
+const personalizados = usePersonalizadoStore()
 
 const modalSenhaRef = ref(null)
 
 onMounted(async () => {
-  await favoritosStore.carregarFavoritos()
-})
-
-onMounted(async () => {
-  await encomendasStore.carregarEncomendas()
+  await Promise.all([
+    favoritosStore.carregarFavoritos(),
+    encomendasStore.carregarEncomendas(),
+    personalizados.carregarPedidos()
+  ])
 })
 
 const stats = computed(() => {
@@ -29,6 +31,8 @@ const stats = computed(() => {
     totalGasto: lista.reduce((acc, p) => acc + (p.total ?? 0), 0)
   }
 })
+
+const totalPedidos = computed(() => personalizados.pedidos.length)
 
 const sair = async () => {
   await authStore.logout();
@@ -41,6 +45,7 @@ const Favoritos = () => router.push({ name: 'Favoritos' });
 const Cadastro = () => router.push({ name: 'Cadastro' });
 const Enderecos = () => router.push({ name: 'Endereco' });
 const NovoCrud = () => router.push({ name: 'NovoCrud' });
+const irParaPersonalizados = () => router.push({ name: 'MeusPersonalizados' })
 </script>
 
 <template>
@@ -115,6 +120,13 @@ const NovoCrud = () => router.push({ name: 'NovoCrud' });
         <span class="sc-notif warn-bg">{{ favoritosStore.quantidade }}</span>
         <div class="sc-name">Favoritos</div>
         <div class="sc-desc">Produtos salvos para depois</div>
+      </div>
+
+      <div class="sc-card" @click="irParaPersonalizados">
+        <div class="sc-icon-wrap ind"><span class="material-symbols-outlined">design_services</span></div>
+        <span class="sc-notif">{{ totalPedidos }}</span>
+        <div class="sc-name">Meus Personalizados</div>
+        <div class="sc-desc">Acompanhe seus pedidos personalizados</div>
       </div>
 
       <div class="sc-card" @click="Enderecos">
