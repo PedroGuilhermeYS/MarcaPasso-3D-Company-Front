@@ -1,3 +1,9 @@
+const useMock = import.meta.env.VITE_API_MOCK === 'true'
+
+const freteApi = useMock
+  ? await import('./freteMock.js')
+  : await import('./freteApi.js')
+
 export const {
   getTodosFretesNaApi,
   getFreteNaApi,
@@ -5,4 +11,4 @@ export const {
   removeFreteNaApi,
   removeTodosFretesNaApi,
   atualizaFreteNaApi
-} = await import('./freteMock.js')
+} = freteApi
