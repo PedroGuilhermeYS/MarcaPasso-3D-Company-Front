@@ -2,20 +2,27 @@
     import { ref, computed, onMounted, onUnmounted } from 'vue'
     import { useCarrinhoStore } from '@/stores/useCarrinhoStore'
     import { formatarPreco } from '@/composables/useFormatadorPreco.js'
-
+ 
     const props = defineProps({
         ValorFrete: { type: Number, default: null },
         DiaEntrega: { type: String, default: '' },
         cidade: { type: String, default: '' }
     })
-
+ 
+    const emit = defineEmits(['calcular-frete'])
+ 
     const carrinho = useCarrinhoStore()
     const cepatual = ref('')
+ 
+    function calcularFrete() {
+        const cepNormalizado = cepatual.value.replace(/\D/g, '')
+        emit('calcular-frete', cepNormalizado)
+    }
 </script>
-
+ 
 <template>
     <div class="ct-left">
-
+ 
         <div class="ct-card">
             <div class="ct-card-hd">
                 <div class="ct-card-title">
@@ -27,12 +34,12 @@
                     Remover todos
                 </button>
             </div>
-
+ 
             <div v-if="carrinho.itens.length === 0" class="ct-empty">
                 <span class="material-symbols-outlined">shopping_cart</span>
                 <p>Seu carrinho está vazio</p>
             </div>
-
+ 
             <div v-for="item in carrinho.itens" :key="item.id">
                 <div class="sold-by">Vendido e entregue por: <strong>MarcaPasso Official</strong></div>
                 <div class="ct-item">
@@ -61,7 +68,7 @@
                 </div>
             </div>
         </div>
-
+ 
         <div class="extras-card">
             <div class="extras-sec">
                 <div class="extras-lbl">
@@ -77,7 +84,7 @@
                 </div>
                 <a href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank" class="cep-help">? Não sei meu CEP</a>
             </div>
-
+ 
         </div>
     </div>
 </template>

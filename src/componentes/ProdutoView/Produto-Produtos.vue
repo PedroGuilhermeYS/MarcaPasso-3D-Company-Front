@@ -57,9 +57,18 @@
     onMounted(async () => {
 
         await produtosStore.carregarProdutos()
-        await carrinho.carregarCarrinho()
-        await favoritos.carregarFavoritos()
 
+        try {
+            await carrinho.carregarCarrinho()
+        } catch (e) {
+            console.error('Erro ao carregar carrinho:', e)
+        }
+
+        try {
+            await favoritos.carregarFavoritos()
+        } catch (e) {
+            console.error('Erro ao carregar favoritos:', e)
+        }
 
         produto.value = produtosStore.produtos.find(p => String(p.id) === String(route.params.id))
 

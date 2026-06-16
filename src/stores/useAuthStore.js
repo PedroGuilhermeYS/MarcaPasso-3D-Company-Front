@@ -6,7 +6,7 @@ import { useAsyncHandler } from '@/composables/useAsyncHandler.js'
 export const useAuthStore = defineStore('auth', () => {
   const authService = useAuthService()
 
-  const usuario = ref(authService.getCurrentUser())
+  const usuario = ref(authService.isAuthenticated() ? authService.getCurrentUser() : null)
   const carregando = ref(false)
   const erro = ref(null)
 
