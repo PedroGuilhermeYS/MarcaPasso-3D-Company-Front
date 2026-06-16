@@ -7,62 +7,50 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useEncomendasStore } from '@/stores/useEncomendasStore'
 import { criarPreferenceMercadoPago } from '@/api/pagamento/pagamentoMercadoPagoApi'
-
+ 
 const router = useRouter()
 const carrinho = useCarrinhoStore()
 const authStore = useAuthStore()
 const encomendasStore = useEncomendasStore()
 const cupons = useCupomStore()
-
-// Tabela de frete fixo por CEP
-const FRETES_POR_CEP = {
-  '55535000': 15,
-  '51160220': 20,
-}
-
-const ValorFrete = computed(() => {
-  const cepEndereco = (carrinho.enderecoSelecionado?.cep ?? '').replace(/\D/g, '')
-  if (cepEndereco && FRETES_POR_CEP[cepEndereco] !== undefined) {
-    return FRETES_POR_CEP[cepEndereco]
-  }
-  return carrinho.freteSelecionado
-})
-
+ 
+const ValorFrete = computed(() => carrinho.freteSelecionado)
+ 
 const cupomDigitado = ref('')
 const percentualDesconto = ref(0)
 const msgCupom = ref('')
 const cupomValido = ref(false)
-
+ 
 const enviando = ref(false)
 const erroMsg = ref('')
-
+ 
 const totalComDesconto = computed(() => {
   const subtotal = carrinho.total + (ValorFrete.value ?? 0)
   return percentualDesconto.value > 0 ? subtotal * (1 - percentualDesconto.value) : subtotal
 })
-
+ 
 const totalPrazo = computed(() => {
   const base = totalComDesconto.value * 1.05
   return base
 })
-
+ 
 const totalVista = computed(() => {
   return totalComDesconto.value
 })
-
+ 
 const podeContinuar = computed(() => {
   return ValorFrete.value !== null && carrinho.formaPagamento !== null
 })
-
+ 
 onMounted(async () => {
   await cupons.carregarCupons()
 })
-
+ 
 function aplicarCupom() {
   const codigo = cupomDigitado.value.trim().toUpperCase()
-
+ 
   const cupom = cupons.cupons.find(c => c.nomeCupom === codigo)
-
+ 
   if (cupom) {
     percentualDesconto.value = cupom.valorDesconto / 100
     msgCupom.value = `Cupom aplicado! ${cupom.valorDesconto}% de desconto`
@@ -73,11 +61,11 @@ function aplicarCupom() {
     cupomValido.value = false
   }
 }
-
+ 
 function montarPayload() {
   const usuario = authStore.usuario
   const end = carrinho.enderecoSelecionado ?? {}
-
+ 
   return {
     itens: carrinho.itens.map(item => ({
       idProduto: Number(item.idProduto ?? item.id),
@@ -89,7 +77,7 @@ function montarPayload() {
     desconto: percentualDesconto.value > 0 ? (carrinho.total + (ValorFrete.value ?? 0)) * percentualDesconto.value : 0,
     descontoCupom: percentualDesconto.value > 0 ? (carrinho.total + (ValorFrete.value ?? 0)) * percentualDesconto.value : 0,
     total: totalComDesconto.value,
-
+ 
     endRua: end.rua ?? '',
     endNumero: end.numero ?? '',
     endComplemento: end.complemento ?? '',
@@ -97,23 +85,23 @@ function montarPayload() {
     endCidade: end.cidade ?? '',
     endEstado: end.estado ?? '',
     endCep: end.cep ?? '',
-
+ 
     clienteNome: usuario?.nome ?? '',
     clienteEmail: usuario?.email ?? '',
     clienteCpf: usuario?.cpf ?? '',
-
+ 
     formaPagamento: carrinho.formaPagamento,
     tipoPagamento: carrinho.formaPagamento === 'pix' ? 'pix' : 'crédito',
   }
 }
-
+ 
 /**
  * Monta o payload da preference para o Mercado Pago.
  * Envia apenas os campos que o MercadoPagoService espera.
  */
 function montarPayloadMercadoPago() {
   const usuario = authStore.usuario
-
+ 
   return {
     // Itens com nome (necessário para o MP exibir na tela de pagamento)
     itens: carrinho.itens.map(item => ({
@@ -121,56 +109,56 @@ function montarPayloadMercadoPago() {
       quantidade: item.quantidade,
       precoUnitario: Number(item.preco),
     })),
-
+ 
     frete: ValorFrete.value ?? 0,
-
+ 
     descontoCupom: percentualDesconto.value > 0
       ? (carrinho.total + (ValorFrete.value ?? 0)) * percentualDesconto.value
       : 0,
-
+ 
     formaPagamento: carrinho.formaPagamento, // "pix" | "cartao"
-
+ 
     clienteNome:  usuario?.nome  ?? '',
     clienteEmail: usuario?.email ?? '',
     clienteCpf:   usuario?.cpf   ?? '',
   }
 }
-
+ 
 async function salvarFreteNoCarrinho() {
   erroMsg.value = ''
-
+ 
   if (ValorFrete.value === null || ValorFrete.value === undefined) {
     erroMsg.value = 'Selecione um endereço de entrega.'
     return
   }
-
+ 
   if (!carrinho.formaPagamento) {
     erroMsg.value = 'Selecione uma forma de pagamento.'
     return
   }
-
+ 
   enviando.value = true
   try {
     // ── 1. Salva a encomenda no banco com status PENDENTE ──────
     const payload = montarPayload()
     await encomendasStore.adicionarEncomenda(payload)
-
+ 
     // ── 2. Cria a Preference no Mercado Pago ───────────────────
     const payloadMP = montarPayloadMercadoPago()
     const { sandboxInitPoint, initPoint } = await criarPreferenceMercadoPago(payloadMP)
-
+ 
     // ── 3. Limpa o carrinho ────────────────────────────────────
     await carrinho.limparCarrinho()
-
+ 
     // ── 4. Redireciona para o Checkout Pro do Mercado Pago ─────
     //    Em desenvolvimento use sandboxInitPoint.
     //    Em produção troque por initPoint.
     const urlCheckout = import.meta.env.VITE_MP_SANDBOX === 'true'
       ? sandboxInitPoint
       : initPoint
-
+ 
     window.location.href = urlCheckout
-
+ 
   } catch (err) {
     console.error(err)
     erroMsg.value = 'Erro ao finalizar pedido. Tente novamente.'
@@ -179,7 +167,7 @@ async function salvarFreteNoCarrinho() {
   }
 }
 </script>
-
+ 
 <template>
   <div class="sum-sticky">
     <div class="sum-card">
@@ -189,13 +177,13 @@ async function salvarFreteNoCarrinho() {
           Resumo do pedido
         </div>
       </div>
-
+ 
       <div class="sum-items" v-for="item in carrinho.itens" :key="item.id">
         <div class="sum-item">
           <div class="sum-item-img">
             <img v-if="item.imagem" :src="item.imagem" :alt="item.nome" />
           </div>
-
+ 
           <div class="sum-item-info">
             <div class="sum-item-name">{{ item.nome }}</div>
             <div class="sum-item-qty">Quantidade: {{ item.quantidade }}</div>
@@ -203,37 +191,37 @@ async function salvarFreteNoCarrinho() {
           </div>
         </div>
       </div>
-
+ 
       <div class="sum-cupom">
         <span class="cupom-label">Cupom de desconto</span>
-
+ 
         <div class="cupom-box">
           <input v-model="cupomDigitado" type="text" placeholder="Digite o cupom" class="input-cupom"
             @keyup.enter="aplicarCupom" />
-
+ 
           <button class="btn-cupom" @click="aplicarCupom" type="button">
             Aplicar
           </button>
         </div>
-
+ 
         <span v-if="msgCupom" class="msg-cupom" :class="cupomValido ? 'ok' : 'erro'">
           {{ msgCupom }}
         </span>
       </div>
-
+ 
       <div class="sum-rows">
         <div class="sum-row">
           <span class="sum-row-lbl">Produtos</span>
           <span class="sum-row-val">{{ formatarPreco(carrinho.total) }}</span>
         </div>
-
+ 
         <div class="sum-row">
           <span class="sum-row-lbl">Frete</span>
           <span class="sum-row-val" :class="{ ok: ValorFrete !== null }">
             {{ ValorFrete !== null ? formatarPreco(ValorFrete) : '—' }}
           </span>
         </div>
-
+ 
         <div class="sum-row" v-if="percentualDesconto > 0">
           <span class="sum-row-lbl">Desconto ({{ Math.round(percentualDesconto * 100) }}%)</span>
           <span class="sum-row-val" style="color: #e53935;">
@@ -241,7 +229,7 @@ async function salvarFreteNoCarrinho() {
           </span>
         </div>
       </div>
-
+ 
       <div class="sum-total-blk">
         <div class="sum-total-row">
           <span class="sum-total-lbl">
@@ -250,7 +238,7 @@ async function salvarFreteNoCarrinho() {
           <span class="sum-total-val ok">{{ formatarPreco(totalVista) }}</span>
         </div>
       </div>
-
+ 
       <div class="sum-pix-blk">
         <div class="sum-row">
           <span class="sum-row-lbl">Total a prazo</span>
@@ -258,7 +246,7 @@ async function salvarFreteNoCarrinho() {
         </div>
         <div class="sum-total-sub">Em até 2× de {{ formatarPreco(totalPrazo / 2) }} sem juros</div>
       </div>
-
+ 
       <!-- Badge do Mercado Pago -->
       <div class="mp-badge">
         <img
@@ -268,18 +256,18 @@ async function salvarFreteNoCarrinho() {
         />
         <span class="mp-badge-txt">Pagamento seguro via Mercado Pago</span>
       </div>
-
+ 
       <div v-if="erroMsg" class="msg-erro">
         {{ erroMsg }}
       </div>
-
+ 
       <div class="sum-footer">
         <button class="btn-continuar" @click="salvarFreteNoCarrinho" :disabled="!podeContinuar || enviando"
           type="button">
           <span class="material-symbols-outlined">lock</span>
           <span>{{ enviando ? 'Processando...' : 'Pagar com Mercado Pago' }}</span>
         </button>
-
+ 
         <router-link :to="{ name: 'Carrinho' }">
           <button class="btn-voltar" type="button">Voltar ao Carrinho</button>
         </router-link>
