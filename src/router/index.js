@@ -26,6 +26,8 @@ const AdminProdutosView = () => import('@/views/AdicionarProdutosView.vue')
 const AtualizarProdutoView = () => import('@/views/AtualizarProdutoView.vue')
 const AdicionarCupomView = () => import('@/views/AdicionarCupomView.vue')
 const AtualizarCupomView = () => import('@/views/AtualizarCupomView.vue')
+const AdicionarFreteView = () => import('@/views/AdicionarFreteView.vue')
+const AtualizarFreteView = () => import('@/views/AtualizarFreteView.vue')
 
 const routes = [
   {
@@ -73,6 +75,7 @@ const routes = [
       { path: 'novocrud', name: 'NovoCrud', component: NovoCrudView },
       { path: 'adicionar', name: 'AdicionarProdutos', component: AdminProdutosView },
       { path: 'cupons/novo', name: 'AdicionarCupom', component: AdicionarCupomView },
+      { path: 'fretes/novo', name: 'AdicionarFrete', component: AdicionarFreteView },
     ]
   },
 
@@ -83,8 +86,10 @@ const routes = [
     children: [
       { path: 'atualizar/:id', name: 'AtualizarProduto', component: AtualizarProdutoView, props: true },
       { path: 'cupons/atualizar/:id', name: 'AtualizarCupom', component: AtualizarCupomView, props: true },
+      { path: 'fretes/atualizar/:id', name: 'AtualizarFrete', component: AtualizarFreteView, props: true },
       { path: 'adicionar', name: 'AdicionarProdutos', component: AdminProdutosView },
-      { path: 'cupons/novo', name: 'AdicionarCupom', component: AdicionarCupomView }
+      { path: 'cupons/novo', name: 'AdicionarCupom', component: AdicionarCupomView },
+      { path: 'fretes/novo', name: 'AdicionarFrete', component: AdicionarFreteView }
     ]
   }
 ]
