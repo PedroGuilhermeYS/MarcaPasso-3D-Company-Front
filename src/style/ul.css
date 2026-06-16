@@ -108,6 +108,7 @@
 
 .btn-cupom:hover {
     transform: scale(1.05);
+    background: #0A377A;
 }
 
 .btn-confirmar {

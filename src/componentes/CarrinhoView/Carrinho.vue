@@ -255,7 +255,7 @@
     .extras-in:focus { border-color: #114798; }
     .btn-apply {
         padding: 10px 20px;
-        background: #049377;
+        background: #005C4A;
         color: #fff;
         border: none;
         border-radius: 10px;

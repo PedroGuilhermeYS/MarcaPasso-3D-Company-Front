@@ -181,6 +181,7 @@ input:focus {
 }
 
 .btn-submit:hover {
+  background: #0A377A;
   transform: scale(1.02);
 }
 

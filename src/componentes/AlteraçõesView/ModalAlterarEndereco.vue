@@ -125,7 +125,7 @@ defineExpose({ abrir })
             <input type="text" v-model="estado" placeholder="UF" maxlength="2" />
           </div>
 
-          <p v-if="mensagem" class="mensagem-modal">{{ mensagem }}</p>
+          <p v-if="mensagem" class="mensagem-modal" v-html="mensagem"></p>
         </div>
 
         <div class="modal-footer">

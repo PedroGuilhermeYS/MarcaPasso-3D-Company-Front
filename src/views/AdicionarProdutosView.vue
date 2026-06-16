@@ -176,7 +176,7 @@ function _resetarFormulario() {
         {{ loading ? 'Cadastrando...' : 'Cadastrar Produto' }}
       </button>
 
-      <p v-if="mensagem" class="mensagem">{{ mensagem }}</p>
+      <p v-if="mensagem" class="mensagem" v-html="mensagem"></p>
     </form>
   </main>
 </template>
@@ -327,6 +327,7 @@ textarea:focus {
   cursor: pointer;
 }
 .btn-submit:hover:not(:disabled) {
+  background: #0A377A;
   transform: scale(1.02);
 }
 .btn-submit:disabled {
