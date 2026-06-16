@@ -5,22 +5,22 @@ import { useFretesStore } from '@/stores/useFretesStore'
 import { useAuthStore } from '@/stores/useAuthStore'
 import axiosInstance from '@/api/config'
 import ModalAdicionarEndereco from '@/componentes/AlteraçõesView/ModalAdicionarEndereco.vue'
-
+ 
 const carrinho = useCarrinhoStore()
 const fretes = useFretesStore()
 const authStore = useAuthStore()
-
+ 
 const enderecos = ref([])
 const ValorFrete = ref(null)
 const enderecoSelecionado = ref(null)
 const modoEscolha = ref(false)
-
+ 
 const modalAdicionar = ref(null)
-
+ 
 onMounted(async () => {
   await fretes.carregarFretes()
   await carregarEnderecos()
-
+ 
   if (carrinho.freteSelecionado) {
     ValorFrete.value = carrinho.freteSelecionado
   }
@@ -28,7 +28,7 @@ onMounted(async () => {
     enderecoSelecionado.value = carrinho.enderecoSelecionado
   }
 })
-
+ 
 async function carregarEnderecos() {
   const idUsuario = authStore.usuario?.id
   if (!idUsuario) return
@@ -40,12 +40,19 @@ async function carregarEnderecos() {
     aplicarEndereco(data[0])
   }
 }
-
+ 
+function normalizarCep(cep) {
+  return (cep || '').replace(/\D/g, '')
+}
+ 
 function aplicarEndereco(endereco) {
   enderecoSelecionado.value = endereco
   carrinho.definirEndereco(endereco)
-
-  const freteEncontrado = fretes.fretes.find(f => f.cep_entrega === endereco.cep)
+ 
+  const cepEnderecoNormalizado = normalizarCep(endereco.cep)
+  const freteEncontrado = fretes.fretes.find(
+    f => normalizarCep(f.cep_destino) === cepEnderecoNormalizado
+  )
   if (freteEncontrado) {
     ValorFrete.value = freteEncontrado.valor_frete
     carrinho.definirFrete(freteEncontrado.valor_frete)
@@ -53,22 +60,22 @@ function aplicarEndereco(endereco) {
     ValorFrete.value = null
     carrinho.definirFrete(null)
   }
-
+ 
   modoEscolha.value = false
 }
-
+ 
 function abrirEscolha() {
   modoEscolha.value = true
 }
-
+ 
 function fecharEscolha() {
   modoEscolha.value = false
 }
-
+ 
 function abrirModalAdicionar() {
   modalAdicionar.value?.abrir()
 }
-
+ 
 async function onEnderecoSalvo() {
   await carregarEnderecos()
 }
@@ -83,7 +90,7 @@ async function onEnderecoSalvo() {
         </div>
         <span class="sec-title">Endereço de Entrega</span>
       </div>
-
+ 
       <button
         v-if="enderecoSelecionado && !modoEscolha"
         class="btn-alterar"
@@ -93,9 +100,9 @@ async function onEnderecoSalvo() {
         ALTERAR
       </button>
     </div>
-
+ 
     <div class="sec-body">
-
+ 
       <div v-if="enderecoSelecionado && !modoEscolha" class="addr-selecionado">
         <div class="addr-sel-icon">
           <span class="material-symbols-outlined">location_on</span>
@@ -112,7 +119,7 @@ async function onEnderecoSalvo() {
         </div>
         <div class="addr-sel-badge"><span class="material-symbols-outlined">check_circle</span></div>
       </div>
-
+ 
       <div v-else-if="modoEscolha || (!enderecoSelecionado && enderecos.length)" class="addr-list">
         <div
           v-for="endereco in enderecos"
@@ -133,11 +140,11 @@ async function onEnderecoSalvo() {
             <div class="addr-linha">{{ endereco.bairro }} · {{ endereco.cidade }} · {{ endereco.estado }} · {{ endereco.cep }}</div>
           </div>
         </div>
-
+ 
         <button class="btn-novo-inline" type="button" @click="abrirModalAdicionar">
           <span class="btn-novo-plus">+</span> Adicionar novo endereço
         </button>
-
+ 
         <button
           v-if="enderecoSelecionado && modoEscolha"
           class="btn-cancelar-escolha"
@@ -147,7 +154,7 @@ async function onEnderecoSalvo() {
           Cancelar
         </button>
       </div>
-
+ 
       <div v-else class="sem-endereco">
         <span class="material-symbols-outlined">location_on</span>
         <p>Nenhum endereço cadastrado.</p>
@@ -155,10 +162,10 @@ async function onEnderecoSalvo() {
           + CADASTRAR ENDEREÇO
         </button>
       </div>
-
+ 
     </div>
   </div>
-
+ 
   <ModalAdicionarEndereco ref="modalAdicionar" @salvo="onEnderecoSalvo" />
 </template>
 

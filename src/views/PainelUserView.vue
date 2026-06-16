@@ -7,23 +7,28 @@ import { useFavoritosStore } from '@/stores/useFavoritosStore'
 import { useEncomendasStore } from '@/stores/useEncomendasStore'
 import ModalAlterarSenha from '@/componentes/AlteraçõesView/ModalAlterarSenha.vue'
 import { usePersonalizadoStore } from '@/stores/usePersonalizadoStore'
-
+ 
 const authStore = useAuthStore();
 const router = useRouter();
 const favoritosStore = useFavoritosStore()
 const encomendasStore = useEncomendasStore()
 const personalizados = usePersonalizadoStore()
-
+ 
 const modalSenhaRef = ref(null)
-
+ 
 onMounted(async () => {
+  if (!authStore.usuario) {
+    router.push({ name: 'Login' })
+    return
+  }
+ 
   await Promise.all([
     favoritosStore.carregarFavoritos(),
     encomendasStore.carregarEncomendas(),
     personalizados.carregarPedidos()
   ])
 })
-
+ 
 const stats = computed(() => {
   const lista = encomendasStore.encomendas
   return {
@@ -31,14 +36,14 @@ const stats = computed(() => {
     totalGasto: lista.reduce((acc, p) => acc + (p.total ?? 0), 0)
   }
 })
-
+ 
 const totalPedidos = computed(() => personalizados.pedidos.length)
-
+ 
 const sair = async () => {
   await authStore.logout();
   router.push({ name: 'Login' });
 };
-
+ 
 const Home = () => router.push({ name: 'Home' });
 const Encomendas = () => router.push({ name: 'Encomendas' });
 const Favoritos = () => router.push({ name: 'Favoritos' });
@@ -47,7 +52,7 @@ const Enderecos = () => router.push({ name: 'Endereco' });
 const NovoCrud = () => router.push({ name: 'NovoCrud' });
 const irParaPersonalizados = () => router.push({ name: 'MeusPersonalizados' })
 </script>
-
+ 
 <template>
   <div class="page-wrap">
     <div class="bc">
@@ -55,33 +60,33 @@ const irParaPersonalizados = () => router.push({ name: 'MeusPersonalizados' })
       <span class="bc-sep"><span class="material-symbols-outlined">chevron_right</span></span>
       <span class="cur">Minha Conta</span>
     </div>
-
-    <div class="welcome-card">
+ 
+    <div v-if="authStore.usuario" class="welcome-card">
       <div class="avatar-wrap">
-        <div class="avatar">{{ authStore.usuario.nome[0] }}</div>
+        <div class="avatar">{{ authStore.usuario.nome?.[0] }}</div>
         <div class="avatar-online"></div>
       </div>
-
+ 
       <div class="welcome-info">
         <div class="welcome-sub">Central Minha Conta</div>
         <div class="welcome-name">{{ authStore.usuario.nome }}</div>
         <div class="welcome-email">{{ authStore.usuario.email }}</div>
       </div>
-
+ 
       <div class="welcome-right">
         <button class="btn-edit" @click="Cadastro" type="button">✏️ EDITAR DADOS</button>
-
+ 
         <div class="welcome-meta">
           <div class="meta-item">
             <div class="meta-num">{{ stats.total }}</div>
             <div class="meta-lbl">Pedidos</div>
           </div>
-
+ 
           <div class="meta-item">
             <div class="meta-num">{{ favoritosStore.quantidade }}</div>
             <div class="meta-lbl">Favoritos</div>
           </div>
-
+ 
           <div class="meta-item">
             <div class="meta-num meta-green">R$ {{ formatarPreco(stats.totalGasto) }}</div>
             <div class="meta-lbl">Gasto total</div>
@@ -89,52 +94,52 @@ const irParaPersonalizados = () => router.push({ name: 'MeusPersonalizados' })
         </div>
       </div>
     </div>
-
+ 
     <div class="sec-title-row">
       <div class="sec-title">ATALHOS</div>
     </div>
-
+ 
     <div class="shortcut-grid">
       <div class="sc-card" @click="Cadastro">
         <div class="sc-icon-wrap ind"><span class="material-symbols-outlined">person</span></div>
         <div class="sc-name">Meus Dados</div>
         <div class="sc-desc">Dados pessoais e senha</div>
       </div>
-
+ 
       <!-- Abre o modal de alterar senha -->
       <div class="sc-card" @click="modalSenhaRef.abrir()">
         <div class="sc-icon-wrap grn"><span class="material-symbols-outlined">lock</span></div>
         <div class="sc-name">Trocar Senha</div>
         <div class="sc-desc">Atualize sua senha de acesso</div>
       </div>
-
+ 
       <div class="sc-card" @click="Encomendas">
         <div class="sc-icon-wrap ind"><span class="material-symbols-outlined">inventory_2</span></div>
         <span class="sc-notif">{{ stats.total }}</span>
         <div class="sc-name">Meus Pedidos</div>
         <div class="sc-desc">Acompanhe suas encomendas</div>
       </div>
-
+ 
       <div class="sc-card" @click="Favoritos">
         <div class="sc-icon-wrap warn"><span class="material-symbols-outlined">favorite</span></div>
         <span class="sc-notif warn-bg">{{ favoritosStore.quantidade }}</span>
         <div class="sc-name">Favoritos</div>
         <div class="sc-desc">Produtos salvos para depois</div>
       </div>
-
+ 
       <div class="sc-card" @click="irParaPersonalizados">
         <div class="sc-icon-wrap ind"><span class="material-symbols-outlined">design_services</span></div>
         <span class="sc-notif">{{ totalPedidos }}</span>
         <div class="sc-name">Meus Personalizados</div>
         <div class="sc-desc">Acompanhe seus pedidos personalizados</div>
       </div>
-
+ 
       <div class="sc-card" @click="Enderecos">
         <div class="sc-icon-wrap grn"><span class="material-symbols-outlined">location_on</span></div>
         <div class="sc-name">Meus Endereços</div>
         <div class="sc-desc">Gerencie seus endereços de entrega</div>
       </div>
-
+ 
       <div class="sc-card danger" @click="sair">
         <div class="sc-icon-wrap red"><span class="material-symbols-outlined">logout</span></div>
         <div class="sc-name">Sair</div>
@@ -142,7 +147,7 @@ const irParaPersonalizados = () => router.push({ name: 'MeusPersonalizados' })
       </div>
     </div>
   </div>
-
+ 
   <!-- Modal montado fora do grid, controlado via ref -->
   <ModalAlterarSenha ref="modalSenhaRef" />
 </template>

@@ -6,6 +6,7 @@ import { useProdutosStore } from '@/stores/useProdutosStore'
 import { getTodosUsuariosNaApi } from '@/api/usuario/usuarioApi.js'
 import { getTodosEncomendasAdminNaApi } from '@/api/encomenda'
 import { useCupomStore } from '@/stores/useCupomStore'
+import { useFretesStore } from '@/stores/useFretesStore'
 import {
   getTodosPersonalizadosAdminNaApi,
   atualizarStatusPersonalizadoNaApi,
@@ -14,6 +15,7 @@ import {
 const router = useRouter()
 const produtosStore = useProdutosStore()
 const cupomStore = useCupomStore()
+const fretesStore = useFretesStore()
 
 const usuarios = ref([])
 const encomendas = ref([])
@@ -26,7 +28,7 @@ const erroEncomendas = ref(null)
 const erroPersonalizados = ref(null)
 
 // ── Aba ativa ────────────────────────────────────────────────
-const abas = ['Produtos', 'Clientes', 'Cupons', 'Personalizações']
+const abas = ['Produtos', 'Clientes', 'Cupons', 'Fretes', 'Personalizações']
 const abaAtiva = ref('Produtos')
 
 // ── Mapa de status: valor interno → label exibido ────────────
@@ -93,6 +95,7 @@ const formatarData = (iso) => {
 // ── Ações produtos ───────────────────────────────────────────
 const adicionarProduto = () => router.push({ name: 'AdicionarProdutos' })
 const adicionarCupom = () => router.push({ name: 'AdicionarCupom' })
+const adicionarFrete = () => router.push({ name: 'AdicionarFrete' })
 
 const atualizarProduto = (id) =>
   router.push({ name: 'AtualizarProduto', params: { id } })
@@ -117,11 +120,24 @@ const excluirCupom = async (id) => {
     alert('Erro ao excluir cupom.')
   }
 }
+ 
+const editarFrete = (id) =>
+  router.push({ name: 'AtualizarFrete', params: { id } })
+ 
+const excluirFrete = async (id) => {
+  if (!confirm('Deseja excluir este frete?')) return
+  try {
+    await fretesStore.removerFrete(id)
+  } catch {
+    alert('Erro ao excluir frete.')
+  }
+}
 
 // ── Carregamento inicial ─────────────────────────────────────
 onMounted(async () => {
   await produtosStore.carregarProdutos()
   await cupomStore.carregarCupons()
+  await fretesStore.carregarFretes()
 
   carregandoUsuarios.value = true
   try {
@@ -171,6 +187,9 @@ onMounted(async () => {
         <button class="btn-adicionar cupom" @click="adicionarCupom">
           + Adicionar Cupom
         </button>
+        <button class="btn-adicionar" @click="adicionarFrete">
+          + Adicionar Frete
+        </button>
       </div>
     </div>
 
@@ -199,7 +218,15 @@ onMounted(async () => {
           <p class="stat-valor">{{ cupomStore.cupons.length }}</p>
         </div>
       </div>
-
+ 
+      <div class="card-stat">
+        <span class="stat-icone">🚚</span>
+        <div>
+          <p class="stat-label">Fretes Cadastrados</p>
+          <p class="stat-valor">{{ fretesStore.fretes.length }}</p>
+        </div>
+      </div>
+ 
       <div class="card-stat">
         <span class="stat-icone">🖨️</span>
         <div>
@@ -280,7 +307,7 @@ onMounted(async () => {
       <div v-else-if="usuarios.length === 0" class="estado-vazio">
         Nenhum cliente encontrado.
       </div>
-
+ 
       <div v-else class="tabela-wrapper">
         <table class="tabela">
           <thead>
@@ -367,7 +394,52 @@ onMounted(async () => {
         </table>
       </div>
     </div>
-
+ 
+    <!-- ══════════════════ ABA: FRETES ════════════════════ -->
+    <div v-if="abaAtiva === 'Fretes'">
+      <div v-if="fretesStore.carregando" class="estado-vazio">
+        Carregando fretes…
+      </div>
+ 
+      <div v-else-if="fretesStore.fretes.length === 0" class="estado-vazio">
+        Nenhum frete cadastrado.
+      </div>
+ 
+      <div v-else class="tabela-wrapper">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>CEP</th>
+              <th>Cidade</th>
+              <th>Valor</th>
+              <th>Prazo (dias)</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="frete in fretesStore.fretes" :key="frete.id">
+              <td class="id-cel">{{ frete.id }}</td>
+              <td><span class="badge categoria">{{ frete.cep_entrega ?? frete.cepEntrega }}</span></td>
+              <td class="nome-cel">{{ frete.cidade }}</td>
+              <td>{{ formatarPreco(Number(frete.valor_frete ?? frete.valorFrete ?? 0)) }}</td>
+              <td>{{ frete.prazo_entrega_dias ?? frete.prazoEntregaDias }} dias</td>
+              <td>
+                <div class="acoes-cel">
+                  <button class="btn-acao azul" @click="editarFrete(frete.id)">
+                    Editar
+                  </button>
+                  <button class="btn-acao vermelho" @click="excluirFrete(frete.id)">
+                    Excluir
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+ 
     <!-- ══════════════ ABA: PERSONALIZAÇÕES ══════════════════ -->
     <div v-if="abaAtiva === 'Personalizações'">
       <div v-if="carregandoPersonalizados" class="estado-vazio">

@@ -17,8 +17,17 @@ const acessar = computed(() => {
 })
 
 onMounted(async () => {
-  await carrinho.carregarCarrinho()
-  await favoritosStore.carregarFavoritos()
+  try {
+    await carrinho.carregarCarrinho()
+  } catch (e) {
+    console.error('Erro ao carregar carrinho:', e)
+  }
+
+  try {
+    await favoritosStore.carregarFavoritos()
+  } catch (e) {
+    console.error('Erro ao carregar favoritos:', e)
+  }
 })
 
 function buscar() {
