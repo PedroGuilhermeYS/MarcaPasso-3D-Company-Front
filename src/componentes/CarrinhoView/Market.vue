@@ -164,7 +164,7 @@ function totalCartao() {
     display: block;
     margin: 0 22px 10px;
     padding: 15px;
-    background: linear-gradient(135deg, #2C18A0, #114798);
+    background: #114798;
     color: #fff;
     border: none;
     border-radius: 10px;
@@ -177,7 +177,7 @@ function totalCartao() {
 }
 
 .btn-checkout:hover {
-    opacity: .9;
+    background: #0A377A;
     transform: scale(1.01);
 }
 

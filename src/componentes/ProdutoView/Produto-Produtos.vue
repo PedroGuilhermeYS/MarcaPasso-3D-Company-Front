@@ -171,12 +171,32 @@
                             <span class="material-symbols-outlined">share</span>
                             Copiar link
                         </button>
-                        <a :href="`https://api.whatsapp.com/send?text=${encodeURIComponent('Confira este produto: ' + produto.nome + ' - ' + currentUrl)}`" target="_blank" rel="noopener noreferrer">
-                            <button class="share-btn wpp"><span class="material-symbols-outlined">smartphone</span> WhatsApp</button>
+
+                        <a
+                            :href="`https://api.whatsapp.com/send?text=${encodeURIComponent('Confira este produto: ' + produto.nome + ' - ' + currentUrl)}`"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <button class="icon-btn wpp" aria-label="Compartilhar no WhatsApp">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </button>
                         </a>
-                        <button v-if="usuarioLogado" class="share-btn fav" :style="{ borderColor: favoritos.isFavoritado(produto.id) ? 'var(--color-brand-green)' : 'var(--color-brand-green)', backgroundColor: favoritos.isFavoritado(produto.id) ? 'var(--color-brand-green)' : 'transparent', color: favoritos.isFavoritado(produto.id) ? '#fff' : 'var(--color-brand-green)' }" @click="onToggleFavorito"><span class="material-symbols-outlined">favorite_border</span> {{ favoritos.isFavoritado(produto.id) ? 'Favorito' : 'Favoritar' }}</button>
+
+                        <button
+                            v-if="usuarioLogado"
+                            class="icon-btn fav"
+                            @click="onToggleFavorito"
+                            :aria-label="favoritos.isFavoritado(produto.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'"
+                        >
+                            <span class="material-symbols-outlined">
+                                {{ favoritos.isFavoritado(produto.id) ? 'favorite' : 'favorite_border' }}
+                            </span>
+                        </button>
+
                         <router-link v-if="!usuarioLogado" to="/Login">
-                            <button class="share-btn fav"><span class="material-symbols-outlined">favorite_border</span> Favoritar</button>
+                            <button class="icon-btn fav" aria-label="Favoritar">
+                                <span class="material-symbols-outlined">favorite_border</span>
+                            </button>
                         </router-link>
                     </div>
                 </div>
@@ -567,7 +587,7 @@
 .btn-cart-main {
     width: 100%;
     padding: 15px;
-    background: linear-gradient(135deg, var(--color-brand-indigo), var(--color-brand-blue));
+    background: #114798;
     color: #fff;
     border: none;
     border-radius: var(--radius);
@@ -583,7 +603,7 @@
 }
 
 .btn-cart-main:hover {
-    opacity: 0.9;
+    background: #0A377A;
     transform: scale(1.01);
 }
 
@@ -775,4 +795,39 @@ a {
 .btn-edit:hover{background:var(--color-brand-blue);color:#fff}
 .btn-delete{padding:8px 12px;border-radius:8px;border:1.5px solid var(--color-danger);background:transparent;color:var(--color-danger);cursor:pointer;font-weight:700}
 .btn-delete:hover{background:var(--color-danger);color:#fff}
+.icon-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1.5px solid;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 22px;
+}
+
+/* WhatsApp */
+.icon-btn.wpp {
+    color: #25D366;
+    border-color: #25D366;
+}
+
+.icon-btn.wpp:hover {
+    background: #25D366;
+    color: #fff;
+}
+
+/* Favorito */
+.icon-btn.fav {
+    color: #EFA83E;
+    border-color: #EFA83E;
+}
+
+.icon-btn.fav:hover {
+    background: #EFA83E;
+    color: #fff;
+}
 </style>

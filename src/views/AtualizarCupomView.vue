@@ -117,7 +117,7 @@ async function atualizarCupom() {
           {{ loading ? 'Atualizando...' : 'Atualizar Cupom' }}
         </button>
 
-        <p class="mensagem">{{ mensagem }}</p>
+        <p class="mensagem" v-html="mensagem"></p>
       </template>
     </form>
   </main>
@@ -191,6 +191,7 @@ input:focus, select:focus {
 }
 
 .btn-submit:hover {
+  background: #0A377A;
   transform: scale(1.02);
 }
 

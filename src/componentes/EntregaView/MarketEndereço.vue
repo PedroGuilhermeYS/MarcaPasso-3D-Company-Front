@@ -440,7 +440,7 @@ async function salvarFreteNoCarrinho() {
 .btn-continuar {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #009ee3, #007eb5);
+  background: #114798;
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -452,14 +452,15 @@ async function salvarFreteNoCarrinho() {
   justify-content: center;
   gap: 8px;
   letter-spacing: .03em;
-  box-shadow: 0 4px 20px rgba(0, 158, 227, .35);
+  box-shadow: 0 4px 20px rgba(17, 71, 152, .35);
   cursor: pointer;
   transition: all .2s;
 }
 
 .btn-continuar:hover:not(:disabled) {
+  background: #0A377A;
   transform: translateY(-2px);
-  box-shadow: 0 6px 28px rgba(0, 158, 227, .45);
+  box-shadow: 0 6px 28px rgba(17, 71, 152, .45);
 }
 
 .btn-continuar:disabled {
@@ -519,6 +520,11 @@ async function salvarFreteNoCarrinho() {
   border-radius: 8px;
   font-size: 13px;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-cupom:hover {
+  background: #0A377A;
 }
 
 .msg-cupom {

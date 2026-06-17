@@ -105,7 +105,7 @@ async function cadastrarCupom() {
         {{ loading ? 'Cadastrando...' : 'Cadastrar Cupom' }}
       </button>
 
-      <p class="mensagem">{{ mensagem }}</p>
+      <p class="mensagem" v-html="mensagem"></p>
     </form>
   </main>
 </template>
@@ -180,6 +180,7 @@ select:focus {
 }
 
 .btn-submit:hover {
+  background: #0A377A;
   transform: scale(1.02);
 }
 

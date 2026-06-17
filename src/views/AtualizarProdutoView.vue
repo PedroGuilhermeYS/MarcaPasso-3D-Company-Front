@@ -200,7 +200,7 @@ async function atualizarProduto() {
         {{ loading ? 'Atualizando...' : 'Atualizar Produto' }}
       </button>
 
-      <p v-if="mensagem" class="mensagem">{{ mensagem }}</p>
+      <p v-if="mensagem" class="mensagem" v-html="mensagem"></p>
     </form>
   </main>
 </template>
@@ -393,6 +393,7 @@ textarea:focus {
 }
 
 .btn-submit:hover:not(:disabled) {
+  background: #0A377A;
   transform: scale(1.02);
 }
 

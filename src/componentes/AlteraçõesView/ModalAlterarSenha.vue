@@ -75,7 +75,7 @@ defineExpose({ abrir })
             <label>Confirmar nova senha</label>
             <input type="password" v-model="confirmarSenha" placeholder="Repita a nova senha" />
           </div>
-          <p v-if="mensagem" class="mensagem-modal">{{ mensagem }}</p>
+          <p v-if="mensagem" class="mensagem-modal" v-html="mensagem"></p>
         </div>
 
         <div class="modal-footer">

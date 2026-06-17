@@ -335,7 +335,7 @@ svg {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  background: var(--green, #049377);
+  background: #005C4A;
   color: #fff;
   padding: 14px 30px;
   border-radius: 50px;
@@ -347,9 +347,9 @@ svg {
 }
 
 .btn-hero-main:hover {
-  background: var(--green-l, #05b090);
+  background: #00765F;
   transform: translateY(-2px);
-  box-shadow: 0 10px 32px rgba(4, 147, 119, .5);
+  box-shadow: 0 10px 32px rgba(0, 118, 95, .5);
 }
 
 .btn-hero-main svg {
@@ -695,7 +695,7 @@ svg {
   align-items: center;
   gap: 9px;
   flex-shrink: 0;
-  background: var(--green, #049377);
+  background: #005C4A;
   color: #fff;
   padding: 14px 28px;
   border-radius: 50px;
@@ -708,7 +708,7 @@ svg {
 }
 
 .btn-banner:hover {
-  background: var(--green-l, #05b090);
+  background: #00765F;
   transform: translateY(-2px);
 }
 

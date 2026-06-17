@@ -254,19 +254,20 @@ async function onToggleFavorito() {
 .btn-buy-sm {
   padding: 8px 13px;
   border-radius: var(--radius, 12px);
-  background: linear-gradient(135deg, var(--color-brand-indigo, #2C18A0), var(--color-brand-blue, #114798));
+  background: #114798;
   color: #fff;
   font-size: 12px;
   font-weight: 700;
   flex-shrink: 0;
-  box-shadow: 0 3px 10px rgba(44, 24, 160, .22);
+  box-shadow: 0 3px 10px rgba(17, 71, 152, .22);
   display: flex;
   align-items: center;
   gap: 5px;
+  cursor: pointer;
 }
 
 .btn-buy-sm:hover {
-  opacity: .9;
+  background: #0A377A;
   transform: scale(1.05);
 }
 

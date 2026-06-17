@@ -184,7 +184,7 @@ onMounted(async () => {
         <button class="btn-adicionar" @click="adicionarProduto">
           + Adicionar Produto
         </button>
-        <button class="btn-adicionar cupom" @click="adicionarCupom">
+        <button class="btn-adicionar" @click="adicionarCupom">
           + Adicionar Cupom
         </button>
         <button class="btn-adicionar" @click="adicionarFrete">
@@ -195,8 +195,11 @@ onMounted(async () => {
 
     <!-- ── Cards de estatísticas ─────────────────────────── -->
     <div class="cards-stats">
+
       <div class="card-stat">
-        <span class="stat-icone">📦</span>
+        <span class="material-symbols-outlined stat-icone">
+          inventory_2
+        </span>
         <div>
           <p class="stat-label">Total de Produtos</p>
           <p class="stat-valor">{{ totalProdutos }}</p>
@@ -204,7 +207,9 @@ onMounted(async () => {
       </div>
 
       <div class="card-stat">
-        <span class="stat-icone">👥</span>
+        <span class="material-symbols-outlined stat-icone">
+          group
+        </span>
         <div>
           <p class="stat-label">Total de Clientes</p>
           <p class="stat-valor">{{ usuarios.length }}</p>
@@ -212,28 +217,35 @@ onMounted(async () => {
       </div>
 
       <div class="card-stat">
-        <span class="stat-icone">🏷️</span>
+        <span class="material-symbols-outlined stat-icone">
+          local_offer
+        </span>
         <div>
           <p class="stat-label">Total de Cupons</p>
           <p class="stat-valor">{{ cupomStore.cupons.length }}</p>
         </div>
       </div>
- 
+
       <div class="card-stat">
-        <span class="stat-icone">🚚</span>
+        <span class="material-symbols-outlined stat-icone">
+          local_shipping
+        </span>
         <div>
           <p class="stat-label">Fretes Cadastrados</p>
           <p class="stat-valor">{{ fretesStore.fretes.length }}</p>
         </div>
       </div>
- 
+
       <div class="card-stat">
-        <span class="stat-icone">🖨️</span>
+        <span class="material-symbols-outlined stat-icone">
+          print
+        </span>
         <div>
           <p class="stat-label">Pedidos Personalizados</p>
           <p class="stat-valor">{{ personalizados.length }}</p>
         </div>
       </div>
+
     </div>
 
     <!-- ── Abas ─────────────────────────────────────────────── -->
@@ -538,18 +550,14 @@ onMounted(async () => {
 }
 
 .btn-adicionar:hover {
+  background: #0A377A;
   transform: scale(1.03);
-  opacity: 0.92;
 }
 
 .cabecalho-acoes {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
-}
-
-.btn-adicionar.cupom {
-  background: var(--color-brand-blue);
 }
 
 /* ── Cards de estatísticas ─────────────────────────────────── */
@@ -576,8 +584,11 @@ onMounted(async () => {
 }
 
 .stat-icone {
-  font-size: 2rem;
-  line-height: 1;
+  font-size: 40px;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .stat-label {
@@ -618,7 +629,7 @@ onMounted(async () => {
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  color: var(--color-primary);
+  color: var(--color-brand-blue);
   transition: background 0.15s, color 0.15s;
 }
 
@@ -759,7 +770,7 @@ onMounted(async () => {
   border: 1.5px solid var(--color-brand-blue);
   font-size: 0.82rem;
   font-weight: 500;
-  color: var(--color-primary);
+  color: var(--color-brand-blue);
   background: #fff;
   cursor: pointer;
   outline: none;
@@ -788,7 +799,8 @@ onMounted(async () => {
   transition: transform 0.12s, opacity 0.12s;
 }
 
-.btn-acao:hover:not(:disabled) {
+.btn-acao.azul:hover:not(:disabled) {
+  background: #0A377A;
   transform: scale(1.05);
 }
 
@@ -806,6 +818,11 @@ onMounted(async () => {
   background: var(--color-error, #ef4444);
   color: #fff;
 }
+
+.btn-acao.vermelho:hover:not(:disabled) {
+  background: #a10e0e;
+  transform: scale(1.05);
+} 
 
 /* ── Estado vazio ───────────────────────────────────────────── */
 .estado-vazio {

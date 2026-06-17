@@ -410,16 +410,16 @@ watch(
     padding: 10px 12px;
     border: none;
     border-radius: 12px;
-    background: linear-gradient(135deg, #2c18a0, #114798);
+    background: #114798;
     color: #fff;
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: opacity 0.2s ease, transform 0.1s ease;
+    transition: background 0.2s ease, transform 0.1s ease;
 }
 
 .buy-btn:hover {
-    opacity: 0.92;
+    background: #0A377A;
 }
 
 .buy-btn:active {
